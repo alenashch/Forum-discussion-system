@@ -5,6 +5,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 public class Post {
@@ -85,6 +86,11 @@ public class Post {
         if (o == null || getClass() != o.getClass()) return false;
         Post post = (Post) o;
         return id == post.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, postNumber, body, created, edited);
     }
 
     @Override
