@@ -71,4 +71,23 @@ public class Post {
     public void setEdited(LocalDateTime edited) {
         this.edited = edited;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Post post = (Post) o;
+        return id == post.id;
+    }
+
+    @Override
+    public String toString() {
+        return "Post{" +
+                "id=" + id +
+                ", postNumber=" + postNumber +
+                ", body='" + body + '\'' +
+                ", created=" + created +
+                ", edited=" + edited +
+                '}';
+    }
 }
