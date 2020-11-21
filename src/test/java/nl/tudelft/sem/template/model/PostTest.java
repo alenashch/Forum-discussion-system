@@ -14,6 +14,8 @@ public class PostTest {
     transient int demoNumber2;
     transient String demoBody2;
     transient LocalDateTime demoCreated2;
+    transient LocalDateTime invalidEdited;
+    transient LocalDateTime validEdited;
     transient Post demoPost2;
 
     @BeforeEach
@@ -69,19 +71,19 @@ public class PostTest {
 
     @Test
     void testSetEditedException() {
-        LocalDateTime invalidEdited = demoPost2.getCreated().minusHours(1);
+        invalidEdited = demoPost2.getCreated().minusHours(1);
         assertThrows(IllegalArgumentException.class, () -> demoPost2.setEdited(invalidEdited));
     }
 
     @Test
     void testSetEditedBoundary() {
-        LocalDateTime invalidEdited = demoPost2.getCreated();
+        invalidEdited = demoPost2.getCreated();
         assertThrows(IllegalArgumentException.class, () -> demoPost2.setEdited(invalidEdited));
     }
 
     @Test
     void testSetAndGetEditedSuccessful() {
-        LocalDateTime validEdited = demoPost2.getCreated().plusHours(3);
+        validEdited = demoPost2.getCreated().plusHours(3);
         demoPost2.setEdited(validEdited);
         assertEquals(validEdited, demoPost2.getEdited());
     }
