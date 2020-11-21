@@ -88,7 +88,6 @@ public class PostTest {
         assertEquals(validEdited, demoPost2.getEdited());
     }
 
-
     @Test
     void testIsEditedTrue() {
         demoPost2.setEdited(demoPost2.getCreated().plusHours(3));

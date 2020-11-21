@@ -1,11 +1,11 @@
 package nl.tudelft.sem.template.model;
 
+import java.time.LocalDateTime;
+import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Entity
 public class Post {
@@ -24,6 +24,14 @@ public class Post {
     public Post() {
     }
 
+    /**
+     * Non-empty constructor for Post class.
+     *
+     * @param id - id of the Post.
+     * @param postNumber - the number of the Post (to identify it within a thread).
+     * @param body - the body of a Post.
+     * @param created - LocalDateTime showing when a Post was created.
+     */
     public Post(long id, int postNumber, String body, LocalDateTime created) {
         this.id = id;
         this.postNumber = postNumber;
@@ -69,21 +77,34 @@ public class Post {
         return edited;
     }
 
-    public void setEdited(LocalDateTime edited) throws IllegalArgumentException {
-        if (edited.isAfter(this.created))
-            this.edited = edited;
-        else
-            throw new IllegalArgumentException("Post cannot be edited before or when it was created.");
-    }
-
     public boolean isEdited() {
         return !this.edited.isEqual(this.created);
     }
 
+    /**
+     * This method sets the edited field to a new value.
+     *
+     * @param edited - LocalDateTime representing when the Post was last edited.
+     * @throws IllegalArgumentException when the new "edited" value is before or equal
+     *      to the current edited value.
+     */
+    public void setEdited(LocalDateTime edited) throws IllegalArgumentException {
+        if (edited.isAfter(this.edited)) {
+            this.edited = edited;
+        } else {
+            throw new IllegalArgumentException(
+                    "Post cannot be edited before or when it was created.");
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Post post = (Post) o;
         return id == post.id;
     }
@@ -95,12 +116,12 @@ public class Post {
 
     @Override
     public String toString() {
-        return "Post{" +
-                "id=" + id +
-                ", postNumber=" + postNumber +
-                ", body='" + body + '\'' +
-                ", created=" + created +
-                ", edited=" + edited +
-                '}';
+        return "Post{"
+                + "id=" + id
+                + ", postNumber=" + postNumber
+                + ", body='" + body + '\''
+                + ", created=" + created
+                + ", edited=" + edited
+                + '}';
     }
 }
