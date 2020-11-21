@@ -75,6 +75,10 @@ public class Post {
             throw new IllegalArgumentException("Post cannot be edited before or when it was created.");
     }
 
+    public boolean isEdited() {
+        return !this.edited.isEqual(this.created);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
