@@ -5,8 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PostTest {
     Post demoPost1;
@@ -43,5 +42,47 @@ public class PostTest {
                 && demoPost2.getEdited().equals(demoCreated2));
     }
 
-    
+    @Test
+    void testGetAndSetId() {
+        demoPost2.setId(3);
+        assertEquals(3, demoPost2.getId());
+    }
+
+    @Test
+    void testGetAndSetPostNumber() {
+        demoPost2.setPostNumber(12);
+        assertEquals(12, demoPost2.getPostNumber());
+    }
+
+    @Test
+    void testGetAndSetBody() {
+        demoPost2.setBody("Another body.");
+        assertEquals("Another body.", demoPost2.getBody());
+    }
+
+    @Test
+    void testGetAndSetCreated() {
+        LocalDateTime newCreated = demoCreated2.plusHours(3);
+        demoPost2.setCreated(newCreated);
+        assertEquals(newCreated, demoPost2.getCreated());
+    }
+
+    @Test
+    void testSetEditedException() {
+        LocalDateTime invalidEdited = demoPost2.getCreated().minusHours(1);
+        assertThrows(IllegalArgumentException.class, () -> demoPost2.setEdited(invalidEdited));
+    }
+
+    @Test
+    void testSetEditedBoundary() {
+        LocalDateTime invalidEdited = demoPost2.getCreated();
+        assertThrows(IllegalArgumentException.class, () -> demoPost2.setEdited(invalidEdited));
+    }
+
+    @Test
+    void testSetAndGetEditedSuccessful() {
+        LocalDateTime validEdited = demoPost2.getCreated().plusHours(3);
+        demoPost2.setEdited(validEdited);
+        assertEquals(validEdited, demoPost2.getEdited());
+    }
 }
