@@ -8,13 +8,13 @@ import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PostTest {
-    Post demoPost1;
+    transient Post demoPost1;
 
-    long demoId2;
-    int demoNumber2;
-    String demoBody2;
-    LocalDateTime demoCreated2;
-    Post demoPost2;
+    transient long demoId2;
+    transient int demoNumber2;
+    transient String demoBody2;
+    transient LocalDateTime demoCreated2;
+    transient Post demoPost2;
 
     @BeforeEach
     void initialize() {
