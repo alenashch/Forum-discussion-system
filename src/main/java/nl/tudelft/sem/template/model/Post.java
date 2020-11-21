@@ -68,8 +68,11 @@ public class Post {
         return edited;
     }
 
-    public void setEdited(LocalDateTime edited) {
-        this.edited = edited;
+    public void setEdited(LocalDateTime edited) throws IllegalArgumentException {
+        if (edited.isAfter(this.created))
+            this.edited = edited;
+        else
+            throw new IllegalArgumentException("Post cannot be edited before or when it was created.");
     }
 
     @Override
