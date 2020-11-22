@@ -49,21 +49,21 @@ public class BoardTest {
 
     @Test
     public void testGetAndSetId() {
-        board.setId(2);
-        assertEquals(2, board.getId());
+        board.setId(3);
+        assertEquals(3, board.getId());
     }
 
 
     @Test
     public void testGetAndSetName() {
-        board.setName("New Board 1");
-        assertEquals("New Board 1", board.getName());
+        board.setName("New Board 2");
+        assertEquals("New Board 2", board.getName());
     }
 
     @Test
     public void testGetAndSetDescription() {
-        board.setDescription("New description of board 1");
-        assertEquals("New description of board 1", board.getDescription());
+        board.setDescription("New description of board 2");
+        assertEquals("New description of board 2", board.getDescription());
     }
 
     @Test
