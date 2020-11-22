@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.entities;
+package nl.tudelft.sem.template.model;
 
 public class Example {
     private String name;

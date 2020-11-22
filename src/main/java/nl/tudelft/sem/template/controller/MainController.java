@@ -1,7 +1,7 @@
 package nl.tudelft.sem.template.controller;
 
-import nl.tudelft.sem.template.entities.User;
-import nl.tudelft.sem.template.repos.UserRepository;
+import nl.tudelft.sem.template.model.User;
+import nl.tudelft.sem.template.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
