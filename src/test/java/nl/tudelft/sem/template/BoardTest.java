@@ -1,7 +1,10 @@
 package nl.tudelft.sem.template;
 
+import nl.tudelft.sem.template.entities.Board;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class BoardTest {
     transient Board board;
@@ -13,7 +16,7 @@ public class BoardTest {
     @BeforeEach
     void initialize() {
         board = new Board();
-        id = (long)1;
+        id = 1;
         name = "Board 1";
         description = "Description of board 1";
     }
@@ -23,10 +26,11 @@ public class BoardTest {
         assertNotNull(board);
     }
 
+
     @Test
     public void testGetAndSetId() {
-        board.setId((long)2);
-        assertEquals((long)2, board.getId());
+        board.setId(2);
+        assertEquals(2, board.getId());
     }
 
 
