@@ -2,6 +2,7 @@ package nl.tudelft.sem.template.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -20,6 +21,7 @@ public class PostTest {
     transient LocalDateTime invalidEdited;
     transient LocalDateTime validEdited;
     transient Post demoPost2;
+    transient Post demoPost2Copy;
 
     @BeforeEach
     void initialize() {
@@ -100,5 +102,27 @@ public class PostTest {
     @Test
     void testIsEditedFalse() {
         assertFalse(demoPost2.isEdited());
+    }
+
+    @Test
+    void testEqualsSameObject() {
+        assertEquals(demoPost1, demoPost1);
+    }
+
+    @Test
+    void testEqualsTrue() {
+        demoPost2Copy = new Post(demoPost2.getId(), demoPost2.getPostNumber(), demoPost2.getBody(),
+                demoPost2.getCreated());
+        assertEquals(demoPost2Copy, demoPost2);
+    }
+
+    @Test
+    void testEqualsFalse() {
+        assertNotEquals(demoPost2, demoPost1);
+    }
+
+    @Test
+    void testEqualsDifferentClass() {
+        assertNotEquals(demoPost2, "A string.");
     }
 }
