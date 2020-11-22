@@ -32,6 +32,8 @@ public class PostTest {
         demoBody2 = "This is a demo post.";
         demoCreated2 = LocalDateTime.now();
         demoPost2 = new Post(demoId2, demoNumber2, demoBody2, demoCreated2);
+        demoPost2Copy = new Post(demoPost2.getId(), demoPost2.getPostNumber(), demoPost2.getBody(),
+                demoPost2.getCreated());
     }
 
     @Test
@@ -111,8 +113,6 @@ public class PostTest {
 
     @Test
     void testEqualsTrue() {
-        demoPost2Copy = new Post(demoPost2.getId(), demoPost2.getPostNumber(), demoPost2.getBody(),
-                demoPost2.getCreated());
         assertEquals(demoPost2Copy, demoPost2);
     }
 
@@ -124,5 +124,27 @@ public class PostTest {
     @Test
     void testEqualsDifferentClass() {
         assertNotEquals(demoPost2, "A string.");
+    }
+
+    @Test
+    void testDifferentHashCodes() {
+        assertNotEquals(demoPost1.hashCode(), demoPost2.hashCode());
+    }
+
+    @Test
+    void testSameHashCodes() {
+        assertEquals(demoPost2.hashCode(), demoPost2Copy.hashCode());
+    }
+
+    @Test
+    void testToString() {
+        String string = "Post{"
+                + "id=" + demoPost2.getId()
+                + ", postNumber=" + demoPost2.getPostNumber()
+                + ", body='" + demoPost2.getBody() + '\''
+                + ", created=" + demoPost2.getCreated()
+                + ", edited=" + demoPost2.getEdited()
+                + '}';
+        assertEquals(string, demoPost2.toString());
     }
 }
