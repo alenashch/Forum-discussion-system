@@ -3,6 +3,7 @@ package nl.tudelft.sem.template.entities;
 import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name="board")
@@ -55,5 +56,26 @@ public class Board {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Board board = (Board) o;
+        return Objects.equals(id, board.getId());
+    }
+
+    @Override
+    public String toString() {
+        return "Board{"
+                + "boardId='" + id + '\''
+                + ", boardName='" + name + '\''
+                + ", boardDescription='" + description + '\''
+                + '}';
     }
 }
