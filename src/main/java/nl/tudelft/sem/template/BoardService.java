@@ -28,4 +28,13 @@ public class BoardService {
         boardRepository.saveAndFlush(newBoard);
         return newBoard.getId();
     }
+
+    public boolean updateBoard(Board updatedBoard) {
+        if (boardRepository.getById(updatedBoard.getId()).isEmpty()) {
+            return false;
+        }
+
+        boardRepository.saveAndFlush(updatedBoard);
+        return true;
+    }
 }
