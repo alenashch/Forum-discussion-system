@@ -100,7 +100,7 @@ public class Board {
             this.edited = edited;
         } else {
             throw new IllegalArgumentException(
-                    "Board cannot be edited before it was created.");
+                    "Board cannot be edited before it was last edited.");
         }
     }
 
