@@ -1,10 +1,11 @@
 package nl.tudelft.sem.template.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -78,6 +79,10 @@ public class PostServiceTest {
         postRepository = Mockito.mock(PostRepository.class);
         Mockito.when(postRepository.findAll())
                 .thenReturn(posts);
+        Mockito.when(postRepository.saveAndFlush(any(Post.class)))
+                .then(returnsFirstArg());
+        Mockito.when(postRepository.getById(2))
+                .thenReturn(Optional.of(demoPost2));
 
         postService = new PostService(postRepository);
     }
@@ -89,21 +94,30 @@ public class PostServiceTest {
 
     @Test
     void testCreatePostSuccessful() {
-        Mockito.when(postRepository.saveAndFlush(any(Post.class)))
-                .then(returnsFirstArg());
         assertEquals(postService.createPost(demoPost3), demoPost3.getId());
 
-        posts.add(demoPost3);
-        assertTrue(postService.getPosts().contains(demoPost3));
+        verify(postRepository, times(1)).saveAndFlush(demoPost3);
     }
 
     @Test
     void testCreatePostUnsuccessful() {
-        Mockito.when(postRepository.getById(2))
-                .thenReturn(Optional.of(demoPost2));
         assertEquals(-1, postService.createPost(demoPost2));
 
-        //check that no more posts were added
-        assertEquals(postService.getPosts().size(), posts.size());
+        //check that no post was added
+        verify(postRepository, times(0)).saveAndFlush(any(Post.class));
+    }
+
+    @Test
+    void updatePostSuccessful() {
+        demoPost2.setBody("Updated body.");
+
+        assertTrue(postService.updatePost(demoPost2));
+        verify(postRepository, times(1)).saveAndFlush(demoPost2);
+    }
+
+    @Test
+    void updatePostUnsuccessful() {
+        assertFalse(postService.updatePost(demoPost3));
+        verify(postRepository, times(0)).saveAndFlush(any(Post.class));
     }
 }
