@@ -76,14 +76,14 @@ public class PostServiceTest {
         posts.add(demoPost2);
 
         postRepository = Mockito.mock(PostRepository.class);
+        Mockito.when(postRepository.findAll())
+                .thenReturn(posts);
 
         postService = new PostService(postRepository);
     }
 
     @Test
     void testGetPosts() {
-        Mockito.when(postRepository.findAll())
-                .thenReturn(posts);
         assertThat(postService.getPosts()).hasSize(posts.size()).hasSameElementsAs(posts);
     }
 
@@ -94,8 +94,6 @@ public class PostServiceTest {
         assertEquals(postService.createPost(demoPost3), demoPost3.getId());
 
         posts.add(demoPost3);
-        Mockito.when(postRepository.findAll())
-                .thenReturn(posts);
         assertTrue(postService.getPosts().contains(demoPost3));
     }
 
@@ -105,6 +103,7 @@ public class PostServiceTest {
                 .thenReturn(Optional.of(demoPost2));
         assertEquals(-1, postService.createPost(demoPost2));
 
+        //check that no more posts were added
         assertEquals(postService.getPosts().size(), posts.size());
     }
 }
