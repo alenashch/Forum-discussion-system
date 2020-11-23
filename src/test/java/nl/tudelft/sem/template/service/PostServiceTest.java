@@ -1,6 +1,10 @@
 package nl.tudelft.sem.template.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
+import static org.mockito.ArgumentMatchers.any;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -65,20 +69,31 @@ public class PostServiceTest {
         demoPost2 = new Post(demoId2, demoNumber2, demoBody2, demoCreated2);
         demoPost3 = new Post(demoId3, demoNumber3, demoBody3, demoCreated3);
 
-        posts = new ArrayList<Post>();
+        posts = new ArrayList<>();
         posts.add(demoPost1);
         posts.add(demoPost2);
-        posts.add(demoPost3);
 
         postRepository = Mockito.mock(PostRepository.class);
-        Mockito.when(postRepository.findAll())
-                .thenReturn(posts);
 
         postService = new PostService(postRepository);
     }
 
     @Test
     void testGetPosts() {
+        Mockito.when(postRepository.findAll())
+                .thenReturn(posts);
         assertThat(postService.getPosts()).hasSize(posts.size()).hasSameElementsAs(posts);
+    }
+
+    @Test
+    void testCreatePost() {
+        Mockito.when(postRepository.saveAndFlush(any(Post.class)))
+                .then(returnsFirstArg());
+        assertEquals(postService.createPost(demoPost3), demoPost3.getId());
+
+        posts.add(demoPost3);
+        Mockito.when(postRepository.findAll())
+                .thenReturn(posts);
+        assertTrue(postService.getPosts().contains(demoPost3));
     }
 }
