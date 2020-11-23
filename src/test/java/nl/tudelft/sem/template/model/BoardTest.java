@@ -82,7 +82,8 @@ public class BoardTest {
 
     @Test
     public void testGetCreated() {
-        assertEquals(LocalDateTime.now(), board.getCreated());
+        assertTrue(board.getCreated().isEqual(LocalDateTime.now())
+                || board.getCreated().isBefore(LocalDateTime.now()));
     }
 
     @Test

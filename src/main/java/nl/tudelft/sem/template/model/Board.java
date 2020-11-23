@@ -120,7 +120,7 @@ public class Board {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, locked, created, edited);
+        return Objects.hash(id, name, description, locked);
     }
 
 
