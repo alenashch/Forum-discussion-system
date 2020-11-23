@@ -117,6 +117,8 @@ public class PostServiceTest {
 
     @Test
     void updatePostUnsuccessful() {
+        Mockito.when(postRepository.getById(3))
+                .thenReturn(Optional.empty());
         assertFalse(postService.updatePost(demoPost3));
         verify(postRepository, times(0)).saveAndFlush(any(Post.class));
     }
