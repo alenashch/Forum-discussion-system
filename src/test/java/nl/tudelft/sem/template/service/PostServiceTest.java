@@ -1,7 +1,9 @@
 package nl.tudelft.sem.template.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -11,7 +13,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import nl.tudelft.sem.template.model.Post;
 import nl.tudelft.sem.template.repository.PostRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,10 +46,10 @@ public class PostServiceTest {
 
     transient List<Post> posts;
 
-    transient private PostService postService;
+    transient PostService postService;
 
     @MockBean
-    transient private PostRepository postRepository;
+    transient PostRepository postRepository;
 
     @BeforeEach
     void initialize() {
@@ -119,6 +120,7 @@ public class PostServiceTest {
     void updatePostUnsuccessful() {
         Mockito.when(postRepository.getById(3))
                 .thenReturn(Optional.empty());
+
         assertFalse(postService.updatePost(demoPost3));
         verify(postRepository, times(0)).saveAndFlush(any(Post.class));
     }

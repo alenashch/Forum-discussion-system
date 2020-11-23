@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class PostService {
 
-    transient private final PostRepository postRepository;
+    private final transient PostRepository postRepository;
 
     public PostService(PostRepository postRepository) {
         this.postRepository = postRepository;
@@ -26,8 +26,9 @@ public class PostService {
      *      if creation was successful.
      */
     public long createPost(Post toCreate) {
-        if (postRepository.getById(toCreate.getId()).isPresent())
+        if (postRepository.getById(toCreate.getId()).isPresent()) {
             return -1;
+        }
 
         postRepository.saveAndFlush(toCreate);
         return toCreate.getId();
@@ -40,8 +41,9 @@ public class PostService {
      * @return false if the Post does not exist in the database, and true otherwise.
      */
     public boolean updatePost(Post toUpdate) {
-        if (postRepository.getById(toUpdate.getId()).isEmpty())
+        if (postRepository.getById(toUpdate.getId()).isEmpty()) {
             return false;
+        }
 
         postRepository.saveAndFlush(toUpdate);
         return true;
