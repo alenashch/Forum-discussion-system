@@ -9,6 +9,8 @@ import static org.mockito.ArgumentMatchers.any;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 import nl.tudelft.sem.template.model.Post;
 import nl.tudelft.sem.template.repository.PostRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -86,7 +88,7 @@ public class PostServiceTest {
     }
 
     @Test
-    void testCreatePost() {
+    void testCreatePostSuccessful() {
         Mockito.when(postRepository.saveAndFlush(any(Post.class)))
                 .then(returnsFirstArg());
         assertEquals(postService.createPost(demoPost3), demoPost3.getId());
@@ -95,5 +97,14 @@ public class PostServiceTest {
         Mockito.when(postRepository.findAll())
                 .thenReturn(posts);
         assertTrue(postService.getPosts().contains(demoPost3));
+    }
+
+    @Test
+    void testCreatePostUnsuccessful() {
+        Mockito.when(postRepository.getById(2))
+                .thenReturn(Optional.of(demoPost2));
+        assertEquals(-1, postService.createPost(demoPost2));
+
+        assertEquals(postService.getPosts().size(), posts.size());
     }
 }
