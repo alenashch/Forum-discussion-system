@@ -35,16 +35,33 @@ repositories {
 	mavenCentral()
 }
 
+//dependencies {
+//	implementation 'org.springframework.boot:spring-boot-starter'
+//	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+//		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+//	}
+//	testImplementation('org.junit.jupiter:junit-jupiter:5.5.2')
+//	testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.1.0'
+//	testImplementation('org.assertj:assertj-core:3.14.0')
+//}
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'junit:junit:4.12'
+	runtimeOnly 'mysql:mysql-connector-java'
+
+	implementation 'com.h2database:h2'
+	developmentOnly 'org.hibernate:hibernate-entitymanager'
+
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
 	testImplementation('org.junit.jupiter:junit-jupiter:5.5.2')
 	testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.1.0'
 	testImplementation('org.assertj:assertj-core:3.14.0')
-}
 
+}
 test {
 	useJUnitPlatform()
 	jacoco {

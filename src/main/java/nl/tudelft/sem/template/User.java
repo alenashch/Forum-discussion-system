@@ -1,136 +1,168 @@
 package nl.tudelft.sem.template;
-import javax.persistence.*;
+
 import java.util.Objects;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 
 @Entity
 @Table(name = "user")
-public class User{
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private String username;
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private String username;
 
-        private String password;
-        private String email;
-        private boolean type;
+    private String password;
+    private String email;
+    private boolean type;
 
-        public User() {
-        }
+    public User() {}
 
-        /**
-         * Non-empty constructer for User class.
-         @param username - username of the user.
-         @param password - password of the user.
-         @param email - email of the user.
-         @param  type - type of the user, student or teacher.
-         */
-        public User(String username, String password, String email, boolean type) {
-            this.username = username;
-            this.password = password;
-            this.email = email;
-            this.type = type;
-        }
+    /**
+     * Non-empty constructer for User class.
+     *
+     * @param username - username of the user.
+     * @param password - password of the user.
+     * @param email - email of the user.
+     * @param  type - type of the user, student or teacher.
+     */
+    public User(String username, String password, String email, boolean type) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.type = type;
+    }
 
     /**
      * Gets the value of the username.
+     *
      * @return returns the username.
      */
     public String getUsername() {
-            return username;
-        }
+        return username;
+    }
 
     /**
      * Sets the username to the given value.
+     *
      * @param username - username of the user.
      */
-        public void setUsername(String username) {
-            this.username = username;
-        }
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
     /**
      * Gets the value of the password.
+     *
      * @return returns the password.
      */
-        public String getPassword() {
-            return password;
-        }
+    public String getPassword() {
+        return password;
+    }
 
     /**
      * Sets the password to the given value.
+     *
      * @param password - password of the user.
      */
-        public void setPassword(String password) {
-            this.password = password;
-        }
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     /**
      * Gets the value of the email.
+     *
      * @return returns the email.
      */
-        public String getEmail() {
-            return email;
-        }
+    public String getEmail() {
+        return email;
+    }
 
     /**
      * Sets the email to the given value.
+     *
      * @param email - email of the user.
      */
-        public void setEmail(String email) {
-            this.email = email;
-        }
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
     /**
      * Gets the value of the type.
+     *
      * @return returns true or false, depending on whether the user is a teacher or student.
      */
-        public boolean isType() {
-            return type;
-        }
+    public boolean isType() {
+        return type;
+    }
 
     /**
      * Sets the type to the given value.
+     *
      * @param type - true or false, depending on whether the user is a teacher or student.
      */
-        public void setType(boolean type) {
-            this.type = type;
-        }
+    public void setType(boolean type) {
+        this.type = type;
+    }
 
     /**
      * Method that checks to see if two objects are equal or not.
-     * @param object - object to be compared.
+     *
+     * @param \Object - object to be compared.
+     *
      * @return returns true or false, depending on whether the objects are equal or not.
      */
-    public boolean equals(Object object) {
-            if (this == object) return true;
-            if (object == null || getClass() != object.getClass()) return false;
-            if (!super.equals(object)) return false;
-            User user = (User) object;
-            return type == user.type &&
-                    java.util.Objects.equals(username, user.username) &&
-                    java.util.Objects.equals(password, user.password) &&
-                    java.util.Objects.equals(email, user.email);
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
         }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        User user = (User) o;
+        return isType() == user.isType()
+                && Objects.equals(getUsername(), user.getUsername())
+                && Objects.equals(getPassword(), user.getPassword())
+                && Objects.equals(getEmail(), user.getEmail());
+    }
 
     /**
      *  Method that hashes the user object.
+     *
      * @return returns integer of the hash code.
      */
+
+    @Override
     public int hashCode() {
-            return Objects.hash(super.hashCode(), username, password, email, type);
-        }
+        return Objects.hash(getUsername(), getPassword(), getEmail(), isType());
+    }
 
     /**
      * Method that returns a readable string from the user object.
+     *
      * @return readable string of the user object.
      */
     @java.lang.Override
-        public java.lang.String toString() {
-            return "User{" +
-                    "username='" + username + '\'' +
-                    ", password='" + password + '\'' +
-                    ", email='" + email + '\'' +
-                    ", type=" + type +
-                    '}';
-        }
+    public java.lang.String toString() {
+        return "User{"
+                    + "username='"
+                    + username
+                    + '\''
+                    + ", password='"
+                    + password
+                    + '\''
+                    + ", email='"
+                    + email
+                    + '\''
+                    + ", type="
+                    + type
+                    + '}';
+    }
 }
 
 

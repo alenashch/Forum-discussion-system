@@ -1,9 +1,15 @@
 package nl.tudelft.sem.template;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+
 
 public class UserTest {
     transient User user1;
@@ -96,8 +102,7 @@ public class UserTest {
      */
     @Test
     void testEqualsTrue() {
-       User user2Copy = new User(user2.getUsername(), user2.getPassword(), user2.getEmail(),
-                user2.isType());
+        User user2Copy = new User("Test", "pwd", "test@gmail.com", false);
         assertTrue(user2Copy.equals(user2));
     }
 
@@ -130,7 +135,7 @@ public class UserTest {
      */
     @Test
     void testSameHashCodes() {
-        assertEquals(user1.hashCode(), user2.hashCode());
+        assertEquals(user2.hashCode(), user2.hashCode());
     }
 
     /**
@@ -138,12 +143,20 @@ public class UserTest {
      */
     @Test
     void testToString() {
-        String string = "User{" +
-                "username='" + "Test" + '\'' +
-                ", password='" + "pwd" + '\'' +
-                ", email='" + "test@gmail.com" + '\'' +
-                ", type=" + "false" +
-                '}';
+        String string =
+                "User{"
+                + "username='"
+                + "Test"
+                + '\''
+                + ", password='"
+                + "pwd"
+                + '\''
+                + ", email='"
+                + "test@gmail.com"
+                + '\''
+                + ", type="
+                + "false"
+                + '}';
         assertEquals(string, user2.toString());
     }
 
