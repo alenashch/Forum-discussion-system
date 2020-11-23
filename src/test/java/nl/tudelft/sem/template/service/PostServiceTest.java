@@ -1,21 +1,19 @@
 package nl.tudelft.sem.template.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import nl.tudelft.sem.template.model.Post;
 import nl.tudelft.sem.template.repository.PostRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -38,12 +36,12 @@ public class PostServiceTest {
     transient LocalDateTime demoCreated3;
     transient Post demoPost3;
 
-    List<Post> posts;
+    transient List<Post> posts;
 
-    private PostService postService;
+    transient private PostService postService;
 
     @MockBean
-    private PostRepository postRepository;
+    transient private PostRepository postRepository;
 
     @BeforeEach
     void initialize() {
