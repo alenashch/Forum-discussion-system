@@ -1,27 +1,26 @@
 package nl.tudelft.sem.template;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import nl.tudelft.sem.template.model.Board;
 import nl.tudelft.sem.template.repository.BoardRepository;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.AdditionalAnswers.returnsFirstArg;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -89,7 +88,8 @@ public class BoardServiceTest {
 
     @Test
     public void testGetBoards() {
-        assertThat(boardService.getBoards()).hasSize(boardsList.size()).hasSameElementsAs(boardsList);
+        assertThat(boardService.getBoards()).hasSize(boardsList.size())
+                .hasSameElementsAs(boardsList);
     }
 
     @Test
@@ -99,10 +99,25 @@ public class BoardServiceTest {
     }
 
     @Test
+    public void testCreateExistingBoard() {
+        //Doesn't create a board if it already exists in the database
+        assertEquals(boardService.createBoard(board2), -1);
+        verify(boardRepository, times(0)).saveAndFlush(board2);
+    }
+
+    @Test
     public void testUpdateBoard() {
         board2.setName("New name 2");
         assertTrue(boardService.updateBoard(board2));
         verify(boardRepository, times(1)).saveAndFlush(board2);
+    }
+
+    @Test
+    public void testUpdateNonExistingBoard() {
+        //Doesn't update a board that is not in the database
+        board3.setName("New name 3");
+        assertFalse(boardService.updateBoard(board3));
+        verify(boardRepository, times(0)).saveAndFlush(board3);
     }
 
 }
