@@ -20,5 +20,12 @@ public class BoardService {
         return boardRepository.findAll();
     }
 
+    public long createBoard(Board newBoard) {
+        if (boardRepository.getById(newBoard.getId()).isPresent()) {
+            return -1;
+        }
 
+        boardRepository.saveAndFlush(newBoard);
+        return newBoard.getId();
+    }
 }

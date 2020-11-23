@@ -1,9 +1,7 @@
 package nl.tudelft.sem.template;
 
-import static jdk.internal.org.objectweb.asm.util.CheckClassAdapter.verify;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import nl.tudelft.sem.template.BoardService;
 import nl.tudelft.sem.template.model.Board;
 import nl.tudelft.sem.template.repository.BoardRepository;
 import org.junit.jupiter.api.Test;
@@ -18,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -94,6 +93,13 @@ public class BoardServiceTest {
     public void testCreateBoard() {
         assertEquals(boardService.createBoard(board3), board3.getId());
         verify(boardRepository, times(1)).saveAndFlush(board3);
+    }
+
+    @Test
+    public void testUpdateBoard() {
+        board2.setName("New name 2");
+        assertTrue(boardService.updateBoard(board2));
+        verify(boardRepository, times(1)).saveAndFlush(board2);
     }
 
 }
