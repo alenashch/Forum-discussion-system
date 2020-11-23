@@ -9,8 +9,7 @@ import java.util.List;
 
 @Service
 public class BoardService {
-    //@Autowired
-    //private BoardRepository boardRepository;
+
     private final transient BoardRepository boardRepository;
 
     public BoardService(BoardRepository boardRepository) {
@@ -20,4 +19,6 @@ public class BoardService {
     public List<Board> getBoards(){
         return boardRepository.findAll();
     }
+
+
 }
