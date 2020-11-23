@@ -17,4 +17,19 @@ public class PostService {
     public List<Post> getPosts() {
         return postRepository.findAll();
     }
+
+    /**
+     * Creates a Post and adds it to the database.
+     *
+     * @param newPost - the Post to be added.
+     * @return -1 if the Post already exists in the database, and the id of the newly created post
+     *      if creation was successful.
+     */
+    public long createPost(Post newPost) {
+        if (postRepository.getById(newPost.getId()).isPresent())
+            return -1;
+
+        postRepository.saveAndFlush(newPost);
+        return newPost.getId();
+    }
 }
