@@ -1,9 +1,5 @@
 package nl.tudelft.sem.template;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
@@ -27,7 +23,7 @@ public class User{
          @param email - email of the user.
          @param  type - type of the user, student or teacher.
          */
-        public Country(String username, String password, String email, boolean type) {
+        public User(String username, String password, String email, boolean type) {
             this.username = username;
             this.password = password;
             this.email = email;

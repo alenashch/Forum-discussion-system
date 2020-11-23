@@ -1,14 +1,14 @@
 package nl.tudelft.sem.template;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class UserTest {
     transient User user1;
     transient User user2;
-    transient Strign username1;
+    transient String username1;
     transient String password1;
     transient String email1;
     transient boolean type1;
@@ -41,10 +41,10 @@ public class UserTest {
     @Test
     void testNonEmptyConstructor() {
         assertNotNull(user2);
-        assertTrue(user2.getUserName().equals(username1)
+        assertTrue(user2.getUsername().equals(username1)
                 && user2.getPassword().equals(password1)
                 && user2.getEmail().equals(email1)
-                && user2.isType() == type1;
+                && user2.isType() == type1);
     }
 
     /**
@@ -60,7 +60,7 @@ public class UserTest {
      * Tests the getters and setters for the password.
      */
     @Test
-    void testGetAndSetUsername() {
+    void testGetAndSetPassword() {
         user2.setPassword("Merry");
         assertEquals("Merry", user2.getPassword());
     }
@@ -69,7 +69,7 @@ public class UserTest {
      * Tests the getters and setters for the email.
      */
     @Test
-    void testGetAndSetUsername() {
+    void testGetAndSetEmail() {
         user2.setEmail("baggins@gmail.com");
         assertEquals("baggins@gmail.com", user2.getEmail());
     }
@@ -78,7 +78,7 @@ public class UserTest {
      * Tests the getters and setters for the type.
      */
     @Test
-    void testGetAndSetUsername() {
+    void testGetAndSetType() {
         user2.setType(true);
         assertEquals(true, user2.isType());
     }
@@ -96,8 +96,8 @@ public class UserTest {
      */
     @Test
     void testEqualsTrue() {
-        user2Copy = new Post(user2.getUserName(), user2.getPassword(), user2.getEmail(),
-                user2.getType());
+       User user2Copy = new User(user2.getUsername(), user2.getPassword(), user2.getEmail(),
+                user2.isType());
         assertTrue(user2Copy.equals(user2));
     }
 
