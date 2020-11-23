@@ -1,6 +1,7 @@
-package nl.tudelft.sem.template.repos;
+package nl.tudelft.sem.template.repository;
 
-import nl.tudelft.sem.template.entities.Board;
+
+import nl.tudelft.sem.template.model.Board;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

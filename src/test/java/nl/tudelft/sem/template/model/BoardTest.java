@@ -1,11 +1,13 @@
 package nl.tudelft.sem.template.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import nl.tudelft.sem.template.entities.Board;
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,6 +18,9 @@ public class BoardTest {
     transient long id;
     transient String name;
     transient String description;
+    transient boolean locked;
+    transient LocalDateTime invalidEdited;
+    transient LocalDateTime validEdited;
     transient Board board2;
     transient Board board2Copy;
 
@@ -27,9 +32,11 @@ public class BoardTest {
         id = 2;
         name = "Board 2";
         description = "Description of board 2";
+        locked = false;
 
-        board2 = new Board(id, name, description);
-        board2Copy = new Board(board2.getId(), board2.getName(), board2.getDescription());
+        board2 = new Board(id, name, description, locked);
+        board2Copy = new Board(board2.getId(), board2.getName(), board2.getDescription(),
+                board2.getLocked());
 
     }
 
@@ -43,7 +50,8 @@ public class BoardTest {
         assertNotNull(board2);
         assertTrue(board2.getId() == id
                 && board2.getName().equals(name)
-                && board2.getDescription().equals(description));
+                && board2.getDescription().equals(description)
+                && board2.getLocked() == locked);
     }
 
 
@@ -67,8 +75,43 @@ public class BoardTest {
     }
 
     @Test
+    public void testGetAndSetLocked() {
+        board.setLocked(true);
+        assertEquals(true, board.getLocked());
+    }
+
+    @Test
+    public void testGetCreated() {
+        assertEquals(LocalDateTime.now(), board.getCreated());
+    }
+
+    @Test
+    void testSetAndGetEditedSuccessful() {
+        validEdited = board.getCreated().plusHours(3);
+        board.setEdited(validEdited);
+        assertEquals(validEdited, board.getEdited());
+    }
+
+    @Test
+    void testSetEditedException() {
+        invalidEdited = board.getCreated().minusHours(3);
+        assertThrows(IllegalArgumentException.class, () -> board.setEdited(invalidEdited));
+    }
+
+    @Test
+    void testIsEditedFalse() {
+        assertFalse(board2.isEdited());
+    }
+
+
+    @Test
     public void testBoardTwoEqual() {
         assertTrue(board2.equals(board2Copy));
+    }
+
+    @Test
+    public void testBoardTwoNotEqual() {
+        assertFalse(board.equals(board2));
     }
 
     @Test
@@ -87,6 +130,8 @@ public class BoardTest {
         String boardToString = "Board{boardId='" + board.getId()
                 + "', boardName='" + board.getName()
                 + "', boardDescription='" + board.getDescription()
+                + "', locked='" + board.getLocked()
+                + "', edited='" + board.getEdited()
                 + "'}";
         assertEquals(board.toString(), boardToString);
     }
