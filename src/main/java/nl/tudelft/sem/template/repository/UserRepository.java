@@ -1,6 +1,6 @@
-package nl.tudelft.sem.template.repos;
+package nl.tudelft.sem.template.repository;
 
-import nl.tudelft.sem.template.entities.User;
+import nl.tudelft.sem.template.model.User;
 import org.springframework.data.repository.CrudRepository;
 
 
