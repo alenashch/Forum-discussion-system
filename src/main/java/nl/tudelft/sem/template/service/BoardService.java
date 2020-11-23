@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template;
+package nl.tudelft.sem.template.service;
 
 import nl.tudelft.sem.template.model.Board;
 import nl.tudelft.sem.template.repository.BoardRepository;
