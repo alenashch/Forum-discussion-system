@@ -3,6 +3,7 @@ package nl.tudelft.sem.template.service;
 import nl.tudelft.sem.template.model.Post;
 import nl.tudelft.sem.template.repository.PostRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -35,7 +38,8 @@ public class PostServiceTest {
     transient LocalDateTime demoCreated3;
     transient Post demoPost3;
 
-    @Autowired
+    List<Post> posts;
+
     private PostService postService;
 
     @MockBean
@@ -63,12 +67,20 @@ public class PostServiceTest {
         demoPost2 = new Post(demoId2, demoNumber2, demoBody2, demoCreated2);
         demoPost3 = new Post(demoId3, demoNumber3, demoBody3, demoCreated3);
 
-        List<Post> posts = new ArrayList<Post>();
+        posts = new ArrayList<Post>();
         posts.add(demoPost1);
         posts.add(demoPost2);
         posts.add(demoPost3);
 
+        postRepository = Mockito.mock(PostRepository.class);
         Mockito.when(postRepository.findAll())
                 .thenReturn(posts);
+
+        postService = new PostService(postRepository);
+    }
+
+    @Test
+    void testGetPosts() {
+        assertThat(postService.getPosts()).hasSize(posts.size()).hasSameElementsAs(posts);
     }
 }
