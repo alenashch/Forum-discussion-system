@@ -2,9 +2,12 @@ package nl.tudelft.sem.template.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,6 +86,11 @@ public class UserServiceTest {
         userRepository = Mockito.mock(UserRepository.class);
         Mockito.when(userRepository.findAll())
                 .thenReturn(users);
+        Mockito.when(userRepository.saveAndFlush(any(User.class)))
+                .then(returnsFirstArg());
+        Mockito.when(userRepository.getById(2))
+                .thenReturn(Optional.of(user2));
+
 
         userService = new UserService(userRepository);
     }
@@ -98,17 +106,28 @@ public class UserServiceTest {
                 .then(returnsFirstArg());
         assertEquals(userService.createUser(user3), user3.getId());
 
-        users.add(user3);
-        assertTrue(userService.getUsers().contains(user3));
+        verify(userRepository, times(1)).saveAndFlush(user3);
     }
 
     @Test
     void testCreateUserUnsuccessful() {
-        Mockito.when(userRepository.getById(2))
-                .thenReturn(Optional.of(user2));
         assertEquals(-1, userService.createUser(user2));
 
-        assertEquals(userService.getUsers().size(), users.size());
+        verify(userRepository, times(0)).saveAndFlush(any(User.class));
+    }
+
+    @Test
+    void updateUserSuccessful() {
+        user2.setUsername("Pippin");
+
+        assertTrue(userService.updateUser(user2));
+        verify(userRepository, times(1)).saveAndFlush(user2);
+    }
+
+    @Test
+    void updateUserUnsuccessful() {
+        assertFalse(userService.updateUser(user3));
+        verify(userRepository, times(0)).saveAndFlush(any(User.class));
     }
 
 
