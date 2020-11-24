@@ -9,7 +9,7 @@ import javax.persistence.Table;
 
 
 @Entity
-@Table(name = "user")
+//@Table(name = "user")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -111,9 +111,8 @@ public class User {
     /**
      * Method that checks to see if two objects are equal or not.
      *
-     * @param \Object - object to be compared.
-     *
-     * @return returns true or false, depending on whether the objects are equal or not.
+     * @return returns true or false, depending on whether
+     *         the objects are equal or not.
      */
 
     @Override
