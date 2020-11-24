@@ -20,6 +20,12 @@ public class PostController {
     @Autowired
     private transient PostService postService;
 
+    /**
+     * Create post request.
+     *
+     * @param post - new post to be created.
+     * @return JSON file containing the ID of a new post.
+     */
     @PostMapping("/create")
     @ResponseBody
     public Map<String, Long> createPost(@RequestBody Post post) {
@@ -27,6 +33,11 @@ public class PostController {
         return Collections.singletonMap("ID", postService.createPost(post));
     }
 
+    /**
+     * Get post request.
+     *
+     * @return JSON containing list of all posts.
+     */
     @GetMapping("/get")
     @ResponseBody
     public List<Post> getPosts() {
@@ -34,6 +45,12 @@ public class PostController {
         return postService.getPosts();
     }
 
+    /**
+     * Edit post request.
+     *
+     * @param post - Post to be edited. With the old ID and new parameters to be set.
+     * @return JSON containing a boolean signifying success.
+     */
     @PostMapping("/edit")
     @ResponseBody
     public Map<String, Boolean> editPost(@RequestBody Post post) {
