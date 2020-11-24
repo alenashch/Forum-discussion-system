@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 public class UserTest {
     transient User user1;
     transient User user2;
+    transient long id1;
     transient String username1;
     transient String password1;
     transient String email1;
@@ -26,11 +27,12 @@ public class UserTest {
     void initialize() {
         user1 = new User();
 
+        id1 = 12345;
         username1 = "Test";
         password1 = "pwd";
         email1 = "test@gmail.com";
         type1 = false;
-        user2 = new User(username1, password1, email1, type1);
+        user2 = new User(id1, username1, password1, email1, type1);
     }
 
     /**
@@ -47,10 +49,20 @@ public class UserTest {
     @Test
     void testNonEmptyConstructor() {
         assertNotNull(user2);
-        assertTrue(user2.getUsername().equals(username1)
+        assertTrue(user2.getId() == (id1)
+                && user2.getUsername().equals(username1)
                 && user2.getPassword().equals(password1)
                 && user2.getEmail().equals(email1)
                 && user2.isType() == type1);
+    }
+
+    /**
+     * Tests the getters and setters for the id.
+     */
+    @Test
+    void testGetAndId() {
+        user2.setId(4567);
+        assertEquals(4567, user2.getId());
     }
 
     /**
@@ -102,7 +114,7 @@ public class UserTest {
      */
     @Test
     void testEqualsTrue() {
-        User user2Copy = new User("Test", "pwd", "test@gmail.com", false);
+        User user2Copy = new User(12345, "Test", "pwd", "test@gmail.com", false);
         assertTrue(user2Copy.equals(user2));
     }
 
@@ -145,6 +157,7 @@ public class UserTest {
     void testToString() {
         String string =
                 "User{"
+                + "id= 12345"
                 + "username='"
                 + "Test"
                 + '\''

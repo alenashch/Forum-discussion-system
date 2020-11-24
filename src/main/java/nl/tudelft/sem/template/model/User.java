@@ -12,6 +12,7 @@ import javax.persistence.Id;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
     private String username;
 
     private String password;
@@ -23,16 +24,36 @@ public class User {
     /**
      * Non-empty constructer for User class.
      *
+     * @param id - unique id for the user.
      * @param username - username of the user.
      * @param password - password of the user.
      * @param email - email of the user.
      * @param  type - type of the user, student or teacher.
      */
-    public User(String username, String password, String email, boolean type) {
+    public User(long id, String username, String password, String email, boolean type) {
+        this.id = id;
         this.username = username;
         this.password = password;
         this.email = email;
         this.type = type;
+    }
+
+    /**
+     * Gets the value of the id.
+     *
+     * @return returns the id.
+     */
+    public long getId() {
+        return id;
+    }
+
+    /**
+     * Sets the id to the given value.
+     *
+     * @param id - id of the user.
+     */
+    public void setId(long id) {
+        this.id = id;
     }
 
     /**
@@ -113,7 +134,6 @@ public class User {
      * @return returns true or false, depending on whether
      *         the objects are equal or not.
      */
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -123,7 +143,8 @@ public class User {
             return false;
         }
         User user = (User) o;
-        return isType() == user.isType()
+        return getId() == user.getId()
+                && isType() == user.isType()
                 && Objects.equals(getUsername(), user.getUsername())
                 && Objects.equals(getPassword(), user.getPassword())
                 && Objects.equals(getEmail(), user.getEmail());
@@ -134,10 +155,9 @@ public class User {
      *
      * @return returns integer of the hash code.
      */
-
     @Override
     public int hashCode() {
-        return Objects.hash(getUsername(), getPassword(), getEmail(), isType());
+        return Objects.hash(getId(), getUsername(), getPassword(), getEmail(), isType());
     }
 
     /**
@@ -148,6 +168,8 @@ public class User {
     @java.lang.Override
     public java.lang.String toString() {
         return "User{"
+                    + "id= "
+                    + id
                     + "username='"
                     + username
                     + '\''
