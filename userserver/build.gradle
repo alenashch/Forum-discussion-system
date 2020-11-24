@@ -1,0 +1,3 @@
+bootJar {
+    mainClassName = "nl.tudelft.sem.group20.userserver.UserServer"
+}
