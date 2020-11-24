@@ -94,7 +94,8 @@ public class Board {
      * This method sets the edited field to a new value.
      *
      * @param edited - LocalDateTime representing when the Board was last edited.
-     * @throws IllegalArgumentException when the new "edited" value is before the current edited value.
+     * @throws IllegalArgumentException when the new "edited" value is before
+     *                                  the current edited value.
      */
     public void setEdited(LocalDateTime edited) throws IllegalArgumentException {
         if (edited.isAfter(this.edited) || edited.isEqual(this.edited)) {

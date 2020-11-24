@@ -12,11 +12,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
-import nl.tudelft.sem.template.model.Post;
-import nl.tudelft.sem.template.service.PostService;
+import nl.tudelft.sem.template.model.Board;
+import nl.tudelft.sem.template.service.BoardService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,27 +26,26 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 @AutoConfigureMockMvc
-@WebMvcTest(PostController.class)
-class PostControllerTest {
+@WebMvcTest(BoardController.class)
+class BoardControllerTest {
 
 
     @Autowired
     @MockBean
-    transient PostService postService;
+    transient BoardService boardService;
     @Autowired
     private transient MockMvc mockMvc;
 
     @Test
-    void createPost() {
+    void createPostTest() {
 
-        LocalDateTime time = LocalDateTime.now();
-        Post post = new Post(123, 1, "abc", time);
-        when(postService.createPost(any(Post.class))).thenReturn(1L);
+        Board board = new Board(123, "boardy", "abc", false);
+        when(boardService.createBoard(board)).thenReturn(1L);
 
         try {
-            MvcResult result = mockMvc.perform(post("/post/create")
+            MvcResult result = mockMvc.perform(post("/board/create")
                 .contentType(APPLICATION_JSON)
-                .content(createJsonRequest(post)))
+                .content(createJsonRequest(board)))
                 .andDo(print())
                 .andReturn();
 
@@ -64,16 +62,15 @@ class PostControllerTest {
     }
 
     @Test
-    void getPosts() {
+    void getBoardsTest() {
 
-        LocalDateTime time = LocalDateTime.now();
-        List<Post> list = Collections.singletonList(new Post(123, 1, "abc", time));
+        List<Board> list = Collections.singletonList(new Board(123, "boardy", "abc", false));
 
-        when(postService.getPosts()).thenReturn(list);
+        when(boardService.getBoards()).thenReturn(list);
 
         try {
 
-            MvcResult result = mockMvc.perform(get("/post/get")
+            MvcResult result = mockMvc.perform(get("/board/get")
                 .contentType(APPLICATION_JSON))
                 .andReturn();
 
@@ -81,9 +78,9 @@ class PostControllerTest {
 
             System.out.println(json);
 
-            Post responsePost = new ObjectMapper().readValue(json, Post.class);
+            Board responseBoard = new ObjectMapper().readValue(json, Board.class);
 
-            Assertions.assertEquals(list.get(0), responsePost);
+            Assertions.assertEquals(list.get(0), responseBoard);
         } catch (Exception e) {
 
             e.printStackTrace();
@@ -92,18 +89,16 @@ class PostControllerTest {
     }
 
     @Test
-    void editPost() {
-        LocalDateTime time = LocalDateTime.now();
-        Post post = new Post(123, 1, "abc", time);
+    void editBoardTest() {
 
-        //when(postService.updatePost(post)).thenReturn(true);
+        Board board = new Board(123, "boardy", "abc", false);
 
-        given(postService.updatePost(any(Post.class))).willReturn(true);
+        given(boardService.updateBoard(any(Board.class))).willReturn(true);
         try {
 
             MvcResult result = mockMvc.perform(post("/post/edit")
                 .contentType(APPLICATION_JSON)
-                .content(createJsonRequest(post)))
+                .content(createJsonRequest(board)))
                 .andReturn();
 
             String json = result.getResponse().getContentAsString();
@@ -120,12 +115,12 @@ class PostControllerTest {
 
     }
 
-    private String createJsonRequest(Post post) throws JsonProcessingException {
+    private String createJsonRequest(Board board) throws JsonProcessingException {
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
         ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
 
-        return ow.writeValueAsString(post);
+        return ow.writeValueAsString(board);
     }
 }
