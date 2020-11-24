@@ -6,10 +6,10 @@
 | User can get all threats         | 1      | 1 hour                    | 1 hour                 | Yes  |                                                              |
 | Database is connected to project | 16     | 1 hour                    | 1 hour                 | Yes  | Project Infrastructure                                       |
 | Eureka Server for microservices  | 28     | 2 hours                   | 2 hours                | No   | Project Infrastructure. Need some more work for it to run, but initial set up is up and running |
-| User can create boards           | 15     | 3 hours                   | 4 hours                | Yes    |                                                              |
-| User can get all boards          | 14     | 3 hours                   |  4 hours               | Yes     |                                                              |
-|                                  |        |                           |                        |      |                                                              |
-|                                  |        |                           |                        |      |                                                              |
+| User can create boards           | 15     | 3 hours                   | 4 hours                | Yes  |                                                              |
+| User can get all boards          | 14     | 3 hours                   | 4 hours                | Yes  |                                                              |
+| Users can be created             | 3      | 3 hours                   | 7 hours                | Yes  |                                                              |
+| Users can get info about users   | 5      | 2 hours                   | 3 hours                | Yes  |                                                              |
 
 
 
