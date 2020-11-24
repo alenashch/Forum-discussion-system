@@ -1,6 +1,5 @@
 package nl.tudelft.sem.template.model;
 
-import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
