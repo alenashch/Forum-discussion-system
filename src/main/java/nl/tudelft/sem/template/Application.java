@@ -10,4 +10,6 @@ public class Application {
         System.setProperty("spring.config.name", "application");
         SpringApplication.run(Application.class, args);
     }
+
 }
+

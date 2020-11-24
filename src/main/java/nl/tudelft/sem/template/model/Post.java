@@ -42,6 +42,21 @@ public class Post {
         this.edited = created;
     }
 
+    /**
+     * Non-empty constructor for Post class.
+     *
+     * @param postNumber - the number of the Post (to identify it within a thread).
+     * @param body - the body of a Post.
+     * @param created - LocalDateTime showing when a Post was created.
+     */
+    public Post(int postNumber, String body, LocalDateTime created) {
+        this.postNumber = postNumber;
+        this.body = body;
+        this.created = created;
+        //initially, set this field the same as the created field
+        this.edited = created;
+    }
+
     public long getId() {
         return id;
     }
