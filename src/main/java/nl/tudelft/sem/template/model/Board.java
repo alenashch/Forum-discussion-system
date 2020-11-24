@@ -1,9 +1,11 @@
 package nl.tudelft.sem.template.model;
 
-
-import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 @Entity
 public class Board {
@@ -27,12 +29,12 @@ public class Board {
     }
 
     /**
-     * Non-empty constructor for Board class
+     * Non-empty constructor for Board class.
      *
-     * @param id Unique identifier as to be used in the database
-     * @param name The name of the board
-     * @param description The description of the board
-     * @param locked Indicates whether the board is locked or not
+     * @param id Unique identifier as to be used in the database.
+     * @param name The name of the board.
+     * @param description The description of the board.
+     * @param locked Indicates whether the board is locked or not.
      */
 
     public Board(long id, String name, String description, boolean locked) {
