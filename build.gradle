@@ -48,6 +48,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
 	implementation 'junit:junit:4.12'
 	runtimeOnly 'mysql:mysql-connector-java'
 
@@ -61,7 +62,11 @@ dependencies {
 	testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.1.0'
 	testImplementation('org.assertj:assertj-core:3.14.0')
 
+
 }
+
+
+
 test {
 	useJUnitPlatform()
 	jacoco {
