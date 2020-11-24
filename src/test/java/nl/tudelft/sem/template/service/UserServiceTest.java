@@ -1,19 +1,23 @@
 package nl.tudelft.sem.template.service;
 
-import nl.tudelft.sem.template.model.User;
-import nl.tudelft.sem.template.repository.UserRepository;
-import org.junit.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import static org.assertj.core.api.Assertions.assertThat;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
+import static org.mockito.ArgumentMatchers.any;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import nl.tudelft.sem.template.model.User;
+import nl.tudelft.sem.template.repository.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -39,11 +43,11 @@ public class UserServiceTest {
     transient String email3;
     transient boolean type3;
 
-    private UserService userService;
-    List<User> users;
+    private transient UserService userService;
+    transient List<User> users;
 
     @MockBean
-    private UserRepository userRepository;
+    private transient UserRepository userRepository;
 
     @BeforeEach
     void initialize() {
@@ -71,10 +75,10 @@ public class UserServiceTest {
         user2 = new User(id2, username2, password2, email2, type2);
         user3 = new User(id3, username3, password3, email3, type3);
 
-        users = new ArrayList<User>();
+        users = new ArrayList<>();
         users.add(user1);
         users.add(user2);
-        users.add(user3);
+        //users.add(user3);
 
         userRepository = Mockito.mock(UserRepository.class);
         Mockito.when(userRepository.findAll())
@@ -84,9 +88,30 @@ public class UserServiceTest {
     }
 
     @Test
-    void testGetUsers(){
+    void testGetUsers() {
         assertThat(userService.getUsers()).hasSize(users.size()).hasSameElementsAs(users);
     }
+
+    @Test
+    void testCreateUserSuccessful() {
+        Mockito.when(userRepository.saveAndFlush(any(User.class)))
+                .then(returnsFirstArg());
+        assertEquals(userService.createUser(user3), user3.getId());
+
+        users.add(user3);
+        assertTrue(userService.getUsers().contains(user3));
+    }
+
+    @Test
+    void testCreateUserUnsuccessful() {
+        Mockito.when(userRepository.getById(2))
+                .thenReturn(Optional.of(user2));
+        assertEquals(-1, userService.createUser(user2));
+
+        assertEquals(userService.getUsers().size(), users.size());
+    }
+
+
 
 
 }
