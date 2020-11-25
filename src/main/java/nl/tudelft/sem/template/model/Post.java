@@ -25,6 +25,7 @@ public class Post {
     public Post() {
     }
 
+
     /**
      * Non-empty constructor for Post class.
      *
