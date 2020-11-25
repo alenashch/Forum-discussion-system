@@ -1,6 +1,6 @@
 # Sprint Retrospective, Iteration #1
 
-| User Story                       | task # | Estimated Effort per Task | Actual Effort per Task | Done | Notes                                                        |
+| User Story/Issue                       | task # | Estimated Effort per Task | Actual Effort per Task | Done | Notes                                                        |
 | -------------------------------- | ------ | ------------------------- | ---------------------- | ---- | ------------------------------------------------------------ |
 | Users can create threads         | 1      | 1 hour                    | 1 hour                 | Yes  |                                                              |
 | User can get all threats         | 1      | 1 hour                    | 1 hour                 | Yes  |                                                              |
@@ -16,6 +16,8 @@
 | Users can manage boards          | 2      | 2 hours                   | 2 hours                | Yes  |
 | Admins can manage users          | 6      | 2 hours                   | 3 hours                | Yes  | Had some terrible issues designing tests|
 | Users can manage threads         | 9      | 2 hours                   | 2 hours                | Yes  | |     
+| Create Post Repository        | 4      | 3 hours                   | 6 hours                | Yes  | This took long because I had to set up the project.|  
+| Create Post Service        | 10      | 2 hours               | 3 hours 30 minutes                | Yes  | |  
 
 
 
@@ -37,9 +39,14 @@
 - Description: Now that we are aware of the architecture, we have to set up our structure and determine what should correspond as a micro service and what not.
 - Reaction: Group planning and careful infrastructure review
 
+**Problem 3**
+
+- Description: Issues assigned to different people depended on each other.
+- Reaction: A lot of team members could not start writing code until others were finished with their tasks. For instance, the controllers depended on the services and repositories to be finished.
 
 
 ## Adjustments for next Sprint Plan
 
 - So far the team has reacted well, we now have to shift our focus on the infrastructure so that we can plan better what each micro service will need, and how to coordinate communication within each micro service
 - We also need to determine what corresponds as a micro service or not.
+- Split issues in such a way that everyone can start working at the beginning of a sprint, not just 2 days before the sprint ends.
