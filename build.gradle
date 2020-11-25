@@ -18,16 +18,17 @@ plugins {
 	id 'info.solidsoft.pitest' version '1.5.2'
 }
 
-allprojects {
-	repositories {
-		mavenCentral()
 
-	}
-
+repositories {
+	mavenCentral()
 }
 
-
+bootJar {
+	enabled = false
+}
 subprojects {
+
+
 	repositories {
 		mavenCentral()
 		//Needed only for SNAPSHOT versions
@@ -117,7 +118,7 @@ subprojects {
 			rule {
 				enabled = true
 				element = 'CLASS'
-				includes = ['nl.tudelft.sem.template.*']
+				includes = ['nl.tudelft.sem.group20.*']
 
 				limit {
 					counter = 'BRANCH'
