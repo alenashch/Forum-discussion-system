@@ -21,7 +21,6 @@ import nl.tudelft.sem.group20.userserver.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
@@ -30,9 +29,9 @@ import org.springframework.test.web.servlet.ResultMatcher;
 
 @AutoConfigureMockMvc
 @SpringBootTest(classes = UserController.class)
+@ContextConfiguration(classes = UserServer.class)
 class UserControllerTest {
-    //Will get fixed soon!
-    /*@Autowired
+    @Autowired
     @MockBean
     private transient UserService userService;
     @Autowired
@@ -72,7 +71,8 @@ class UserControllerTest {
         try {
 
             mockMvc.perform(get("/user/get")
-                    .contentType(APPLICATION_JSON))
+                .contentType(APPLICATION_JSON))
+                .andDo(print())
                     .andExpect((ResultMatcher) jsonPath("$[0].username").value("Bob"))
                     .andExpect((ResultMatcher) jsonPath("$[0].password").value("123"));
 
@@ -92,8 +92,9 @@ class UserControllerTest {
         try {
 
             mockMvc.perform(post("/user/edit")
-                    .contentType(APPLICATION_JSON)
-                    .content(createJsonRequest(user)))
+                .contentType(APPLICATION_JSON)
+                .content(createJsonRequest(user)))
+                .andDo(print())
                     .andExpect((ResultMatcher) jsonPath("$.success").value(true));
 
         } catch (Exception e) {
@@ -116,6 +117,6 @@ class UserControllerTest {
     private User constructDefaultUser() {
 
         return new User(1, "Bob", "123", "bob@gmail.com", false);
-    }*/
+    }
 
 }
