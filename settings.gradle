@@ -1,7 +1,3 @@
 rootProject.name = 'application'
-include 'userserver'
-include 'eurekaserver'
-include 'boardserver'
-include 'threadserver'
-include 'postserver'
+include 'eurekaserver', 'authenticationserver', 'boardserver', 'contentserver'
 
