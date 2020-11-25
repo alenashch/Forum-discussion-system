@@ -1,4 +1,4 @@
-package nl.tudelft.sem.group20.userserver.test;
+package nl.tudelft.sem.group20.postserver.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -13,10 +13,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import nl.tudelft.sem.group20.userserver.model.Post;
-import nl.tudelft.sem.group20.userserver.repository.PostRepository;
-import nl.tudelft.sem.group20.userserver.service.PostService;
+import nl.tudelft.sem.group20.postserver.Post;
+import nl.tudelft.sem.group20.postserver.PostRepository;
+import nl.tudelft.sem.group20.postserver.PostServer;
+import nl.tudelft.sem.group20.postserver.PostService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -26,7 +26,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(classes = PostServer.class)
 public class PostServiceTest {
     transient long demoId1;
     transient int demoNumber1;

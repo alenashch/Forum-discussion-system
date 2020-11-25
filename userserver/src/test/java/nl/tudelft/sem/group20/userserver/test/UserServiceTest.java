@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.service;
+package nl.tudelft.sem.group20.userserver.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -12,8 +12,10 @@ import static org.mockito.Mockito.verify;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import nl.tudelft.sem.template.model.User;
-import nl.tudelft.sem.template.repository.UserRepository;
+import nl.tudelft.sem.group20.userserver.User;
+import nl.tudelft.sem.group20.userserver.UserRepository;
+import nl.tudelft.sem.group20.userserver.UserServer;
+import nl.tudelft.sem.group20.userserver.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -23,7 +25,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(classes = UserServer.class)
 public class UserServiceTest {
     transient User user1;
     transient long id1;

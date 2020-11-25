@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.service;
+package nl.tudelft.sem.group20.boardserver.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -10,12 +10,15 @@ import static org.mockito.Mockito.verify;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import nl.tudelft.sem.template.model.Board;
-import nl.tudelft.sem.template.repository.BoardRepository;
+import nl.tudelft.sem.group20.boardserver.Board;
+import nl.tudelft.sem.group20.boardserver.BoardRepository;
+import nl.tudelft.sem.group20.boardserver.BoardServer;
+import nl.tudelft.sem.group20.boardserver.BoardService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -23,7 +26,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(classes = BoardServer.class)
 public class BoardServiceTest {
     transient Board board1;
     transient long id1;

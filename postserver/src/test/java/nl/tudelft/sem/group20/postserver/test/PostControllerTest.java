@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.controller;
+package nl.tudelft.sem.group20.postserver.test;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -15,19 +15,24 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
-import nl.tudelft.sem.template.model.Post;
-import nl.tudelft.sem.template.service.PostService;
+import nl.tudelft.sem.group20.postserver.Post;
+import nl.tudelft.sem.group20.postserver.PostController;
+import nl.tudelft.sem.group20.postserver.PostServer;
+import nl.tudelft.sem.group20.postserver.PostService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 @AutoConfigureMockMvc
 @WebMvcTest(PostController.class)
+@ContextConfiguration(classes = PostServer.class)
 class PostControllerTest {
 
 

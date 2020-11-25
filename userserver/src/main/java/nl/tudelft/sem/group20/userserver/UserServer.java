@@ -8,6 +8,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 @EnableDiscoveryClient
 public class UserServer {
 
+    /** Starts application. **/
     public static void main(String[] args) {
         // Will configure using accounts-server.yml
         System.setProperty("spring.config.name", "userserver.properties");

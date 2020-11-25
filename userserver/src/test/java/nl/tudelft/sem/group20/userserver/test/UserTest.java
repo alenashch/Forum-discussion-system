@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.model;
+package nl.tudelft.sem.group20.userserver.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -6,11 +6,14 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import nl.tudelft.sem.group20.userserver.User;
+import nl.tudelft.sem.group20.userserver.UserServer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
 
-
+@SpringBootTest(classes = UserServer.class)
 public class UserTest {
     transient User user1;
     transient User user2;

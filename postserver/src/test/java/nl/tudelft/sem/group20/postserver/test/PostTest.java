@@ -1,4 +1,4 @@
-package nl.tudelft.sem.group20.userserver.test;
+package nl.tudelft.sem.group20.postserver.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -8,11 +8,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
-
-import nl.tudelft.sem.group20.userserver.model.Post;
+import nl.tudelft.sem.group20.postserver.Post;
+import nl.tudelft.sem.group20.postserver.PostServer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
+@SpringBootTest(classes = PostServer.class)
 public class PostTest {
     transient Post demoPost1;
 

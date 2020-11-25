@@ -14,3 +14,16 @@ mainClassName = 'nl.tudelft.sem.group20.userserver.UserServer'
 bootJar {
     launchScript() // optional
 }
+
+apply plugin: 'info.solidsoft.pitest'
+
+pitest {
+    //adds dependency to org.pitest:pitest-junit5-plugin and sets "testPlugin" to "junit5"
+    junit5PluginVersion = '0.12'
+
+    targetClasses = ['nl.tudelft.sem.group20.userserver.test.*']  //by default "${project.group}.*"
+    pitestVersion = '1.5.1' //not needed when a default PIT version should be used
+    threads = 4
+    outputFormats = ['XML', 'HTML']
+    timestampedReports = false
+}
