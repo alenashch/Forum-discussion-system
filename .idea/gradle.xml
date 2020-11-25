@@ -9,11 +9,10 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/authenticationserver" />
             <option value="$PROJECT_DIR$/boardserver" />
+            <option value="$PROJECT_DIR$/contentserver" />
             <option value="$PROJECT_DIR$/eurekaserver" />
-            <option value="$PROJECT_DIR$/postserver" />
-            <option value="$PROJECT_DIR$/threadserver" />
-            <option value="$PROJECT_DIR$/userserver" />
           </set>
         </option>
         <option name="useAutoImport" value="true" />
