@@ -9,6 +9,7 @@ import javax.persistence.Id;
 
 @Entity
 public class Board {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
@@ -19,9 +20,9 @@ public class Board {
 
     private boolean locked;
 
-    transient private LocalDateTime created;
-
     private LocalDateTime edited;
+
+    transient private LocalDateTime created;
 
     public Board() {
         this.created = LocalDateTime.now();
@@ -94,8 +95,8 @@ public class Board {
      * This method sets the edited field to a new value.
      *
      * @param edited - LocalDateTime representing when the Board was last edited.
-     * @throws IllegalArgumentException when the new "edited" value is before
-     *                                  the current edited value.
+     * @throws IllegalArgumentException when the new "edited" value is before the
+     *         current edited value.
      */
     public void setEdited(LocalDateTime edited) throws IllegalArgumentException {
         if (edited.isAfter(this.edited) || edited.isEqual(this.edited)) {
@@ -105,8 +106,6 @@ public class Board {
                     "Board cannot be edited before it was last edited.");
         }
     }
-
-
 
     @Override
     public boolean equals(Object o) {
