@@ -12,7 +12,11 @@
 | Users can get info about users   | 5      | 2 hours                   | 3 hours                | Yes  |                                                              |
 | Microservice architecture        | 36     | 6 hours                   | 7 hours                | Yes  | Added later because of new information of lecture
 | Security                         | 13     | 3 hours                   | - hours                | No   | Not added because of change in architecture of project
-    
+| Users can manage posts           | 11     | 2 hours                   | 6 hours                | Yes  | Took longer than expected because it was the first created controller |
+| Users can manage boards          | 2      | 2 hours                   | 2 hours                | Yes  |
+| Admins can manage users          | 6      | 2 hours                   | 3 hours                | Yes  | Had some terrible issues designing tests|
+| Users can manage threads         | 9      | 2 hours                   | 2 hours                | Yes  | |     
+
 
 
 **Project:** Student/Teacher forum
