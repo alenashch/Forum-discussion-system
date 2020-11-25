@@ -115,11 +115,13 @@ class PostControllerTest {
             Boolean response = new ObjectMapper().readValue(json, Boolean.class);
 
             Assertions.assertTrue(response);
+
              System.out.println(json);
 
              Boolean responsePost = new ObjectMapper().readValue(json, Boolean.class);
 
             Assertions.assertTrue(responsePost);
+
 
         } catch (Exception e) {
 

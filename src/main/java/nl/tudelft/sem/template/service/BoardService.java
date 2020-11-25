@@ -1,11 +1,9 @@
 package nl.tudelft.sem.template.service;
 
+import java.util.List;
 import nl.tudelft.sem.template.model.Board;
 import nl.tudelft.sem.template.repository.BoardRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class BoardService {
