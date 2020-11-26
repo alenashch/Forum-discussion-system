@@ -1,1 +1,3 @@
-rootProject.name = 'template'
+rootProject.name = 'application'
+include 'eurekaserver', 'authenticationserver', 'boardserver', 'contentserver'
+

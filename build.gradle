@@ -1,13 +1,5 @@
-buildscript {
-	repositories {
-		mavenCentral()
-		//Needed only for SNAPSHOT versions
-		//maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-	}
-	dependencies {
-		classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.5.2'
-	}
-}
+
+
 
 plugins {
 	id 'org.springframework.boot' version '2.3.5.RELEASE'
@@ -26,101 +18,129 @@ plugins {
 	id 'info.solidsoft.pitest' version '1.5.2'
 }
 
-group = 'nl.tudelft.cse.sem.template'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = 11
-targetCompatibility = 11
 
 repositories {
 	mavenCentral()
 }
 
-ext {
-	set('springCloudVersion', "Hoxton.SR1")
+bootJar {
+	enabled = false
 }
 
+subprojects {
 
-dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
-	compile group: 'org.hsqldb', name: 'hsqldb'
-
-	implementation 'org.springframework.cloud:spring-cloud-starter-config'
-	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
-
-	implementation 'junit:junit:4.12'
-	runtimeOnly 'mysql:mysql-connector-java'
-
-	implementation 'com.h2database:h2'
-	developmentOnly 'org.hibernate:hibernate-entitymanager'
-
-	testImplementation('org.springframework.boot:spring-boot-starter-test') {
-		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	repositories {
+		mavenCentral()
+		//Needed only for SNAPSHOT versions
+		//maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
 	}
-	testImplementation('org.junit.jupiter:junit-jupiter:5.5.2')
-	testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.1.0'
-	testImplementation('org.assertj:assertj-core:3.14.0')
+
+	apply plugin: 'org.springframework.boot'
+	apply plugin: 'io.spring.dependency-management'
+	apply plugin: 'java'
+	// Test coverage
+	apply plugin: 'jacoco'
+
+	// Code style
+	apply plugin: 'checkstyle'
+
+	// PMD
+	apply plugin: 'pmd'
+
+	// PITest
+	apply plugin: 'info.solidsoft.pitest'
 
 
-}
 
-dependencyManagement {
-	imports {
-		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	group = 'nl.tudelft.cse.sem.group20'
+	version = '0.0.1-SNAPSHOT'
+	sourceCompatibility = 11
+	targetCompatibility = 11
+
+
+	repositories {
+		mavenCentral()
 	}
-}
 
-test {
-	useJUnitPlatform()
-	jacoco {
-		enabled = true
-		includes = ['nl.tudelft.sem.template.*']
-		excludes = []
+	ext {
+		set('springCloudVersion', "Hoxton.SR1")
 	}
-}
 
-repositories {
-	mavenCentral()
-	maven { url 'https://repo.spring.io/milestone' }
-}
 
-jacocoTestCoverageVerification() {
-	dependsOn test
-	violationRules {
-		rule {
+	dependencies {
+		implementation 'org.springframework.boot:spring-boot-starter'
+		implementation 'org.springframework.boot:spring-boot-starter-web'
+		implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+		compile group: 'org.hsqldb', name: 'hsqldb'
+
+		implementation 'org.springframework.cloud:spring-cloud-starter-config'
+		implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
+
+		implementation 'junit:junit:4.12'
+		runtimeOnly 'mysql:mysql-connector-java'
+
+		implementation 'com.h2database:h2'
+		developmentOnly 'org.hibernate:hibernate-entitymanager'
+
+		testImplementation('org.springframework.boot:spring-boot-starter-test') {
+			exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+		}
+		testImplementation('org.junit.jupiter:junit-jupiter:5.5.2')
+		testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.1.0'
+		testImplementation('org.assertj:assertj-core:3.14.0')
+
+	}
+
+	dependencyManagement {
+		imports {
+			mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+		}
+	}
+
+	test {
+		useJUnitPlatform()
+		jacoco {
 			enabled = true
-			element = 'CLASS'
-			includes = ['nl.tudelft.sem.template.*']
+			includes = ['nl.tudelft.sem.group20.*']
+			excludes = []
+		}
+	}
 
-			limit {
-				counter = 'BRANCH'
-				value = 'COVEREDRATIO'
-				minimum = 0.1
+	repositories {
+		mavenCentral()
+		maven { url 'https://repo.spring.io/milestone' }
+	}
+
+	jacocoTestCoverageVerification() {
+		dependsOn test
+		violationRules {
+			rule {
+				enabled = true
+				element = 'CLASS'
+				includes = ['nl.tudelft.sem.group20.*']
+
+				limit {
+					counter = 'BRANCH'
+					value = 'COVEREDRATIO'
+					minimum = 0.1
+				}
 			}
 		}
 	}
+
+	checkstyle {
+		toolVersion "8.37"
+		configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
+	}
+
+	pmd {
+		incrementalAnalysis = true
+	}
+
+	apply plugin: 'info.solidsoft.pitest'
+	apply plugin: 'io.spring.dependency-management'
+
 }
 
-checkstyle {
-	toolVersion "8.37"
-	configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
-}
-
-pmd {
-	incrementalAnalysis = true
-}
-
-apply plugin: 'info.solidsoft.pitest'
-apply plugin: 'io.spring.dependency-management'
-pitest {
-	//adds dependency to org.pitest:pitest-junit5-plugin and sets "testPlugin" to "junit5"
-	junit5PluginVersion = '0.12'
-
-	targetClasses = ['nl.tudelft.sem.template.*']  //by default "${project.group}.*"
-	pitestVersion = '1.5.1' //not needed when a default PIT version should be used
-	threads = 4
-	outputFormats = ['XML', 'HTML']
-	timestampedReports = false
-}
