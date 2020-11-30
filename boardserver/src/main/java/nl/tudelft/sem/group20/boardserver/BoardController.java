@@ -33,9 +33,10 @@ public class BoardController {
         long assignedId = boardService.createBoard(board);
 
         //board with this id already exists, no board was created
-        if (assignedId == -1)
-            return new ResponseEntity<>("A board with this id already exists.", HttpStatus.CONFLICT);
-
+        if (assignedId == -1) {
+            return new ResponseEntity<>("A board with this id already exists.",
+                    HttpStatus.CONFLICT);
+        }
         return new ResponseEntity<>(assignedId, HttpStatus.CREATED);
     }
 
@@ -61,10 +62,11 @@ public class BoardController {
     public ResponseEntity<?> editBoard(@RequestBody Board board) {
         boolean updatedSucceeded = boardService.updateBoard(board);
 
-        if (updatedSucceeded)
+        if (updatedSucceeded) {
             return new ResponseEntity<>("This board does not exist.", HttpStatus.BAD_REQUEST);
-        else
+        } else {
             return new ResponseEntity<>("The board was successfully updated.", HttpStatus.OK);
+        }
     }
 
 
