@@ -3,10 +3,8 @@ package nl.tudelft.sem.group20.contentserver.controller;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import nl.tudelft.sem.group20.contentserver.services.PostService;
 import nl.tudelft.sem.group20.contentserver.entities.Post;
-
+import nl.tudelft.sem.group20.contentserver.services.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;

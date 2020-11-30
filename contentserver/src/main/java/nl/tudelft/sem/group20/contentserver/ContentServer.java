@@ -23,6 +23,7 @@ public class ContentServer {
         return new RestTemplate();
     }
 
+    /** Initialize spring. **/
     public static void main(String[] args) {
         // Will configure using accounts-server.yml
         System.setProperty("spring.config.name", "contentserver");
