@@ -10,23 +10,25 @@ import static org.mockito.Mockito.verify;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import nl.tudelft.sem.group20.boardserver.Board;
-import nl.tudelft.sem.group20.boardserver.BoardRepository;
 import nl.tudelft.sem.group20.boardserver.BoardServer;
-import nl.tudelft.sem.group20.boardserver.BoardService;
+import nl.tudelft.sem.group20.boardserver.entities.Board;
+import nl.tudelft.sem.group20.boardserver.repos.BoardRepository;
+import nl.tudelft.sem.group20.boardserver.services.BoardService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.ContextConfiguration;
 
 
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = BoardServer.class)
+//@RunWith(SpringRunner.class)
+//@SpringBootTest(classes = BoardService.class)
+@AutoConfigureMockMvc
+@WebMvcTest(BoardService.class)
+@ContextConfiguration(classes = BoardServer.class)
 public class BoardServiceTest {
     transient Board board1;
     transient long id1;

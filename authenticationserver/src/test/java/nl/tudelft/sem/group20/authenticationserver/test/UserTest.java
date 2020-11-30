@@ -7,13 +7,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import nl.tudelft.sem.group20.authenticationserver.AuthenticationServer;
-import nl.tudelft.sem.group20.authenticationserver.User;
+import nl.tudelft.sem.group20.authenticationserver.entities.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 
-@SpringBootTest(classes = AuthenticationServer.class)
+@SpringBootTest(classes = User.class)
 public class UserTest {
     transient User user1;
     transient User user2;

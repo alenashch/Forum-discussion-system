@@ -1,7 +1,9 @@
-package nl.tudelft.sem.group20.contentserver;
+package nl.tudelft.sem.group20.contentserver.services;
 
 import java.util.List;
 
+import nl.tudelft.sem.group20.contentserver.entities.Post;
+import nl.tudelft.sem.group20.contentserver.repositories.PostRepository;
 import org.springframework.stereotype.Service;
 
 @Service

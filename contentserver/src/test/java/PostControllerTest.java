@@ -7,10 +7,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
-import nl.tudelft.sem.group20.contentserver.ContentServer;
-import nl.tudelft.sem.group20.contentserver.Post;
-import nl.tudelft.sem.group20.contentserver.PostController;
-import nl.tudelft.sem.group20.contentserver.PostService;
+import nl.tudelft.sem.group20.contentserver.controller.PostController;
+import nl.tudelft.sem.group20.contentserver.entities.Post;
+import nl.tudelft.sem.group20.contentserver.services.PostService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 @AutoConfigureMockMvc
 @WebMvcTest(PostController.class)
-@ContextConfiguration(classes = ContentServer.class)
+@ContextConfiguration(classes = PostService.class)
 class PostControllerTest {
 
 
