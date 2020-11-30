@@ -1,6 +1,7 @@
-package nl.tudelft.sem.group20.contentserver;
+package nl.tudelft.sem.group20.contentserver.repositories;
 
 import java.util.Optional;
+import nl.tudelft.sem.group20.contentserver.entities.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -8,14 +8,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
-import nl.tudelft.sem.group20.boardserver.Board;
-import nl.tudelft.sem.group20.boardserver.BoardServer;
+import nl.tudelft.sem.group20.boardserver.entities.Board;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-
-@SpringBootTest(classes = BoardServer.class)
+@SpringBootTest(classes = Board.class)
 public class BoardTest {
     transient Board board;
 
