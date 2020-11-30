@@ -25,8 +25,14 @@ public class Board {
     transient private LocalDateTime created;
 
     public Board() {
-        this.created = LocalDateTime.now();
-        this.edited = created;
+        //this was causing a bug in the system.
+            //please message me if you don't get why.
+            //way to go is check if field is null once the
+            //object is created and if null add a time during
+            //processing of the request.
+            //-Pietro
+        //this.created = LocalDateTime.now();
+        //this.edited = created;
     }
 
     /**
@@ -99,7 +105,9 @@ public class Board {
      *         current edited value.
      */
     public void setEdited(LocalDateTime edited) throws IllegalArgumentException {
-        if (edited.isAfter(this.edited) || edited.isEqual(this.edited)) {
+        //System.out.println("edited:      " + edited);
+        //System.out.println("this.edited: " + this.edited);
+        if ( this.edited == null || edited.isAfter(this.edited) || edited.isEqual(this.edited)) {
             this.edited = edited;
         } else {
             throw new IllegalArgumentException(
@@ -133,6 +141,7 @@ public class Board {
                 + ", boardDescription='" + description + '\''
                 + ", locked='" + locked + '\''
                 + ", edited='" + edited + '\''
+                + ", created='" + created + '\''
                 + '}';
     }
 }
