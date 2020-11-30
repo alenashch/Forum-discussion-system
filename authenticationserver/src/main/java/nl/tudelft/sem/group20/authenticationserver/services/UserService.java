@@ -1,6 +1,8 @@
-package nl.tudelft.sem.group20.authenticationserver;
+package nl.tudelft.sem.group20.authenticationserver.services;
 
 import java.util.List;
+import nl.tudelft.sem.group20.authenticationserver.entities.User;
+import nl.tudelft.sem.group20.authenticationserver.repos.UserRepository;
 import org.springframework.stereotype.Service;
 
 @Service

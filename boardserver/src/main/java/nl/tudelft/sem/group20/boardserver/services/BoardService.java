@@ -1,6 +1,9 @@
-package nl.tudelft.sem.group20.boardserver;
+package nl.tudelft.sem.group20.boardserver.services;
 
 import java.util.List;
+
+import nl.tudelft.sem.group20.boardserver.repos.BoardRepository;
+import nl.tudelft.sem.group20.boardserver.entities.Board;
 import org.springframework.stereotype.Service;
 
 @Service

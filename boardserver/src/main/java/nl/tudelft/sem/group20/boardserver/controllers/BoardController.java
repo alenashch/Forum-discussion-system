@@ -1,8 +1,11 @@
-package nl.tudelft.sem.group20.boardserver;
+package nl.tudelft.sem.group20.boardserver.controllers;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import nl.tudelft.sem.group20.boardserver.services.BoardService;
+import nl.tudelft.sem.group20.boardserver.entities.Board;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -57,5 +60,15 @@ public class BoardController {
         return Collections.singletonMap("success", boardService.updateBoard(board));
     }
 
+    /**
+     * Test Request.
+     *
+     * @return response
+     */
+    //@GetMapping(path = "/all")
+    @RequestMapping("/hello")
+    public @ResponseBody String getAllThreads() {
+        return "hello";
+    }
 
 }

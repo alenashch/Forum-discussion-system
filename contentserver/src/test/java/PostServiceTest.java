@@ -12,20 +12,29 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import nl.tudelft.sem.group20.contentserver.ContentServer;
-import nl.tudelft.sem.group20.contentserver.Post;
-import nl.tudelft.sem.group20.contentserver.PostRepository;
-import nl.tudelft.sem.group20.contentserver.PostService;
+import nl.tudelft.sem.group20.contentserver.entities.Post;
+import nl.tudelft.sem.group20.contentserver.repositories.PostRepository;
+import nl.tudelft.sem.group20.contentserver.services.PostService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.junit4.SpringRunner;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = ContentServer.class)
+//@RunWith(SpringRunner.class)
+//@RunWith(SpringJUnit4ClassRunner.class)
+//@SpringBootTest(classes = PostService.class)
+@AutoConfigureMockMvc
+@WebMvcTest(PostService.class)
+@ContextConfiguration(classes = ContentServer.class)
 public class PostServiceTest {
+
     transient long demoId1;
     transient int demoNumber1;
     transient String demoBody1;
@@ -124,4 +133,5 @@ public class PostServiceTest {
         assertFalse(postService.updatePost(demoPost3));
         verify(postRepository, times(0)).saveAndFlush(any(Post.class));
     }
+
 }

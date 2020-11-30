@@ -15,20 +15,24 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import java.util.List;
 import nl.tudelft.sem.group20.authenticationserver.AuthenticationServer;
-import nl.tudelft.sem.group20.authenticationserver.User;
-import nl.tudelft.sem.group20.authenticationserver.UserController;
-import nl.tudelft.sem.group20.authenticationserver.UserService;
+import nl.tudelft.sem.group20.authenticationserver.controllers.UserController;
+import nl.tudelft.sem.group20.authenticationserver.entities.User;
+import nl.tudelft.sem.group20.authenticationserver.services.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
 
+//@AutoConfigureMockMvc
+//@RunWith(SpringJUnit4ClassRunner.class)
+//@ContextConfiguration(classes = AuthenticationServer.class)
+//@SpringBootTest(classes = UserController.class)
 @AutoConfigureMockMvc
-@SpringBootTest(classes = UserController.class)
+@WebMvcTest(UserController.class)
 @ContextConfiguration(classes = AuthenticationServer.class)
 class UserControllerTest {
     @Autowired

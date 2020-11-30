@@ -1,19 +1,19 @@
-package nl.tudelft.sem.group20.contentserver;
+package nl.tudelft.sem.group20.contentserver.controller;
 
-
+import nl.tudelft.sem.group20.contentserver.repositories.ThreadRepository;
+import nl.tudelft.sem.group20.contentserver.entities.BoardThread;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
+import java.util.List;
+
+@RestController
 @RequestMapping(path = "/thread")
 public class ThreadController {
+
     @Autowired
     private transient ThreadRepository threadRepository;
+
 
     /**
      * Post request.
@@ -41,10 +41,14 @@ public class ThreadController {
      *
      * @return response
      */
-    @GetMapping(path = "/all")
-    public @ResponseBody Iterable<BoardThread> getAllThreads() {
-        // This returns a JSON or XML with the users
-        return threadRepository.findAll();
+    //@GetMapping(path = "/all")
+    @RequestMapping("/hello")
+    public @ResponseBody String getAllThreads() {
+        //Iterable<BoardThread>
+
+        // This returns a JSON or XML with the threads
+        return "hello";
+        //return threadRepository.findAll();
     }
 
 }
