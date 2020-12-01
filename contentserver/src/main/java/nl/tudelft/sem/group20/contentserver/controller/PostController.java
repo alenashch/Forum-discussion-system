@@ -69,7 +69,7 @@ public class PostController {
             return new ResponseEntity<>("The post with ID: " + post.getId() + " has been updated",
                 HttpStatus.OK);
         }
-        return new ResponseEntity<>("Post with ID: " + post.getId() + "could not be updated",
+        return new ResponseEntity<>("Post with ID: " + post.getId() + " could not be updated",
             HttpStatus.BAD_REQUEST);
     }
 

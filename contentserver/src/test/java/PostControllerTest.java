@@ -27,7 +27,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultMatcher;
 
 @AutoConfigureMockMvc
 @WebMvcTest(PostController.class)
@@ -44,7 +43,7 @@ class PostControllerTest {
     private transient ObjectMapper objectMapper;
 
     @Test
-    void createPostTest() {
+    void createPostSuccessTest() {
 
         Post post = createTestPost();
         when(postService.createPost(post)).thenReturn(123L);
@@ -62,6 +61,28 @@ class PostControllerTest {
             e.printStackTrace();
         }
 
+
+    }
+
+    @Test
+    void createPostFailTest() {
+
+        Post post = createTestPost();
+        when(postService.createPost(post)).thenReturn(-1L);
+
+        try {
+            mockMvc.perform(post("/post/create")
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(post)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(
+                    content().string("This post could not be created, it may already exist"));
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
 
     }
 
@@ -89,7 +110,7 @@ class PostControllerTest {
     }
 
     @Test
-    void editPostTest() {
+    void editPostSuccessTest() {
 
         Post post = createTestPost();
 
@@ -100,7 +121,33 @@ class PostControllerTest {
             mockMvc.perform(post("/post/edit")
                 .contentType(APPLICATION_JSON)
                 .content(createJsonRequest(post)).accept(APPLICATION_JSON))
-                .andDo(print()).andExpect(status().isOk());
+                .andDo(print()).andExpect(status().isOk())
+                .andExpect(content().string("The post with ID: 123 has been updated"));
+            //.andExpect((ResultMatcher) jsonPath("$.success").value(true));
+
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+
+    }
+
+    @Test
+    void editPostFailTest() {
+
+        Post post = createTestPost();
+
+        when(postService.updatePost(post)).thenReturn(false);
+
+        //  given(postService.updatePost(any(Post.class))).willReturn(true);
+        try {
+            mockMvc.perform(post("/post/edit")
+                .contentType(APPLICATION_JSON)
+                .content(createJsonRequest(post)).accept(APPLICATION_JSON))
+                .andDo(print()).andExpect(status().isBadRequest())
+                .andExpect(content().string("Post with ID: 123 could not be updated"));
             //.andExpect((ResultMatcher) jsonPath("$.success").value(true));
 
 

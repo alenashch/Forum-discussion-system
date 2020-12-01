@@ -1,6 +1,8 @@
 package nl.tudelft.sem.group20.contentserver.controller;
 
 import java.util.List;
+
+import nl.tudelft.sem.group20.contentserver.entities.BoardThread;
 import nl.tudelft.sem.group20.contentserver.services.ThreadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,18 +31,9 @@ public class ThreadController {
      */
     @PostMapping(path = "/create")
     public @ResponseBody
-    ResponseEntity<String> addNewThread(@RequestParam Thread thread) {
+    ResponseEntity<String> createThread(BoardThread thread) {
         // @ResponseBody means the returned String is the response, not a view name
         // @RequestParam means it is a parameter from the GET or POST request
-
-        //        BoardThread n = new BoardThread();
-        //        n.setLocked(false);
-        //        n.setThreadTitle("Creation 101");
-        //        n.setStatement("Am I alive");
-        //        n.setLocked(false);
-        //        n.setThreadCreator(creator);
-        //        threadRepository.save(n);
-        //        return "Saved";
 
         long newId = threadService.createThread(thread);
         if (newId == -1) {
@@ -59,7 +52,7 @@ public class ThreadController {
      */
     @GetMapping("/get")
     @ResponseBody
-    public List<Thread> getThreads() {
+    public List<BoardThread> getThreads() {
 
         return threadService.getThreads();
     }
@@ -72,14 +65,14 @@ public class ThreadController {
      */
     @PostMapping("/edit")
     @ResponseBody
-    public ResponseEntity<String> editThread(@RequestBody Thread thread) {
+    public ResponseEntity<String> editThread(@RequestBody BoardThread thread) {
 
         if (threadService.updateThread(thread)) {
 
             return new ResponseEntity<>("The thread with ID: " + thread.getId() + " has been "
                 + "updated", HttpStatus.OK);
         }
-        return new ResponseEntity<>("Thread with ID: " + thread.getId() + "could not be updated",
+        return new ResponseEntity<>("Thread with ID: " + thread.getId() + " could not be updated",
             HttpStatus.BAD_REQUEST);
     }
 
