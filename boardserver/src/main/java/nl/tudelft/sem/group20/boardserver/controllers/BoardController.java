@@ -1,11 +1,12 @@
 package nl.tudelft.sem.group20.boardserver.controllers;
 
-import nl.tudelft.sem.group20.boardserver.services.BoardService;
 import nl.tudelft.sem.group20.boardserver.entities.Board;
+import nl.tudelft.sem.group20.boardserver.services.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
