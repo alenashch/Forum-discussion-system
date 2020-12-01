@@ -14,6 +14,8 @@
 | Add proper HTTP requests and responses to thread and post microservices | 42 | 2 hours | 3 hours | Yes | |
 | Fix failing tests for API of Post | 45 | 2 hours | 5 hours | Yes | The issue lied in the Post class throwing errors at creation of a new entity |
 | Standardize API Conventions | 41 | 1 hour | 1 hour | Yes | |
+|Password hashing and  unique email | 52 | 40 min | 2 h 15 min | Yes |
+|Logout method | 54 | 30 min | 1 h 30 min | Yes |
 
 
 
