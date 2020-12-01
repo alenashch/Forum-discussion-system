@@ -1,5 +1,8 @@
 package nl.tudelft.sem.group20.authenticationserver.services;
 
+import static nl.tudelft.sem.group20.authenticationserver.embeddable.StatusResponse.Status.fail;
+import static nl.tudelft.sem.group20.authenticationserver.embeddable.StatusResponse.Status.success;
+
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -11,11 +14,7 @@ import nl.tudelft.sem.group20.authenticationserver.embeddable.StatusResponse;
 import nl.tudelft.sem.group20.authenticationserver.entities.User;
 import nl.tudelft.sem.group20.authenticationserver.repos.AuthTokenRepository;
 import nl.tudelft.sem.group20.authenticationserver.repos.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import static nl.tudelft.sem.group20.authenticationserver.embeddable.StatusResponse.Status.fail;
-import static nl.tudelft.sem.group20.authenticationserver.embeddable.StatusResponse.Status.success;
 
 @Service
 public class UserService {
@@ -43,20 +42,20 @@ public class UserService {
      * Creates a User and adds it to the database.
      *
      * @param newRegisterRequest - the User to be added.
-     * @return statusresponse if the User already exists in the database or the id of the newly created user.
-     *      if creation was successful.
+     * @return statusresponse telling if it was successfull or not.
      */
     public StatusResponse createUser(RegisterRequest newRegisterRequest) {
         //is the email address already in the database?
         if (userRepository.getByEmail(newRegisterRequest.getEmail()).isPresent()) {
             return new StatusResponse(fail, "Email address already exists");
-        }
-        //is the username already in the database?
-        else if(userRepository.getByUsername(newRegisterRequest.getUsername()).isPresent()){
+        } else if (userRepository.getByUsername(newRegisterRequest.getUsername()).isPresent()) {
+            //is the username already in the database?
             return new StatusResponse(fail, "username already exists");
         }
-        //Create a new user with the given name, password and email. Hash the password and set the type to student (false).
-        User newUser = new User(newRegisterRequest.getUsername(), getMd5(newRegisterRequest.getPassword()), newRegisterRequest.getEmail(), false);
+        //Create a new user with the given name, password and email.
+        // Hash the password and set the type to student (false).
+        User newUser = new User(newRegisterRequest.getUsername(), getMd5(newRegisterRequest
+                .getPassword()), newRegisterRequest.getEmail(), false);
         userRepository.saveAndFlush(newUser);
         return new StatusResponse(success, "A new user was succesfully made");
     }
@@ -93,16 +92,30 @@ public class UserService {
     }
 
     /**
+     * Logs out the user by deleting their token from the database.
+     *
+     * @param token - Token to be deleted.
+     * @return - statusresponse telling if it was succesfull or not.
+     */
+    public StatusResponse logout(String token) {
+        Optional<AuthToken> optionalAuthToken = authTokenRepository.findByToken(token);
+        if (optionalAuthToken.isPresent()) {
+            authTokenRepository.delete(optionalAuthToken.get());
+            return new StatusResponse(success, "Successfully logged out.");
+        }
+        return new StatusResponse(fail, "You are already logged out.");
+    }
+    /**
      * Updates a User in the database.
      *
      * @param toUpdate - the user to be updated.
      * @return false if the User does not exist in the database, and true otherwise.
      */
+
     public boolean updateUser(User toUpdate) {
         if (userRepository.getByEmail(toUpdate.getEmail()).isEmpty()) {
             return false;
         }
-
         userRepository.saveAndFlush(toUpdate);
         return true;
     }
@@ -123,7 +136,7 @@ public class UserService {
      * @return - the hashed string.
      */
     public static String getMd5(String input) {
-       try {
+        try {
 
             // Static getInstance method is called with hashing MD5
             MessageDigest md = MessageDigest.getInstance("MD5");

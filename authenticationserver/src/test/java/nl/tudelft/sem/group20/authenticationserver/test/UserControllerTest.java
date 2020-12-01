@@ -17,10 +17,13 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import java.util.List;
 import nl.tudelft.sem.group20.authenticationserver.AuthenticationServer;
 import nl.tudelft.sem.group20.authenticationserver.controllers.UserController;
+import nl.tudelft.sem.group20.authenticationserver.embeddable.AuthToken;
 import nl.tudelft.sem.group20.authenticationserver.embeddable.RegisterRequest;
 import nl.tudelft.sem.group20.authenticationserver.embeddable.StatusResponse;
 import nl.tudelft.sem.group20.authenticationserver.entities.User;
 import nl.tudelft.sem.group20.authenticationserver.services.UserService;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -110,6 +113,37 @@ class UserControllerTest {
             e.printStackTrace();
         }
 
+
+    }
+
+    @Test
+    void logoutUserTest() {
+        when(userService.logout("random7"))
+                .thenReturn(new StatusResponse(success, "Successfully logged out."));
+
+        JSONObject data = new JSONObject();
+
+        try {
+            data.put("token", "random7");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            mockMvc.perform(post("/user/logout")
+                    .contentType(APPLICATION_JSON)
+                    .content("random7"))
+                    .andDo(print())
+                    .andExpect(
+                            jsonPath("$.status")
+                                    .value("success"))
+                    .andExpect(
+                            jsonPath("$.message")
+                                    .value("Successfully logged out."));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
