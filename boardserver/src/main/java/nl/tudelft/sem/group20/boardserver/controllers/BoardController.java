@@ -63,7 +63,7 @@ public class BoardController {
     public ResponseEntity<?> editBoard(@RequestBody Board board) {
         boolean updatedSucceeded = boardService.updateBoard(board);
 
-        if (updatedSucceeded) {
+        if (!updatedSucceeded) {
             return new ResponseEntity<>("This board does not exist.", HttpStatus.BAD_REQUEST);
         } else {
             return new ResponseEntity<>("The board was successfully updated.", HttpStatus.OK);

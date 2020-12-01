@@ -1,14 +1,17 @@
 package nl.tudelft.sem.group20.boardserver.test;
 
+//import static com.sun.tools.doclint.Entity.times;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.times;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,7 +26,9 @@ import nl.tudelft.sem.group20.boardserver.entities.Board;
 import nl.tudelft.sem.group20.boardserver.services.BoardService;
 import org.junit.Before;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -37,6 +42,8 @@ import org.springframework.test.web.servlet.MvcResult;
 @ContextConfiguration(classes = BoardServer.class)
 class BoardControllerTest {
 
+    transient Board board;
+    transient List<Board> list;
 
     @Autowired
     @MockBean
@@ -46,11 +53,16 @@ class BoardControllerTest {
     @Autowired
     private transient ObjectMapper objectMapper;
 
+    @BeforeEach
+    void initialize() {
+        board = new Board(1, "Board 1", "description",false);
+        list = Collections.singletonList(new Board(1,"Board 1", "description", false));
+    }
+
 
     @Test
     void testCreateBoardSuccessful() {
 
-        Board board = new Board(1,"Board 1", "description", false);
         when(boardService.createBoard(board)).thenReturn(1L);
 
         try {
@@ -69,9 +81,10 @@ class BoardControllerTest {
 
     }
 
+    //Board is already in the database
     @Test
     void testCreateBoardFailure() {
-        Board board = new Board(3, "Board 3", "description 3", false);
+
         when(boardService.createBoard(board)).thenReturn(-1L);
 
         try {
@@ -79,6 +92,7 @@ class BoardControllerTest {
                     .contentType(APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(board)))
                     .andDo(print())
+                    .andExpect(status().isBadRequest())
                     .andExpect(content().string("A board with this id already exists."));
 
         } catch (Exception e) {
@@ -88,78 +102,23 @@ class BoardControllerTest {
     }
 
 
-    /*@Test
-    void testCreateBoardSuccessful() {
-        Board validBoard = new Board("This is a new board.", "A description.", false);
-        when(boardService.createBoard(validBoard)).thenReturn(1L);
-
-        try {
-            MvcResult result = mockMvc.perform(post("/board/create")
-                    .contentType(APPLICATION_JSON)
-                    .content(createJsonRequest(validBoard)))
-                    //at the moment, this throws an assertion error
-                    //.andExpect(status().isOk())
-                    .andReturn();
-
-            String json = result.getResponse().getContentAsString();
-            Long response = new ObjectMapper().readValue(json, Long.class);
-
-            Assertions.assertEquals(1L, response);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Test
-    void testCreateBoardFailure() {
-        Board validBoard = new Board(1L, "This is a new board.", "A description.", false);
-        when(boardService.createBoard(validBoard)).thenReturn(-1L);
-
-        try {
-            MvcResult result = mockMvc.perform(post("/board/create")
-                    .contentType(APPLICATION_JSON)
-                    .content(createJsonRequest(validBoard)))
-                    //at the moment, this throws an assertion error
-                    //.andExpect(status().isBadRequest())
-                    .andReturn();
-
-            String json = result.getResponse().getContentAsString();
-            String response = new ObjectMapper().readValue(json, String.class);
-
-            Assertions.assertEquals("A board with this id already exists.", response);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     @Test
     void getBoardsTest() {
-
-        List<Board> list = Collections.singletonList(new Board(123, "boardy", "abc", false));
 
         when(boardService.getBoards()).thenReturn(list);
 
         try {
 
-            MvcResult result = mockMvc.perform(get("/board/get")
-                    .contentType(APPLICATION_JSON))
-                    .andDo(print())
+            mockMvc.perform(get("/board/get")
+                    .contentType(APPLICATION_JSON)).andDo(print())
                     .andExpect(status().isOk())
-                    .andReturn();
+                    .andExpect(jsonPath("$[0].name").value("Board 1"))
+                    .andExpect(jsonPath("$[0].id").value("1"));
 
-            String json = result.getResponse().getContentAsString();
+            Mockito.verify(boardService, times(1)).getBoards();
 
-            //System.out.println(json);
-
-            Board[] responseBoards = new ObjectMapper()
-                    .registerModule(new JavaTimeModule())
-                    .readValue(json, Board[].class);
-
-            //System.out.println("here!");
-            //System.out.println(responseBoards);
-
-            Assertions.assertEquals(list.get(0), responseBoards[0]);
         } catch (Exception e) {
+
             e.printStackTrace();
         }
 
@@ -168,50 +127,84 @@ class BoardControllerTest {
     @Test
     void editBoardSuccessful() {
 
-        Board board = new Board(1L, "An existing board.", "Description.", false);
+        when(boardService.updateBoard(board)).thenReturn(true);
 
-        given(boardService.updateBoard(any(Board.class))).willReturn(true);
         try {
-
-            MvcResult result = mockMvc.perform(post("/post/edit")
+            mockMvc.perform(post("/board/edit")
                     .contentType(APPLICATION_JSON)
-                    .content(createJsonRequest(board)))
-                    //.andExpect(status().isOk())
-                    .andReturn();
+                    .content(objectMapper.writeValueAsString(board)))
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andExpect(content().string("The board was successfully updated."));
 
-            String json = result.getResponse().getContentAsString();
-
-            Boolean response = new ObjectMapper().readValue(json, Boolean.class);
-
-            Assertions.assertTrue(response);
         } catch (Exception e) {
+
             e.printStackTrace();
         }
+
     }
 
+    //Can't edit the board if it is not in the database
     @Test
     void editBoardFailure() {
 
-        Board board = new Board(1L, "A non-existing board.", "Description.", false);
+        when(boardService.updateBoard(board)).thenReturn(false);
 
-        given(boardService.updateBoard(any(Board.class))).willReturn(false);
         try {
-
-            MvcResult result = mockMvc.perform(post("/post/edit")
+            mockMvc.perform(post("/board/edit")
                     .contentType(APPLICATION_JSON)
-                    .content(createJsonRequest(board)))
-                    //.andExpect(status().isBadRequest())
-                    .andReturn();
+                    .content(objectMapper.writeValueAsString(board)))
+                    .andDo(print())
+                    .andExpect(status().isBadRequest())
+                    .andExpect(content().string("This board does not exist."));
 
-            String json = result.getResponse().getContentAsString();
-
-            Boolean response = new ObjectMapper().readValue(json, Boolean.class);
-
-            Assertions.assertFalse(response);
         } catch (Exception e) {
+
             e.printStackTrace();
         }
-    }*/
+
+    }
+
+    @Test
+    void testGetBoardByIdSuccessful() {
+
+        when(boardService.getById(1)).thenReturn(board);
+
+        try {
+
+            mockMvc.perform(get("/board/get/1")
+                    .contentType(APPLICATION_JSON)).andDo(print()).
+                    andExpect(status().isOk());
+
+            Mockito.verify(boardService, times(1)).getById(1);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+    }
+
+    //Can't get the board if it is not in the database
+    @Test
+    void testGetBoardByIdFailure() {
+
+        when(boardService.getById(2)).thenReturn(null);
+
+        try {
+            mockMvc.perform(get("/board/get/2")
+                    .contentType(APPLICATION_JSON)).andDo(print())
+                    .andExpect(status().isBadRequest())
+                    .andExpect(content().string("This board does not exist."));
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+    }
+
+
 
     private String createJsonRequest(Board board) throws JsonProcessingException {
 
