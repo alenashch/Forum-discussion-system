@@ -3,6 +3,8 @@ package nl.tudelft.sem.group20.authenticationserver.controllers;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import nl.tudelft.sem.group20.authenticationserver.embeddable.AuthToken;
+import nl.tudelft.sem.group20.authenticationserver.embeddable.LoginRequest;
 import nl.tudelft.sem.group20.authenticationserver.entities.User;
 import nl.tudelft.sem.group20.authenticationserver.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,18 @@ public class UserController {
     public Map<String, Long> createUser(@RequestBody User user) {
 
         return Collections.singletonMap("ID", userService.createUser(user));
+    }
+
+    /**
+     * Logs a user in.
+     *
+     * @param login the request to process
+     * @return Token response of status
+     */
+    @PostMapping("/login")
+    @ResponseBody
+    public AuthToken login(@RequestBody LoginRequest login) {
+        return userService.login(login.getEmail(), login.getPassword());
     }
 
     /**

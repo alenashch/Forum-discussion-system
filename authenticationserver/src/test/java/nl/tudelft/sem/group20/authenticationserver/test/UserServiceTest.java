@@ -14,12 +14,18 @@ import java.util.List;
 import java.util.Optional;
 import nl.tudelft.sem.group20.authenticationserver.AuthenticationServer;
 import nl.tudelft.sem.group20.authenticationserver.controllers.UserController;
+import nl.tudelft.sem.group20.authenticationserver.embeddable.AuthToken;
+import nl.tudelft.sem.group20.authenticationserver.embeddable.LoginRequest;
+import nl.tudelft.sem.group20.authenticationserver.embeddable.StatusResponse;
 import nl.tudelft.sem.group20.authenticationserver.entities.User;
+import nl.tudelft.sem.group20.authenticationserver.repos.AuthTokenRepository;
 import nl.tudelft.sem.group20.authenticationserver.repos.UserRepository;
 import nl.tudelft.sem.group20.authenticationserver.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -55,11 +61,16 @@ public class UserServiceTest {
     transient String email3;
     transient boolean type3;
 
+
     private transient UserService userService;
-    transient List<User> users;
 
     @MockBean
     private transient UserRepository userRepository;
+
+    @MockBean
+    private transient AuthTokenRepository tokenRepository;
+
+    transient List<User> users;
 
     @BeforeEach
     void initialize() {
@@ -83,9 +94,9 @@ public class UserServiceTest {
         type2 = false;
         type3 = false;
 
-        user1 = new User(id1, username1, password1, email1, type1);
-        user2 = new User(id2, username2, password2, email2, type2);
-        user3 = new User(id3, username3, password3, email3, type3);
+        user1 = new User(id1, username1, UserService.getMd5(password1), email1, type1);
+        user2 = new User(id2, username2, UserService.getMd5(password2), email2, type2);
+        user3 = new User(id3, username3, UserService.getMd5(password3), email3, type3);
 
         users = new ArrayList<>();
         users.add(user1);
@@ -99,9 +110,18 @@ public class UserServiceTest {
                 .then(returnsFirstArg());
         Mockito.when(userRepository.getById(2))
                 .thenReturn(Optional.of(user2));
+        Mockito.when(userRepository.getByEmail(email1))
+                .thenReturn(Optional.of(user1));
 
+        ArrayList<AuthToken> authTokens = new ArrayList<AuthToken>();
 
-        userService = new UserService(userRepository);
+        tokenRepository = Mockito.mock(AuthTokenRepository.class);
+        Mockito.when(tokenRepository.findAll())
+                .thenReturn(authTokens);
+        Mockito.when(tokenRepository.saveAndFlush(any(AuthToken.class)))
+                .then(returnsFirstArg());
+
+        userService = new UserService(userRepository, tokenRepository);
     }
 
     @Test
@@ -139,6 +159,23 @@ public class UserServiceTest {
         verify(userRepository, times(0)).saveAndFlush(any(User.class));
     }
 
+    @Test
+    void loginUserNonExisting() {
+        AuthToken token = new AuthToken();
+        assertEquals(token, userService.login("asdasd", "asdas"));
+    }
+
+    @Test
+    void loginUserWrongPassword() {
+        AuthToken token = new AuthToken();
+        assertEquals(token, userService.login("frodo@gmail.com", "ring2"));
+    }
+
+    @Test
+    void loginUserRight() {
+        assertEquals(StatusResponse.Status.success,
+                userService.login("frodo@gmail.com", "ring").getStatus());
+    }
 
 
 
