@@ -129,6 +129,9 @@ public class UserServiceTest {
         Mockito.when(tokenRepository.saveAndFlush(any(AuthToken.class)))
                 .then(returnsFirstArg());
 
+        Mockito.when(tokenRepository.findByToken("random7"))
+                .thenReturn(Optional.of(new AuthToken("random7")));
+
         userService = new UserService(userRepository, tokenRepository);
     }
 
@@ -183,6 +186,16 @@ public class UserServiceTest {
                 userService.login("frodo@gmail.com", "ring").getStatus());
     }
 
+    @Test
+    void testlogoutUserRightToken() {
+        assertEquals(new StatusResponse(success, "Successfully logged out."),
+                userService.logout("random7"));
+    }
 
+    @Test
+    void testlogoutUserWrongToken() {
+        assertEquals(new StatusResponse(fail, "You are already logged out."),
+                userService.logout("horse8"));
+    }
 
 }

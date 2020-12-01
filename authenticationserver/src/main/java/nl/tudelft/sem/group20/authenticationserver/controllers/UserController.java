@@ -3,7 +3,6 @@ package nl.tudelft.sem.group20.authenticationserver.controllers;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
 import nl.tudelft.sem.group20.authenticationserver.embeddable.AuthToken;
 import nl.tudelft.sem.group20.authenticationserver.embeddable.LoginRequest;
 import nl.tudelft.sem.group20.authenticationserver.embeddable.RegisterRequest;
@@ -49,6 +48,18 @@ public class UserController {
     @ResponseBody
     public AuthToken login(@RequestBody LoginRequest login) {
         return userService.login(login.getEmail(), login.getPassword());
+    }
+
+    /**
+     * Logs a user out.
+     *
+     * @param token - the token to delete from the database.
+     * @return - Statusresponse telling if it was a success or not.
+     */
+    @PostMapping("/logout")
+    @ResponseBody
+    public StatusResponse logout(@RequestBody String token) {
+        return userService.logout(token);
     }
 
     /**

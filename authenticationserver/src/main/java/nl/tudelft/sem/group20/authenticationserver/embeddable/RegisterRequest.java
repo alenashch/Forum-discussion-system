@@ -1,7 +1,7 @@
 package nl.tudelft.sem.group20.authenticationserver.embeddable;
 
-import javax.persistence.Embeddable;
 import java.util.Objects;
+import javax.persistence.Embeddable;
 
 @Embeddable
 public class RegisterRequest {
@@ -9,7 +9,7 @@ public class RegisterRequest {
     private String email;
     private String username;
 
-    public RegisterRequest() {};
+    public RegisterRequest() {}
 
     /**
      * Non-empty constructer for EmailPassword class.
@@ -85,12 +85,16 @@ public class RegisterRequest {
      */
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         RegisterRequest that = (RegisterRequest) o;
-        return Objects.equals(getPassword(), that.getPassword()) &&
-                Objects.equals(getEmail(), that.getEmail()) &&
-                Objects.equals(getUsername(), that.getUsername());
+        return Objects.equals(getPassword(), that.getPassword())
+                && Objects.equals(getEmail(), that.getEmail())
+                && Objects.equals(getUsername(), that.getUsername());
     }
 
     /**
