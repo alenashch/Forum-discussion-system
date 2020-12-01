@@ -1,6 +1,7 @@
 package nl.tudelft.sem.group20.boardserver.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import nl.tudelft.sem.group20.boardserver.repos.BoardRepository;
 import nl.tudelft.sem.group20.boardserver.entities.Board;
@@ -48,7 +49,14 @@ public class BoardService {
         boardRepository.saveAndFlush(updatedBoard);
         return true;
     }
-    
+
+
+    public Optional<Board> getById(long id){
+        if (boardRepository.getById(id).isEmpty()) {
+            return null;
+        }
+        return boardRepository.getById(id);
+    }
     
     
     

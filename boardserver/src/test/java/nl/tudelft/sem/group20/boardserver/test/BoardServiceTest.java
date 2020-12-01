@@ -87,6 +87,8 @@ public class BoardServiceTest {
                 .thenReturn(boardsList);
         Mockito.when(boardRepository.getById(2))
                 .thenReturn(Optional.of(board2));
+        Mockito.when(boardRepository.getById(3))
+                .thenReturn(Optional.of(null));
 
 
         boardService = new BoardService(boardRepository);
@@ -128,7 +130,7 @@ public class BoardServiceTest {
 
     @Test
     public void testGetByIdSuccess() {
-        assertTrue(boardService.getById(2),board2);
+        assertEquals(boardService.getById(2),board2);
     }
 
     @Test
