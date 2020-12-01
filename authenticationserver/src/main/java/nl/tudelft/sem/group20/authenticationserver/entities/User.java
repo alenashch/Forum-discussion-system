@@ -24,14 +24,13 @@ public class User {
     /**
      * Non-empty constructer for User class.
      *
-     * @param id - unique id for the user.
      * @param username - username of the user.
      * @param password - password of the user.
      * @param email - email of the user.
      * @param  type - type of the user, student or teacher.
      */
-    public User(long id, String username, String password, String email, boolean type) {
-        this.id = id;
+    public User(String username, String password, String email, boolean type) {
+        //this.id = id;
         this.username = username;
         this.password = password;
         this.email = email;

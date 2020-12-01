@@ -1,5 +1,6 @@
 package nl.tudelft.sem.group20.authenticationserver.test;
 
+import static nl.tudelft.sem.group20.authenticationserver.embeddable.StatusResponse.Status.success;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
@@ -16,6 +17,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import java.util.List;
 import nl.tudelft.sem.group20.authenticationserver.AuthenticationServer;
 import nl.tudelft.sem.group20.authenticationserver.controllers.UserController;
+import nl.tudelft.sem.group20.authenticationserver.embeddable.RegisterRequest;
+import nl.tudelft.sem.group20.authenticationserver.embeddable.StatusResponse;
 import nl.tudelft.sem.group20.authenticationserver.entities.User;
 import nl.tudelft.sem.group20.authenticationserver.services.UserService;
 import org.junit.jupiter.api.Test;
@@ -43,9 +46,10 @@ class UserControllerTest {
 
     @Test
     void createUserTest() {
-
+        RegisterRequest registerRequest = new RegisterRequest("pwd", "test@gmal.com", "test");
         User user = constructDefaultUser();
-        when(userService.createUser(user)).thenReturn(1L);
+        when(userService.createUser(registerRequest));
+        //.thenReturn(new StatusResponse(success, "A new user was succesfully made"));
 
         try {
             mockMvc.perform(post("/user/create")
@@ -120,7 +124,7 @@ class UserControllerTest {
 
     private User constructDefaultUser() {
 
-        return new User(1, "Bob", "123", "bob@gmail.com", false);
+        return new User("Bob", "123", "bob@gmail.com", false);
     }
 
 }
