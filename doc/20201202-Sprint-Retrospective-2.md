@@ -11,6 +11,9 @@
 | Connect Thread and Posts to SQL database | 44 | 1 hours | 1 hours | Yes | |
 | Finish and test Thread Controller | 41 | 2 hours | 2 hours | Yes | |
 | Finish and test Thread Service | 41 | 1 hours | 1 hour | yes | |
+| Add proper HTTP requests and responses to thread and post microservices | 42 | 2 hours | 3 hours | Yes | |
+| Fix failing tests for API of Post | 45 | 2 hours | 5 hours | Yes | The issue lied in the Post class throwing errors at creation of a new entity |
+| Standardize API Conventions | 41 | 1 hour | 1 hour | Yes | |
 
 
 
