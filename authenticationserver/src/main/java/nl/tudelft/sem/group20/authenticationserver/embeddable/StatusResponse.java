@@ -27,8 +27,7 @@ public class StatusResponse {
 
 
 
-    public enum Status
-    {
+    public enum Status {
         success, fail
     }
 

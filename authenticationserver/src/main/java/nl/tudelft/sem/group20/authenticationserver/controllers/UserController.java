@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import nl.tudelft.sem.group20.authenticationserver.embeddable.AuthToken;
+import nl.tudelft.sem.group20.authenticationserver.embeddable.LoginRequest;
 import nl.tudelft.sem.group20.authenticationserver.embeddable.RegisterRequest;
 import nl.tudelft.sem.group20.authenticationserver.embeddable.StatusResponse;
 import nl.tudelft.sem.group20.authenticationserver.entities.User;
@@ -35,6 +37,18 @@ public class UserController {
 
         //return Collections.singletonMap("ID", userService.createUser(registerRequest));
         return userService.createUser(registerRequest);
+    }
+
+    /**
+     * Logs a user in.
+     *
+     * @param login the request to process
+     * @return Token response of status
+     */
+    @PostMapping("/login")
+    @ResponseBody
+    public AuthToken login(@RequestBody LoginRequest login) {
+        return userService.login(login.getEmail(), login.getPassword());
     }
 
     /**
