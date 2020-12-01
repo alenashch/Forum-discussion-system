@@ -129,7 +129,7 @@ public class BoardServiceTest {
 
     @Test
     public void testGetByIdSuccess() {
-        assertEquals(boardService.getById(2L),board2);
+        assertEquals(boardService.getById(2L), board2);
     }
 
     @Test
