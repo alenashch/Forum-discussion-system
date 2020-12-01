@@ -1,27 +1,31 @@
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import nl.tudelft.sem.group20.contentserver.ContentServer;
 import nl.tudelft.sem.group20.contentserver.controller.ThreadController;
 import nl.tudelft.sem.group20.contentserver.entities.BoardThread;
+import nl.tudelft.sem.group20.contentserver.entities.Post;
 import nl.tudelft.sem.group20.contentserver.services.ThreadService;
-import org.apache.http.protocol.HTTP;
-import org.junit.Before;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
+
+
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDateTime;
@@ -37,37 +41,53 @@ class ThreadControllerTest {
     @Autowired
     @MockBean
     transient ThreadService threadService;
+
     @Autowired
     transient MockMvc mockMvc;
 
-    transient BoardThread thread;
-    transient LocalDateTime time;
+    @Autowired
+    private transient ObjectMapper objectMapper;
 
-    @BeforeEach
-    void setup() {
-        time = LocalDateTime.now();
-        thread = new BoardThread(0L, "Title", "Question", "Jay",
-                time, false );
+
+    @Test
+    void createThreadTest() {
+        BoardThread thread = createTestThread();
+        when(threadService.createThread(Mockito.any())).thenReturn(11L);
+
+        try {
+
+             mockMvc.perform(post("/thread/create")
+                    .contentType(APPLICATION_JSON))
+                    .andDo(print())
+                    .andExpect(status().is2xxSuccessful())
+                    .andExpect(status().isCreated())
+                    .andExpect(content().string("A new thread with ID:11 has been created"))
+                    .andReturn();
+
+            Mockito.verify(threadService, times(1)).createThread(Mockito.any());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
     @Test
-    void createThreadTest() {
-        when(threadService.createThread(thread)).thenReturn(2L);
+    void failedThreadCreationTest() {
+        BoardThread thread = createTestThread();
+        when(threadService.createThread(Mockito.any())).thenReturn(-1L);
 
         try {
 
-            MvcResult result = mockMvc.perform(post("/thread/create")
+            mockMvc.perform(post("/thread/create")
                     .contentType(APPLICATION_JSON))
                     .andDo(print())
-                    .andExpect(status().is2xxSuccessful())
+                    .andExpect(status().is4xxClientError())
+                    .andExpect(content()
+                            .string("This thread could not be created, it may already exist"))
                     .andReturn();
 
-            String json = result.getResponse().getContentAsString();
-            System.out.println("here" + json);
-
-            //var ans = new ObjectMapper().readValue(json, ResponseEntity.class);
-            //Assertions.assertEquals(1, 1);
+            Mockito.verify(threadService, times(1)).createThread(Mockito.any());
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -78,8 +98,82 @@ class ThreadControllerTest {
     @Test
     void getThreadTest() {
 
-       List<BoardThread> list = Collections.singletonList(thread);
+       List<BoardThread> list = Collections.singletonList(createTestThread());
+       when(threadService.getThreads()).thenReturn(list);
 
+        try {
+
+            mockMvc.perform(get("/thread/get")
+                    .contentType(APPLICATION_JSON)).andDo(print())
+                    .andExpect(jsonPath("$[0].threadTitle").value("Title"))
+                    .andExpect(jsonPath("$[0].id").value("123"));
+
+            Mockito.verify(threadService, times(1)).getThreads();
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+    }
+
+    @Test
+    void editThreadTest() {
+        BoardThread thread = createTestThread();
+        when(threadService.updateThread(thread)).thenReturn(true);
+
+        try {
+            mockMvc.perform(post("/thread/edit")
+                    .contentType(APPLICATION_JSON)
+                    .content(createJsonRequest(thread)).accept(APPLICATION_JSON))
+                    .andDo(print()).andExpect(status().isOk());
+            //.andExpect((ResultMatcher) jsonPath("$.success").value(true));
+
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+    }
+
+    @Test
+    void failedThreadEditTest() {
+        BoardThread thread = createTestThread();
+        when(threadService.updateThread(thread)).thenReturn(false);
+
+
+        try {
+            mockMvc.perform(post("/thread/edit")
+                    .contentType(APPLICATION_JSON)
+                    .content(createJsonRequest(thread)).accept(APPLICATION_JSON))
+                    .andDo(print()).andExpect(status().is4xxClientError());
+            //.andExpect((ResultMatcher) jsonPath("$.success").value(true));
+
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+    }
+
+
+
+    private BoardThread createTestThread() {
+
+        LocalDateTime time = LocalDateTime.now();
+        return new  BoardThread(123L, "Title", "Question", "Jay",
+                time, false );
+    }
+
+    private String createJsonRequest(BoardThread thread) throws JsonProcessingException {
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+
+        return ow.writeValueAsString(thread);
     }
 
 }

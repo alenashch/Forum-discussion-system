@@ -31,19 +31,11 @@ public class ThreadController {
      */
     @PostMapping(path = "/create")
     public @ResponseBody
-    ResponseEntity<String> addNewThread(BoardThread thread) {
+    ResponseEntity<String> createThread(BoardThread thread) {
         // @ResponseBody means the returned String is the response, not a view name
         // @RequestParam means it is a parameter from the GET or POST request
 
-        //        BoardThread n = new BoardThread();
-        //        n.setLocked(false);
-        //        n.setThreadTitle("Creation 101");
-        //        n.setStatement("Am I alive");
-        //        n.setLocked(false);
-        //        n.setThreadCreator(creator);
-        //        threadRepository.save(n);
-        //        return "Saved";
-
+        System.out.println(thread);
         long newId = threadService.createThread(thread);
         if (newId == -1) {
 
@@ -81,7 +73,7 @@ public class ThreadController {
             return new ResponseEntity<>("The thread with ID: " + thread.getId() + " has been "
                 + "updated", HttpStatus.OK);
         }
-        return new ResponseEntity<>("Thread with ID: " + thread.getId() + "could not be updated",
+        return new ResponseEntity<>("Thread with ID: " + thread.getId() + " could not be updated",
             HttpStatus.BAD_REQUEST);
     }
 

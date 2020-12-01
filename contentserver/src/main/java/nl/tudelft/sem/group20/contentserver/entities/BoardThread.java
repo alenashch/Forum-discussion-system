@@ -1,5 +1,10 @@
 package nl.tudelft.sem.group20.contentserver.entities;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import nl.tudelft.sem.group20.contentserver.serialization.LocalDateTimeDeserializer;
+import nl.tudelft.sem.group20.contentserver.serialization.LocalDateTimeSerializer;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -22,6 +27,8 @@ public class BoardThread {
 
     private String threadCreator;  //name of thread creator
 
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime created; //when was it creates
 
     private boolean locked;        //locked thread or not
