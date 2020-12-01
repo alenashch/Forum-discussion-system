@@ -31,6 +31,7 @@ public class BoardService {
         if (boardRepository.getById(newBoard.getId()).isPresent()) {
             return -1;
         }
+        Board.checkCreationTime(newBoard);
         boardRepository.saveAndFlush(newBoard);
         return newBoard.getId();
     }
@@ -51,11 +52,11 @@ public class BoardService {
     }
 
 
-    public Optional<Board> getById(long id){
+    public Board getById(long id){
         if (boardRepository.getById(id).isEmpty()) {
             return null;
         }
-        return boardRepository.getById(id);
+        return boardRepository.getOne(id);
     }
     
     

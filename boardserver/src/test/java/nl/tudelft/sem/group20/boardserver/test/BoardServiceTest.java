@@ -25,8 +25,6 @@ import org.springframework.test.context.ContextConfiguration;
 
 
 
-//@RunWith(SpringRunner.class)
-//@SpringBootTest(classes = BoardService.class)
 @AutoConfigureMockMvc
 @WebMvcTest(BoardService.class)
 @ContextConfiguration(classes = BoardServer.class)
@@ -87,8 +85,9 @@ public class BoardServiceTest {
                 .thenReturn(boardsList);
         Mockito.when(boardRepository.getById(2))
                 .thenReturn(Optional.of(board2));
-        Mockito.when(boardRepository.getById(3))
-                .thenReturn(Optional.of(null));
+
+        Mockito.when(boardRepository.getOne(2L)).thenReturn(board2);
+        Mockito.when(boardRepository.getOne(3L)).thenReturn(null);
 
 
         boardService = new BoardService(boardRepository);
@@ -130,12 +129,12 @@ public class BoardServiceTest {
 
     @Test
     public void testGetByIdSuccess() {
-        assertEquals(boardService.getById(2),board2);
+        assertEquals(boardService.getById(2L),board2);
     }
 
     @Test
     public void testGetByIdFail() {
-        assertNull(boardService.getById(3));
+        assertNull(boardService.getById(3L));
     }
 
 }
