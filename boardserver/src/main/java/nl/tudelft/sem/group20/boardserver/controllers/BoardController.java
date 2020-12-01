@@ -7,12 +7,9 @@ import java.util.Map;
 import nl.tudelft.sem.group20.boardserver.services.BoardService;
 import nl.tudelft.sem.group20.boardserver.entities.Board;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -61,14 +58,18 @@ public class BoardController {
     }
 
     /**
-     * Test Request.
      *
-     * @return response
+     * @param id - id of a board to be retrieved.
+     * @return JSON containing a board.
      */
-    //@GetMapping(path = "/all")
-    @RequestMapping("/hello")
-    public @ResponseBody String getAllThreads() {
-        return "hello";
+    @GetMapping("/get/{id}")
+    @ResponseBody
+    public ResponseEntity<?> getBoardById(@PathVariable long id) {
+         Board board = boardService.getById(id);
+         if(board == null){
+             return new ResponseEntity<>("This board does not exist.", HttpStatus.BAD_REQUEST);
+         }
+            return new ResponseEntity<>(board, HttpStatus.OK);
     }
 
 }

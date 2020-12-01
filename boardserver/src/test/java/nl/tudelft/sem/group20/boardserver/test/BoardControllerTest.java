@@ -113,7 +113,7 @@ class BoardControllerTest {
         given(boardService.updateBoard(any(Board.class))).willReturn(true);
         try {
 
-            MvcResult result = mockMvc.perform(post("/post/edit")
+            MvcResult result = mockMvc.perform(post("/board/edit")
                 .contentType(APPLICATION_JSON)
                 .content(createJsonRequest(board)))
                 .andReturn();
