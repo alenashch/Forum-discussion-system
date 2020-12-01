@@ -5,13 +5,14 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Optional;
-import nl.tudelft.sem.group20.authenticationserver.embeddable.AuthToken;
+
+import nl.tudelft.sem.group20.authenticationserver.embeddable.AuthResponse;
+import nl.tudelft.sem.group20.authenticationserver.entities.AuthToken;
 import nl.tudelft.sem.group20.authenticationserver.embeddable.RegisterRequest;
 import nl.tudelft.sem.group20.authenticationserver.embeddable.StatusResponse;
 import nl.tudelft.sem.group20.authenticationserver.entities.User;
 import nl.tudelft.sem.group20.authenticationserver.repos.AuthTokenRepository;
 import nl.tudelft.sem.group20.authenticationserver.repos.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import static nl.tudelft.sem.group20.authenticationserver.embeddable.StatusResponse.Status.fail;
@@ -81,7 +82,7 @@ public class UserService {
                     Optional<AuthToken> optionalAuthToken = authTokenRepository.findByToken(token);
                     if (optionalAuthToken.isEmpty()) {
                         AuthToken loginToken =
-                                new AuthToken(token);
+                                new AuthToken(token, user.isType());
                         authTokenRepository.save(loginToken);
 
                         return loginToken;
@@ -90,6 +91,22 @@ public class UserService {
             }
         }
         return new AuthToken();
+    }
+
+    /**
+     * Checks if token is valid
+     *
+     * @param tokenStr to check
+     * @return StatusResponse with fail or success
+     */
+    public AuthResponse authenticate(String tokenStr) {
+        Optional<AuthToken> tokenOptional = authTokenRepository.findByToken(tokenStr);
+        if (tokenOptional.isPresent()) {
+            AuthToken token = tokenOptional.get();
+
+            return new AuthResponse(token.isType());
+        }
+        return new  AuthResponse();
     }
 
     /**

@@ -17,10 +17,13 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import java.util.List;
 import nl.tudelft.sem.group20.authenticationserver.AuthenticationServer;
 import nl.tudelft.sem.group20.authenticationserver.controllers.UserController;
+import nl.tudelft.sem.group20.authenticationserver.embeddable.AuthResponse;
 import nl.tudelft.sem.group20.authenticationserver.embeddable.RegisterRequest;
-import nl.tudelft.sem.group20.authenticationserver.embeddable.StatusResponse;
+import nl.tudelft.sem.group20.authenticationserver.entities.AuthToken;
 import nl.tudelft.sem.group20.authenticationserver.entities.User;
 import nl.tudelft.sem.group20.authenticationserver.services.UserService;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -59,6 +62,73 @@ class UserControllerTest {
                     .andExpect(
                             jsonPath("$.ID")
                                     .value(1));
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+
+    }
+
+    @Test
+    void loginUserTest() {
+        when(userService.login("test", "test1"))
+                .thenReturn(new AuthToken("abc", false));
+
+        JSONObject data = new JSONObject();
+
+        try {
+            data.put("email", "test");
+            data.put("password", "test1");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            mockMvc.perform(post("/user/login")
+                    .contentType(APPLICATION_JSON)
+                    .content(data.toString()))
+                    .andDo(print())
+                    .andExpect(
+                            jsonPath("$.token")
+                                    .value("abc"))
+                    .andExpect(
+                            jsonPath("$.type")
+                                    .value(false));
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+
+    }
+
+    @Test
+    void authenticateTest() {
+        when(userService.authenticate("abc1"))
+                .thenReturn(new AuthResponse(false));
+
+        JSONObject data = new JSONObject();
+
+        try {
+            data.put("token", "abc1");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            mockMvc.perform(post("/user/authenticate")
+                    .contentType(APPLICATION_JSON)
+                    .content(data.toString()))
+                    .andDo(print())
+                    .andExpect(
+                            jsonPath("$.status")
+                                    .value("success"))
+                    .andExpect(
+                            jsonPath("$.type")
+                                    .value(false));
 
         } catch (Exception e) {
 

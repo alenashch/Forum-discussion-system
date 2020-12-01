@@ -4,7 +4,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import nl.tudelft.sem.group20.authenticationserver.embeddable.AuthToken;
+import nl.tudelft.sem.group20.authenticationserver.embeddable.AuthRequest;
+import nl.tudelft.sem.group20.authenticationserver.entities.AuthToken;
 import nl.tudelft.sem.group20.authenticationserver.embeddable.LoginRequest;
 import nl.tudelft.sem.group20.authenticationserver.embeddable.RegisterRequest;
 import nl.tudelft.sem.group20.authenticationserver.embeddable.StatusResponse;
@@ -49,6 +50,18 @@ public class UserController {
     @ResponseBody
     public AuthToken login(@RequestBody LoginRequest login) {
         return userService.login(login.getEmail(), login.getPassword());
+    }
+
+    /**
+     * Logs a user in.
+     *
+     * @param authRequest to process
+     * @return Token response of status
+     */
+    @PostMapping("/authenticate")
+    @ResponseBody
+    public StatusResponse authenticate(@RequestBody AuthRequest authRequest) {
+        return userService.authenticate(authRequest.getToken());
     }
 
     /**

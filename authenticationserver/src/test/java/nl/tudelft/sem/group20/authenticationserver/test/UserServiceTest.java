@@ -15,27 +15,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import nl.tudelft.sem.group20.authenticationserver.AuthenticationServer;
-import nl.tudelft.sem.group20.authenticationserver.controllers.UserController;
-import nl.tudelft.sem.group20.authenticationserver.embeddable.AuthToken;
-import nl.tudelft.sem.group20.authenticationserver.embeddable.LoginRequest;
 import nl.tudelft.sem.group20.authenticationserver.embeddable.RegisterRequest;
 import nl.tudelft.sem.group20.authenticationserver.embeddable.StatusResponse;
+import nl.tudelft.sem.group20.authenticationserver.entities.AuthToken;
 import nl.tudelft.sem.group20.authenticationserver.entities.User;
 import nl.tudelft.sem.group20.authenticationserver.repos.AuthTokenRepository;
 import nl.tudelft.sem.group20.authenticationserver.repos.UserRepository;
 import nl.tudelft.sem.group20.authenticationserver.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 
 //@RunWith(SpringRunner.class)
 //@SpringBootTest(classes = UserService.class)
@@ -123,9 +116,20 @@ public class UserServiceTest {
 
         ArrayList<AuthToken> authTokens = new ArrayList<AuthToken>();
 
+        AuthToken authToken = new AuthToken("abc1", true);
+        AuthToken authToken2 = new AuthToken("abc2", true);
+        AuthToken authToken3 = new AuthToken("abc3", true);
+
+        authTokens.add(authToken);
+        authTokens.add(authToken2);
+        authTokens.add(authToken3);
+
         tokenRepository = Mockito.mock(AuthTokenRepository.class);
         Mockito.when(tokenRepository.findAll())
                 .thenReturn(authTokens);
+        Mockito.when(tokenRepository.findByToken("abc1")).thenReturn(Optional.of(authToken));
+        Mockito.when(tokenRepository.findByToken("abc2")).thenReturn(Optional.of(authToken2));
+        Mockito.when(tokenRepository.findByToken("abc3")).thenReturn(Optional.of(authToken3));
         Mockito.when(tokenRepository.saveAndFlush(any(AuthToken.class)))
                 .then(returnsFirstArg());
 
@@ -181,6 +185,25 @@ public class UserServiceTest {
     void loginUserRight() {
         assertEquals(StatusResponse.Status.success,
                 userService.login("frodo@gmail.com", "ring").getStatus());
+    }
+
+    @Test
+    void tokenRight() {
+        assertEquals(StatusResponse.Status.success,
+                userService.authenticate("abc1").getStatus());
+
+    }
+
+    @Test
+    void tokenWrong() {
+        assertEquals(StatusResponse.Status.success,
+                userService.authenticate("abc2").getStatus());
+    }
+
+    @Test
+    void tokenPermission() {
+        assertTrue(
+                userService.authenticate("abc3").isType());
     }
 
 
