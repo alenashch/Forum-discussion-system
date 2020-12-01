@@ -1,23 +1,3 @@
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import nl.tudelft.sem.group20.contentserver.ContentServer;
-import nl.tudelft.sem.group20.contentserver.controller.ThreadController;
-import nl.tudelft.sem.group20.contentserver.entities.BoardThread;
-import nl.tudelft.sem.group20.contentserver.entities.Post;
-import nl.tudelft.sem.group20.contentserver.services.ThreadService;
-
-
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -28,9 +8,25 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import nl.tudelft.sem.group20.contentserver.ContentServer;
+import nl.tudelft.sem.group20.contentserver.controller.ThreadController;
+import nl.tudelft.sem.group20.contentserver.entities.BoardThread;
+import nl.tudelft.sem.group20.contentserver.services.ThreadService;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
 
 
 @AutoConfigureMockMvc
@@ -55,15 +51,13 @@ class ThreadControllerTest {
         when(threadService.createThread(Mockito.any())).thenReturn(11L);
 
         try {
-
-             mockMvc.perform(post("/thread/create")
+            mockMvc.perform(post("/thread/create")
                     .contentType(APPLICATION_JSON))
                     .andDo(print())
                     .andExpect(status().is2xxSuccessful())
                     .andExpect(status().isCreated())
                     .andExpect(content().string("A new thread with ID:11 has been created"))
                     .andReturn();
-
             Mockito.verify(threadService, times(1)).createThread(Mockito.any());
 
         } catch (Exception e) {
@@ -97,12 +91,10 @@ class ThreadControllerTest {
 
     @Test
     void getThreadTest() {
-
-       List<BoardThread> list = Collections.singletonList(createTestThread());
-       when(threadService.getThreads()).thenReturn(list);
+        List<BoardThread> list = Collections.singletonList(createTestThread());
+        when(threadService.getThreads()).thenReturn(list);
 
         try {
-
             mockMvc.perform(get("/thread/get")
                     .contentType(APPLICATION_JSON)).andDo(print())
                     .andExpect(jsonPath("$[0].threadTitle").value("Title"))
@@ -164,7 +156,7 @@ class ThreadControllerTest {
 
         LocalDateTime time = LocalDateTime.now();
         return new  BoardThread(123L, "Title", "Question", "Jay",
-                time, false );
+                time, false);
     }
 
     private String createJsonRequest(BoardThread thread) throws JsonProcessingException {
