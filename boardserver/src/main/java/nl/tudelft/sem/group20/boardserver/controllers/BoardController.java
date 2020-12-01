@@ -36,7 +36,9 @@ public class BoardController {
             return new ResponseEntity<>("A board with this id already exists.",
                     HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(assignedId, HttpStatus.OK);
+        return new ResponseEntity<>("A new board with ID: " + assignedId + " has been created",
+                HttpStatus.CREATED
+        );
     }
 
     /**

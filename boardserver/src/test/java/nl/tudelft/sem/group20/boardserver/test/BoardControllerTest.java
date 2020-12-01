@@ -7,6 +7,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -20,6 +21,7 @@ import nl.tudelft.sem.group20.boardserver.BoardServer;
 import nl.tudelft.sem.group20.boardserver.controllers.BoardController;
 import nl.tudelft.sem.group20.boardserver.entities.Board;
 import nl.tudelft.sem.group20.boardserver.services.BoardService;
+import org.junit.Before;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +43,52 @@ class BoardControllerTest {
     transient BoardService boardService;
     @Autowired
     private transient MockMvc mockMvc;
+    @Autowired
+    private transient ObjectMapper objectMapper;
+
 
     @Test
+    void testCreateBoardSuccessful() {
+
+        Board board = new Board(1,"Board 1", "description", false);
+        when(boardService.createBoard(board)).thenReturn(1L);
+
+        try {
+            mockMvc.perform(post("/board/create")
+                    .contentType(APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(board)))
+                    .andDo(print())
+                    .andExpect(status().isCreated())
+                    .andExpect(content().string("A new board with ID: 1 has been created"));
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+
+    }
+
+    @Test
+    void testCreateBoardFailure() {
+        Board board = new Board(3, "Board 3", "description 3", false);
+        when(boardService.createBoard(board)).thenReturn(-1L);
+
+        try {
+            mockMvc.perform(post("/board/create")
+                    .contentType(APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(board)))
+                    .andDo(print())
+                    .andExpect(content().string("A board with this id already exists."));
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+    }
+
+
+    /*@Test
     void testCreateBoardSuccessful() {
         Board validBoard = new Board("This is a new board.", "A description.", false);
         when(boardService.createBoard(validBoard)).thenReturn(1L);
@@ -165,7 +211,7 @@ class BoardControllerTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
     private String createJsonRequest(Board board) throws JsonProcessingException {
 

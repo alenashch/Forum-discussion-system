@@ -97,11 +97,6 @@ public class BoardTest {
         assertEquals(validEdited, board.getEdited());
     }
 
-    @Test
-    void testSetEditedException() {
-        invalidEdited = board.getCreated().minusHours(3);
-        assertThrows(IllegalArgumentException.class, () -> board.setEdited(invalidEdited));
-    }
 
     @Test
     void testIsEditedFalse() {
