@@ -4,6 +4,8 @@
 | -------------------------------- | ------ | ------------------------- | ---------------------- | ---- | ------------------------------------------------------------ |
 | Refactor BoardController and/or BoardService Responses | 49    | 1 hour 30 min                    | 1 hour 30 min                 | Yes  |                                                           |
 | Add Authentication Support for Board Microservice | 50    | 3 hours                    | -                 | No  | This issue depended on methods of the authentication service, and will have to be done during the next sprint.                                                          |
+| Fix BoardController tests | 47    | 2 hours                     | 6 hours                 | Yes  |  It took much longer as there were issues with entities, which affected BoardController tests. It took a lot of time to find them.            |
+| Enhance Board API | 48    | 2 hours                     | 2 hours                 | Yes  |                             |
 
 
 
