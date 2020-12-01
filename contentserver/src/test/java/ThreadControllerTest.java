@@ -51,7 +51,7 @@ class ThreadControllerTest {
 
     @Test
     void createThreadTest() {
-        BoardThread thread = createTestThread();
+        //BoardThread thread = createTestThread();
         when(threadService.createThread(Mockito.any())).thenReturn(11L);
 
         try {
@@ -74,7 +74,7 @@ class ThreadControllerTest {
 
     @Test
     void failedThreadCreationTest() {
-        BoardThread thread = createTestThread();
+        //BoardThread thread = createTestThread();
         when(threadService.createThread(Mockito.any())).thenReturn(-1L);
 
         try {
