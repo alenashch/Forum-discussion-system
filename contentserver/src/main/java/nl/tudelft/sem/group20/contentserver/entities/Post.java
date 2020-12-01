@@ -1,11 +1,15 @@
 package nl.tudelft.sem.group20.contentserver.entities;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import nl.tudelft.sem.group20.contentserver.serialization.LocalDateTimeDeserializer;
+import nl.tudelft.sem.group20.contentserver.serialization.LocalDateTimeSerializer;
 
 @Entity
 public class Post {
@@ -17,13 +21,16 @@ public class Post {
 
     private String body;
 
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime created;
 
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime edited;
 
     public Post() {
     }
-
 
     /**
      * Non-empty constructor for Post class.
@@ -89,28 +96,17 @@ public class Post {
         this.created = created;
     }
 
+    public void setEdited(LocalDateTime edited) {
+
+        this.edited = edited;
+    }
+
     public LocalDateTime getEdited() {
         return edited;
     }
 
     public boolean isEdited() {
         return !this.edited.isEqual(this.created);
-    }
-
-    /**
-     * This method sets the edited field to a new value.
-     *
-     * @param edited - LocalDateTime representing when the Post was last edited.
-     * @throws IllegalArgumentException when the new "edited" value is before or equal
-     *      to the current edited value.
-     */
-    public void setEdited(LocalDateTime edited) throws IllegalArgumentException {
-        if (edited.isAfter(this.edited)) {
-            this.edited = edited;
-        } else {
-            throw new IllegalArgumentException(
-                    "Post cannot be edited before or when it was created.");
-        }
     }
 
     @Override
@@ -141,3 +137,7 @@ public class Post {
                 + '}';
     }
 }
+
+
+
+
