@@ -1,6 +1,7 @@
 package nl.tudelft.sem.group20.boardserver.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -123,6 +124,16 @@ public class BoardServiceTest {
         board3.setName("New name 3");
         assertFalse(boardService.updateBoard(board3));
         verify(boardRepository, times(0)).saveAndFlush(board3);
+    }
+
+    @Test
+    public void testGetByIdSuccess() {
+        assertTrue(boardService.getById(2),board2);
+    }
+
+    @Test
+    public void testGetByIdFail() {
+        assertNull(boardService.getById(3));
     }
 
 }
