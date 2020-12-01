@@ -1,17 +1,14 @@
 package nl.tudelft.sem.group20.boardserver.test;
 
-//import static com.sun.tools.doclint.Entity.times;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -55,8 +52,8 @@ class BoardControllerTest {
 
     @BeforeEach
     void initialize() {
-        board = new Board(1, "Board 1", "description",false);
-        list = Collections.singletonList(new Board(1,"Board 1", "description", false));
+        board = new Board(1, "Board 1", "description", false);
+        list = Collections.singletonList(new Board(1, "Board 1", "description", false));
     }
 
 
@@ -173,8 +170,8 @@ class BoardControllerTest {
         try {
 
             mockMvc.perform(get("/board/get/1")
-                    .contentType(APPLICATION_JSON)).andDo(print()).
-                    andExpect(status().isOk());
+                    .contentType(APPLICATION_JSON)).andDo(print())
+                    .andExpect(status().isOk());
 
             Mockito.verify(boardService, times(1)).getById(1);
 
