@@ -1,5 +1,7 @@
 package nl.tudelft.sem.group20.authenticationserver.test;
 
+import static nl.tudelft.sem.group20.authenticationserver.embeddable.StatusResponse.Status.fail;
+import static nl.tudelft.sem.group20.authenticationserver.embeddable.StatusResponse.Status.success;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -14,6 +16,8 @@ import java.util.List;
 import java.util.Optional;
 import nl.tudelft.sem.group20.authenticationserver.AuthenticationServer;
 import nl.tudelft.sem.group20.authenticationserver.controllers.UserController;
+import nl.tudelft.sem.group20.authenticationserver.embeddable.RegisterRequest;
+import nl.tudelft.sem.group20.authenticationserver.embeddable.StatusResponse;
 import nl.tudelft.sem.group20.authenticationserver.entities.User;
 import nl.tudelft.sem.group20.authenticationserver.repos.UserRepository;
 import nl.tudelft.sem.group20.authenticationserver.services.UserService;
@@ -35,6 +39,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 @ContextConfiguration(classes = AuthenticationServer.class)
 public class UserServiceTest {
     transient User user1;
+    transient RegisterRequest registerRequest1;
+    transient RegisterRequest registerRequest2;
     transient long id1;
     transient String username1;
     transient String password1;
@@ -83,9 +89,13 @@ public class UserServiceTest {
         type2 = false;
         type3 = false;
 
-        user1 = new User(id1, username1, password1, email1, type1);
-        user2 = new User(id2, username2, password2, email2, type2);
-        user3 = new User(id3, username3, password3, email3, type3);
+        registerRequest1 = new RegisterRequest(password3, email3, username3);
+        registerRequest2 = new RegisterRequest(password1, email1, username1);
+        user1 = new User(username1, password1, email1, type1);
+        user2 = new User(username2, password2, email2, type2);
+        user3 = new User(username3, password3, email3, type3);
+
+
 
         users = new ArrayList<>();
         users.add(user1);
@@ -97,8 +107,10 @@ public class UserServiceTest {
                 .thenReturn(users);
         Mockito.when(userRepository.saveAndFlush(any(User.class)))
                 .then(returnsFirstArg());
-        Mockito.when(userRepository.getById(2))
+        Mockito.when(userRepository.getById(1))
                 .thenReturn(Optional.of(user2));
+        Mockito.when(userRepository.getByEmail(email1))
+                .thenReturn(Optional.of(user1));
 
 
         userService = new UserService(userRepository);
@@ -111,30 +123,28 @@ public class UserServiceTest {
 
     @Test
     void testCreateUserSuccessful() {
-        Mockito.when(userRepository.saveAndFlush(any(User.class)))
-                .then(returnsFirstArg());
-        assertEquals(userService.createUser(user3), user3.getId());
-
-        verify(userRepository, times(1)).saveAndFlush(user3);
+        assertEquals(new StatusResponse(success, "A new user was succesfully made"),
+                userService.createUser(registerRequest1));
     }
 
     @Test
     void testCreateUserUnsuccessful() {
-        assertEquals(-1, userService.createUser(user2));
+        assertEquals(new StatusResponse(fail, "Email address already exists"),
+                userService.createUser(registerRequest2));
 
         verify(userRepository, times(0)).saveAndFlush(any(User.class));
     }
 
     @Test
-    void updateUserSuccessful() {
-        user2.setUsername("Pippin");
+    void testUpdateUserSuccessful() {
+        user2.setUsername("hello");
 
-        assertTrue(userService.updateUser(user2));
-        verify(userRepository, times(1)).saveAndFlush(user2);
+        assertTrue(userService.updateUser(user1));
+        //verify(userRepository, times(1)).saveAndFlush(user2);
     }
 
     @Test
-    void updateUserUnsuccessful() {
+    void testUpdateUserUnsuccessful() {
         assertFalse(userService.updateUser(user3));
         verify(userRepository, times(0)).saveAndFlush(any(User.class));
     }
