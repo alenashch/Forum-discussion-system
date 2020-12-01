@@ -1,6 +1,8 @@
 package nl.tudelft.sem.group20.contentserver.services;
 
 import java.util.List;
+
+import nl.tudelft.sem.group20.contentserver.entities.BoardThread;
 import nl.tudelft.sem.group20.contentserver.repositories.ThreadRepository;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +15,7 @@ public class ThreadService {
         this.threadRepository = threadRepository;
     }
 
-    public List<Thread> getThreads() {
+    public List<BoardThread> getThreads() {
         return threadRepository.findAll();
     }
 
@@ -24,7 +26,7 @@ public class ThreadService {
      * @return -1 if the Thread already exists in the database, or the id of the newly
      *      created thread if creation was successful.
      */
-    public long createThread(Thread toCreate) {
+    public long createThread(BoardThread toCreate) {
         if (threadRepository.getById(toCreate.getId()).isPresent()) {
             return -1;
         }
@@ -39,7 +41,7 @@ public class ThreadService {
      * @param toUpdate - the thread to be updated.
      * @return false if the thread does not exist in the database, and true otherwise.
      */
-    public boolean updateThread(Thread toUpdate) {
+    public boolean updateThread(BoardThread toUpdate) {
         if (threadRepository.getById(toUpdate.getId()).isEmpty()) {
             return false;
         }
