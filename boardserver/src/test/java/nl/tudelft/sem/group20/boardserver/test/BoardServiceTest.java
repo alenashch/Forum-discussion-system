@@ -1,6 +1,7 @@
 package nl.tudelft.sem.group20.boardserver.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -24,8 +25,6 @@ import org.springframework.test.context.ContextConfiguration;
 
 
 
-//@RunWith(SpringRunner.class)
-//@SpringBootTest(classes = BoardService.class)
 @AutoConfigureMockMvc
 @WebMvcTest(BoardService.class)
 @ContextConfiguration(classes = BoardServer.class)
@@ -87,6 +86,9 @@ public class BoardServiceTest {
         Mockito.when(boardRepository.getById(2))
                 .thenReturn(Optional.of(board2));
 
+        Mockito.when(boardRepository.getOne(2L)).thenReturn(board2);
+        Mockito.when(boardRepository.getOne(3L)).thenReturn(null);
+
 
         boardService = new BoardService(boardRepository);
     }
@@ -123,6 +125,16 @@ public class BoardServiceTest {
         board3.setName("New name 3");
         assertFalse(boardService.updateBoard(board3));
         verify(boardRepository, times(0)).saveAndFlush(board3);
+    }
+
+    @Test
+    public void testGetByIdSuccess() {
+        assertEquals(boardService.getById(2L), board2);
+    }
+
+    @Test
+    public void testGetByIdFail() {
+        assertNull(boardService.getById(3L));
     }
 
 }

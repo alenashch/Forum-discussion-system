@@ -10,4 +10,5 @@ import org.springframework.stereotype.Repository;
 public interface BoardRepository extends JpaRepository<Board, Long> {
 
     Optional<Board> getById(long id);
+
 }

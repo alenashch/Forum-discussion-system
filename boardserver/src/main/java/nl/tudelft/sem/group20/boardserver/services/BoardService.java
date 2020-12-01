@@ -1,6 +1,7 @@
 package nl.tudelft.sem.group20.boardserver.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import nl.tudelft.sem.group20.boardserver.repos.BoardRepository;
 import nl.tudelft.sem.group20.boardserver.entities.Board;
@@ -30,6 +31,7 @@ public class BoardService {
         if (boardRepository.getById(newBoard.getId()).isPresent()) {
             return -1;
         }
+        Board.checkCreationTime(newBoard);
         boardRepository.saveAndFlush(newBoard);
         return newBoard.getId();
     }
@@ -48,4 +50,20 @@ public class BoardService {
         boardRepository.saveAndFlush(updatedBoard);
         return true;
     }
+
+    /**
+     * Retrieves a Board from the database.
+     *
+     * @param id - an id of a board to be retrieved.
+     * @return the Board if it is in database, null otherwise.
+     */
+    public Board getById(long id){
+        if (boardRepository.getById(id).isEmpty()) {
+            return null;
+        }
+        return boardRepository.getOne(id);
+    }
+    
+    
+    
 }

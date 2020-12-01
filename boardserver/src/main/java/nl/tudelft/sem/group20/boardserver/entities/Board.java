@@ -1,5 +1,7 @@
 package nl.tudelft.sem.group20.boardserver.entities;
 
+import org.apache.tomcat.jni.Local;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 import javax.persistence.Entity;
@@ -104,6 +106,10 @@ public class Board {
         return created;
     }
 
+    public void setCreated(LocalDateTime created) {
+        this.created = created;
+    }
+
     public LocalDateTime getEdited() {
         return edited;
     }
@@ -120,8 +126,6 @@ public class Board {
      *         current edited value.
      */
     public void setEdited(LocalDateTime edited) throws IllegalArgumentException {
-        //System.out.println("edited:      " + edited);
-        //System.out.println("this.edited: " + this.edited);
         if ( this.edited == null || edited.isAfter(this.edited) || edited.isEqual(this.edited)) {
             this.edited = edited;
         } else {
@@ -140,6 +144,13 @@ public class Board {
         }
         Board board = (Board) o;
         return Objects.equals(id, board.getId());
+    }
+
+    public static void checkCreationTime(Board board){
+        if(board.getCreated()==null){
+            board.setCreated(LocalDateTime.now());
+            board.setEdited(LocalDateTime.now());
+        }
     }
 
     @Override
