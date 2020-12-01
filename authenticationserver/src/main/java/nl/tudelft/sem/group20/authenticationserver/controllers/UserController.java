@@ -3,8 +3,11 @@ package nl.tudelft.sem.group20.authenticationserver.controllers;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
 import nl.tudelft.sem.group20.authenticationserver.embeddable.AuthToken;
 import nl.tudelft.sem.group20.authenticationserver.embeddable.LoginRequest;
+import nl.tudelft.sem.group20.authenticationserver.embeddable.RegisterRequest;
+import nl.tudelft.sem.group20.authenticationserver.embeddable.StatusResponse;
 import nl.tudelft.sem.group20.authenticationserver.entities.User;
 import nl.tudelft.sem.group20.authenticationserver.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,14 +28,15 @@ public class UserController {
     /**
      * Create user request.
      *
-     * @param user User to be created.
+     * @param registerRequest User to be created.
      * @return JSON file containing the ID of a new user.
      */
     @PostMapping("/create")
     @ResponseBody
-    public Map<String, Long> createUser(@RequestBody User user) {
+    public StatusResponse createUser(@RequestBody RegisterRequest registerRequest) {
 
-        return Collections.singletonMap("ID", userService.createUser(user));
+        //return Collections.singletonMap("ID", userService.createUser(registerRequest));
+        return userService.createUser(registerRequest);
     }
 
     /**

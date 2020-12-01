@@ -6,11 +6,16 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Optional;
 import nl.tudelft.sem.group20.authenticationserver.embeddable.AuthToken;
+import nl.tudelft.sem.group20.authenticationserver.embeddable.RegisterRequest;
+import nl.tudelft.sem.group20.authenticationserver.embeddable.StatusResponse;
 import nl.tudelft.sem.group20.authenticationserver.entities.User;
 import nl.tudelft.sem.group20.authenticationserver.repos.AuthTokenRepository;
 import nl.tudelft.sem.group20.authenticationserver.repos.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import static nl.tudelft.sem.group20.authenticationserver.embeddable.StatusResponse.Status.fail;
+import static nl.tudelft.sem.group20.authenticationserver.embeddable.StatusResponse.Status.success;
 
 @Service
 public class UserService {
@@ -37,16 +42,23 @@ public class UserService {
     /**
      * Creates a User and adds it to the database.
      *
-     * @param newUser - the User to be added.
-     * @return -1 if the User already exists in the database or the id of the newly created user
+     * @param newRegisterRequest - the User to be added.
+     * @return statusresponse if the User already exists in the database or the id of the newly created user.
      *      if creation was successful.
      */
-    public long createUser(User newUser) {
-        if (userRepository.getById(newUser.getId()).isPresent()) {
-            return -1;
+    public StatusResponse createUser(RegisterRequest newRegisterRequest) {
+        //is the email address already in the database?
+        if (userRepository.getByEmail(newRegisterRequest.getEmail()).isPresent()) {
+            return new StatusResponse(fail, "Email address already exists");
         }
+        //is the username already in the database?
+        else if(userRepository.getByUsername(newRegisterRequest.getUsername()).isPresent()){
+            return new StatusResponse(fail, "username already exists");
+        }
+        //Create a new user with the given name, password and email. Hash the password and set the type to student (false).
+        User newUser = new User(newRegisterRequest.getUsername(), getMd5(newRegisterRequest.getPassword()), newRegisterRequest.getEmail(), false);
         userRepository.saveAndFlush(newUser);
-        return newUser.getId();
+        return new StatusResponse(success, "A new user was succesfully made");
     }
 
     /**
@@ -87,7 +99,7 @@ public class UserService {
      * @return false if the User does not exist in the database, and true otherwise.
      */
     public boolean updateUser(User toUpdate) {
-        if (userRepository.getById(toUpdate.getId()).isEmpty()) {
+        if (userRepository.getByEmail(toUpdate.getEmail()).isEmpty()) {
             return false;
         }
 
@@ -95,6 +107,7 @@ public class UserService {
         return true;
     }
 
+<<<<<<< authenticationserver/src/main/java/nl/tudelft/sem/group20/authenticationserver/services/UserService.java
     private String getRandomToken(int length) {
         StringBuffer stringBuffer = new StringBuffer();
         for (int i = 0; i < length; i++) {
@@ -111,6 +124,16 @@ public class UserService {
      * @return hashed string
      */
     public static String getMd5(String input) {
+=======
+    /**
+     * Hashes the input.
+     *
+     * @param input - String to be hashed.
+     * @return - the hashed string.
+     */
+    public static String getMd5(String input)
+    {
+>>>>>>> authenticationserver/src/main/java/nl/tudelft/sem/group20/authenticationserver/services/UserService.java
         try {
 
             // Static getInstance method is called with hashing MD5
@@ -129,10 +152,20 @@ public class UserService {
                 hashtext = "0" + hashtext;
             }
             return hashtext;
+<<<<<<< authenticationserver/src/main/java/nl/tudelft/sem/group20/authenticationserver/services/UserService.java
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
     }
 
+=======
+        }
+
+        // For specifying wrong message digest algorithms
+        catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
+>>>>>>> authenticationserver/src/main/java/nl/tudelft/sem/group20/authenticationserver/services/UserService.java
 
 }
