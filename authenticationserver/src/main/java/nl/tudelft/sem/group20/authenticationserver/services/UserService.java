@@ -107,7 +107,6 @@ public class UserService {
         return true;
     }
 
-<<<<<<< authenticationserver/src/main/java/nl/tudelft/sem/group20/authenticationserver/services/UserService.java
     private String getRandomToken(int length) {
         StringBuffer stringBuffer = new StringBuffer();
         for (int i = 0; i < length; i++) {
@@ -118,23 +117,13 @@ public class UserService {
     }
 
     /**
-     * Gets md5 of string.
-     *
-     * @param input string to get md5 from
-     * @return hashed string
-     */
-    public static String getMd5(String input) {
-=======
-    /**
      * Hashes the input.
      *
      * @param input - String to be hashed.
      * @return - the hashed string.
      */
-    public static String getMd5(String input)
-    {
->>>>>>> authenticationserver/src/main/java/nl/tudelft/sem/group20/authenticationserver/services/UserService.java
-        try {
+    public static String getMd5(String input) {
+       try {
 
             // Static getInstance method is called with hashing MD5
             MessageDigest md = MessageDigest.getInstance("MD5");
@@ -152,20 +141,8 @@ public class UserService {
                 hashtext = "0" + hashtext;
             }
             return hashtext;
-<<<<<<< authenticationserver/src/main/java/nl/tudelft/sem/group20/authenticationserver/services/UserService.java
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
     }
-
-=======
-        }
-
-        // For specifying wrong message digest algorithms
-        catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
-    }
->>>>>>> authenticationserver/src/main/java/nl/tudelft/sem/group20/authenticationserver/services/UserService.java
-
 }

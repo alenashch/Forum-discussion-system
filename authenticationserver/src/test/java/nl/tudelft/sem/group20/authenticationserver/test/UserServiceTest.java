@@ -99,19 +99,12 @@ public class UserServiceTest {
         type2 = false;
         type3 = false;
 
-<<<<<<< authenticationserver/src/test/java/nl/tudelft/sem/group20/authenticationserver/test/UserServiceTest.java
-        user1 = new User(id1, username1, UserService.getMd5(password1), email1, type1);
-        user2 = new User(id2, username2, UserService.getMd5(password2), email2, type2);
-        user3 = new User(id3, username3, UserService.getMd5(password3), email3, type3);
-=======
+        user1 = new User(username1, UserService.getMd5(password1), email1, type1);
+        user2 = new User(username2, UserService.getMd5(password2), email2, type2);
+        user3 = new User(username3, UserService.getMd5(password3), email3, type3);
+
         registerRequest1 = new RegisterRequest(password3, email3, username3);
         registerRequest2 = new RegisterRequest(password1, email1, username1);
-        user1 = new User(username1, password1, email1, type1);
-        user2 = new User(username2, password2, email2, type2);
-        user3 = new User(username3, password3, email3, type3);
-
-
->>>>>>> authenticationserver/src/test/java/nl/tudelft/sem/group20/authenticationserver/test/UserServiceTest.java
 
         users = new ArrayList<>();
         users.add(user1);
