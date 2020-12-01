@@ -51,7 +51,12 @@ public class BoardService {
         return true;
     }
 
-
+    /**
+     * Retrieves a Board from the database.
+     *
+     * @param id - an id of a board to be retrieved.
+     * @return the Board if it is in database, null otherwise.
+     */
     public Board getById(long id){
         if (boardRepository.getById(id).isEmpty()) {
             return null;
