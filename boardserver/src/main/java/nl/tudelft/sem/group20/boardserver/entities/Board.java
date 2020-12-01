@@ -53,6 +53,21 @@ public class Board {
         this.edited = created;
     }
 
+    /**
+     * For testing purposes: constructor with no id.
+     *
+     * @param name - board name.
+     * @param description - details about the board.
+     * @param locked - true if a board is locked, false otherwise.
+     */
+    public Board(String name, String description, boolean locked) {
+        this.name = name;
+        this.description = description;
+        this.locked = locked;
+        this.created = LocalDateTime.now();
+        this.edited = created;
+    }
+
     public long getId() {
         return id;
     }

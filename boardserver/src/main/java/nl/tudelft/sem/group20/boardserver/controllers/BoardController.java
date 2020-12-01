@@ -1,9 +1,5 @@
 package nl.tudelft.sem.group20.boardserver.controllers;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 import nl.tudelft.sem.group20.boardserver.services.BoardService;
 import nl.tudelft.sem.group20.boardserver.entities.Board;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
 
 @RestController
 @RequestMapping("/board")
@@ -38,9 +33,9 @@ public class BoardController {
         //board with this id already exists, no board was created
         if (assignedId == -1) {
             return new ResponseEntity<>("A board with this id already exists.",
-                    HttpStatus.CONFLICT);
+                    HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(assignedId, HttpStatus.CREATED);
+        return new ResponseEntity<>(assignedId, HttpStatus.OK);
     }
 
     /**
