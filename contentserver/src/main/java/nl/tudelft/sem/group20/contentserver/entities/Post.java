@@ -1,4 +1,4 @@
-package nl.tudelft.sem.group20.contentserver;
+package nl.tudelft.sem.group20.contentserver.entities;
 
 import java.time.LocalDateTime;
 import java.util.Objects;

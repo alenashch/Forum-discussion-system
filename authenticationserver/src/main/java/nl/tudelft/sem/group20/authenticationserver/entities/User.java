@@ -1,4 +1,4 @@
-package nl.tudelft.sem.group20.authenticationserver;
+package nl.tudelft.sem.group20.authenticationserver.entities;
 
 import java.util.Objects;
 import javax.persistence.Entity;

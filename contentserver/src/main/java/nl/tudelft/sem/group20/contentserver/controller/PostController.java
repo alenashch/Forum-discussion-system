@@ -1,9 +1,11 @@
-package nl.tudelft.sem.group20.contentserver;
+package nl.tudelft.sem.group20.contentserver.controller;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import nl.tudelft.sem.group20.contentserver.entities.Post;
+import nl.tudelft.sem.group20.contentserver.services.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,9 +28,16 @@ public class PostController {
      */
     @PostMapping("/create")
     @ResponseBody
-    public Map<String, Long> createPost(@RequestBody Post post) {
+    public ResponseEntity<String> createPost(@RequestBody Post post) {
 
-        return Collections.singletonMap("ID", postService.createPost(post));
+        long newId = postService.createPost(post);
+        if (newId == -1) {
+
+            return new ResponseEntity<>("This post could not be created, it may already exist",
+                HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>("A new post with ID:" + newId + " has been created",
+            HttpStatus.CREATED);
     }
 
     /**
@@ -51,9 +60,15 @@ public class PostController {
      */
     @PostMapping("/edit")
     @ResponseBody
-    public Map<String, Boolean> editPost(@RequestBody Post post) {
+    public ResponseEntity<String> editPost(@RequestBody Post post) {
 
-        return Collections.singletonMap("success", postService.updatePost(post));
+        if (postService.updatePost(post)) {
+
+            return new ResponseEntity<>("The post with ID: " + post.getId() + " has been updated",
+                HttpStatus.OK);
+        }
+        return new ResponseEntity<>("Post with ID: " + post.getId() + "could not be updated",
+            HttpStatus.BAD_REQUEST);
     }
 
 

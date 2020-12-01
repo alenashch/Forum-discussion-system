@@ -1,8 +1,10 @@
-package nl.tudelft.sem.group20.authenticationserver;
+package nl.tudelft.sem.group20.authenticationserver.controllers;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import nl.tudelft.sem.group20.authenticationserver.entities.User;
+import nl.tudelft.sem.group20.authenticationserver.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -54,5 +56,15 @@ public class UserController {
     public Map<String, Boolean> editUser(@RequestBody User user) {
 
         return Collections.singletonMap("success", userService.updateUser(user));
+    }
+
+    /**
+     * Test Request.
+     *
+     * @return response
+     */
+    @RequestMapping("/hello")
+    public @ResponseBody String getAllThreads() {
+        return "hello";
     }
 }

@@ -1,8 +1,11 @@
-package nl.tudelft.sem.group20.boardserver;
+package nl.tudelft.sem.group20.boardserver.controllers;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import nl.tudelft.sem.group20.boardserver.services.BoardService;
+import nl.tudelft.sem.group20.boardserver.entities.Board;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -69,5 +72,15 @@ public class BoardController {
         }
     }
 
+    /**
+     * Test Request.
+     *
+     * @return response
+     */
+    //@GetMapping(path = "/all")
+    @RequestMapping("/hello")
+    public @ResponseBody String getAllThreads() {
+        return "hello";
+    }
 
 }
