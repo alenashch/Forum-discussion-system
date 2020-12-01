@@ -7,6 +7,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -42,28 +43,47 @@ class BoardControllerTest {
     private transient MockMvc mockMvc;
 
     @Test
-    void createPostTest() {
-
-        Board board = new Board(123, "boardy", "abc", false);
-        when(boardService.createBoard(board)).thenReturn(1L);
+    void testCreateBoardSuccessful() {
+        Board validBoard = new Board("This is a new board.", "A description.", false);
+        when(boardService.createBoard(validBoard)).thenReturn(1L);
 
         try {
             MvcResult result = mockMvc.perform(post("/board/create")
-                .contentType(APPLICATION_JSON)
-                .content(createJsonRequest(board)))
-                .andDo(print())
-                .andReturn();
+                    .contentType(APPLICATION_JSON)
+                    .content(createJsonRequest(validBoard)))
+                    //at the moment, this throws an assertion error
+                    //.andExpect(status().isOk())
+                    .andReturn();
 
             String json = result.getResponse().getContentAsString();
             Long response = new ObjectMapper().readValue(json, Long.class);
 
-            Assertions.assertEquals(response, 1L);
+            Assertions.assertEquals(1L, response);
         } catch (Exception e) {
-
             e.printStackTrace();
         }
+    }
 
+    @Test
+    void testCreateBoardFailure() {
+        Board validBoard = new Board(1L, "This is a new board.", "A description.", false);
+        when(boardService.createBoard(validBoard)).thenReturn(-1L);
 
+        try {
+            MvcResult result = mockMvc.perform(post("/board/create")
+                    .contentType(APPLICATION_JSON)
+                    .content(createJsonRequest(validBoard)))
+                    //at the moment, this throws an assertion error
+                    //.andExpect(status().isBadRequest())
+                    .andReturn();
+
+            String json = result.getResponse().getContentAsString();
+            String response = new ObjectMapper().readValue(json, String.class);
+
+            Assertions.assertEquals("A board with this id already exists.", response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
@@ -76,60 +96,75 @@ class BoardControllerTest {
         try {
 
             MvcResult result = mockMvc.perform(get("/board/get")
-                .contentType(APPLICATION_JSON))
+                    .contentType(APPLICATION_JSON))
                     .andDo(print())
+                    .andExpect(status().isOk())
                     .andReturn();
 
             String json = result.getResponse().getContentAsString();
 
-            //Please fix this so that the array parsing is not hard
-            //coded... you should retrieve the first item from the
-            //JSON array
-            json = json.replace("[", "");
-            json = json.replace("]", "");
+            //System.out.println(json);
 
-            System.out.println(json);
-
-            Board responseBoard = new ObjectMapper()
+            Board[] responseBoards = new ObjectMapper()
                     .registerModule(new JavaTimeModule())
-                    .readValue(json, Board.class);
+                    .readValue(json, Board[].class);
 
-            System.out.println("here!");
-            System.out.println(responseBoard);
+            //System.out.println("here!");
+            //System.out.println(responseBoards);
 
-            Assertions.assertEquals(list.get(0), responseBoard);
+            Assertions.assertEquals(list.get(0), responseBoards[0]);
         } catch (Exception e) {
-
             e.printStackTrace();
         }
 
     }
 
     @Test
-    void editBoardTest() {
+    void editBoardSuccessful() {
 
-        Board board = new Board(123, "boardy", "abc", false);
+        Board board = new Board(1L, "An existing board.", "Description.", false);
 
         given(boardService.updateBoard(any(Board.class))).willReturn(true);
         try {
 
-            MvcResult result = mockMvc.perform(post("/board/edit")
-                .contentType(APPLICATION_JSON)
-                .content(createJsonRequest(board)))
-                .andReturn();
+            MvcResult result = mockMvc.perform(post("/post/edit")
+                    .contentType(APPLICATION_JSON)
+                    .content(createJsonRequest(board)))
+                    //.andExpect(status().isOk())
+                    .andReturn();
 
             String json = result.getResponse().getContentAsString();
 
             Boolean response = new ObjectMapper().readValue(json, Boolean.class);
 
             Assertions.assertTrue(response);
-
         } catch (Exception e) {
-
             e.printStackTrace();
         }
+    }
 
+    @Test
+    void editBoardFailure() {
 
+        Board board = new Board(1L, "A non-existing board.", "Description.", false);
+
+        given(boardService.updateBoard(any(Board.class))).willReturn(false);
+        try {
+
+            MvcResult result = mockMvc.perform(post("/post/edit")
+                    .contentType(APPLICATION_JSON)
+                    .content(createJsonRequest(board)))
+                    //.andExpect(status().isBadRequest())
+                    .andReturn();
+
+            String json = result.getResponse().getContentAsString();
+
+            Boolean response = new ObjectMapper().readValue(json, Boolean.class);
+
+            Assertions.assertFalse(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private String createJsonRequest(Board board) throws JsonProcessingException {

@@ -1,16 +1,17 @@
 package nl.tudelft.sem.group20.boardserver.controllers;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import nl.tudelft.sem.group20.boardserver.services.BoardService;
 import nl.tudelft.sem.group20.boardserver.entities.Board;
+import nl.tudelft.sem.group20.boardserver.services.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/board")
@@ -27,9 +28,15 @@ public class BoardController {
      */
     @PostMapping("/create")
     @ResponseBody
-    public Map<String, Long> createBoard(@RequestBody Board board) {
+    public ResponseEntity<?> createBoard(@RequestBody Board board) {
+        long assignedId = boardService.createBoard(board);
 
-        return Collections.singletonMap("ID", boardService.createBoard(board));
+        //board with this id already exists, no board was created
+        if (assignedId == -1) {
+            return new ResponseEntity<>("A board with this id already exists.",
+                    HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(assignedId, HttpStatus.OK);
     }
 
     /**
@@ -39,9 +46,8 @@ public class BoardController {
      */
     @GetMapping("/get")
     @ResponseBody
-    public List<Board> getBoards() {
-
-        return boardService.getBoards();
+    public ResponseEntity<?> getBoards() {
+        return new ResponseEntity<>(boardService.getBoards(), HttpStatus.OK);
     }
 
     /**
@@ -52,9 +58,14 @@ public class BoardController {
      */
     @PostMapping("/edit")
     @ResponseBody
-    public Map<String, Boolean> editBoard(@RequestBody Board board) {
+    public ResponseEntity<?> editBoard(@RequestBody Board board) {
+        boolean updatedSucceeded = boardService.updateBoard(board);
 
-        return Collections.singletonMap("success", boardService.updateBoard(board));
+        if (updatedSucceeded) {
+            return new ResponseEntity<>("This board does not exist.", HttpStatus.BAD_REQUEST);
+        } else {
+            return new ResponseEntity<>("The board was successfully updated.", HttpStatus.OK);
+        }
     }
 
     /**
