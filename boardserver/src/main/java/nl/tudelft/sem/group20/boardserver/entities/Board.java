@@ -27,14 +27,7 @@ public class Board {
     transient private LocalDateTime created;
 
     public Board() {
-        //this was causing a bug in the system.
-            //please message me if you don't get why.
-            //way to go is check if field is null once the
-            //object is created and if null add a time during
-            //processing of the request.
-            //-Pietro
-        //this.created = LocalDateTime.now();
-        //this.edited = created;
+
     }
 
     /**
@@ -118,20 +111,8 @@ public class Board {
         return !this.edited.isEqual(this.created);
     }
 
-    /**
-     * This method sets the edited field to a new value.
-     *
-     * @param edited - LocalDateTime representing when the Board was last edited.
-     * @throws IllegalArgumentException when the new "edited" value is before the
-     *         current edited value.
-     */
-    public void setEdited(LocalDateTime edited) throws IllegalArgumentException {
-        if ( this.edited == null || edited.isAfter(this.edited) || edited.isEqual(this.edited)) {
-            this.edited = edited;
-        } else {
-            throw new IllegalArgumentException(
-                    "Board cannot be edited before it was last edited.");
-        }
+    public void setEdited(LocalDateTime edited) {
+        this.edited = edited;
     }
 
     @Override
