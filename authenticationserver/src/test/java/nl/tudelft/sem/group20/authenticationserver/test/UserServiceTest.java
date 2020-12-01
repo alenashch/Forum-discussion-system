@@ -15,27 +15,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import nl.tudelft.sem.group20.authenticationserver.AuthenticationServer;
-import nl.tudelft.sem.group20.authenticationserver.controllers.UserController;
-import nl.tudelft.sem.group20.authenticationserver.embeddable.AuthToken;
-import nl.tudelft.sem.group20.authenticationserver.embeddable.LoginRequest;
+import nl.tudelft.sem.group20.authenticationserver.embeddable.AuthRequest;
 import nl.tudelft.sem.group20.authenticationserver.embeddable.RegisterRequest;
 import nl.tudelft.sem.group20.authenticationserver.embeddable.StatusResponse;
+import nl.tudelft.sem.group20.authenticationserver.entities.AuthToken;
 import nl.tudelft.sem.group20.authenticationserver.entities.User;
 import nl.tudelft.sem.group20.authenticationserver.repos.AuthTokenRepository;
 import nl.tudelft.sem.group20.authenticationserver.repos.UserRepository;
 import nl.tudelft.sem.group20.authenticationserver.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 
 //@RunWith(SpringRunner.class)
 //@SpringBootTest(classes = UserService.class)
@@ -65,6 +59,8 @@ public class UserServiceTest {
     transient String password3;
     transient String email3;
     transient boolean type3;
+    transient String token1;
+
 
 
     private transient UserService userService;
@@ -120,25 +116,40 @@ public class UserServiceTest {
                 .thenReturn(Optional.of(user2));
         Mockito.when(userRepository.getByEmail(email1))
                 .thenReturn(Optional.of(user1));
+        Mockito.when(userRepository.getByUsername(username2))
+                .thenReturn(Optional.of(user2));
 
         ArrayList<AuthToken> authTokens = new ArrayList<AuthToken>();
+
+        token1 = "abc";
+
+        AuthToken authToken = new AuthToken(token1, true);
+        AuthToken authToken2 = new AuthToken("abc2", true);
+        AuthToken authToken3 = new AuthToken("abc3", true);
+
+        authTokens.add(authToken);
+        authTokens.add(authToken2);
+        authTokens.add(authToken3);
 
         tokenRepository = Mockito.mock(AuthTokenRepository.class);
         Mockito.when(tokenRepository.findAll())
                 .thenReturn(authTokens);
+        Mockito.when(tokenRepository.findByToken(token1)).thenReturn(Optional.of(authToken));
+        Mockito.when(tokenRepository.findByToken("abc2")).thenReturn(Optional.of(authToken2));
+        Mockito.when(tokenRepository.findByToken("abc3")).thenReturn(Optional.of(authToken3));
         Mockito.when(tokenRepository.saveAndFlush(any(AuthToken.class)))
                 .then(returnsFirstArg());
 
         Mockito.when(tokenRepository.findByToken("random7"))
-                .thenReturn(Optional.of(new AuthToken("random7")));
+                .thenReturn(Optional.of(new AuthToken("random7", false)));
 
         userService = new UserService(userRepository, tokenRepository);
     }
-
+    /*
     @Test
     void testGetUsers() {
         assertThat(userService.getUsers()).hasSize(users.size()).hasSameElementsAs(users);
-    }
+    }*/
 
     @Test
     void testCreateUserSuccessful() {
@@ -156,15 +167,15 @@ public class UserServiceTest {
 
     @Test
     void testUpdateUserSuccessful() {
-        user2.setUsername("hello");
-
-        assertTrue(userService.updateUser(user1));
+        user2.setEmail("hello");
+        assertEquals(success, userService.updateUser(user2, token1).getStatus());
         //verify(userRepository, times(1)).saveAndFlush(user2);
     }
 
     @Test
     void testUpdateUserUnsuccessful() {
-        assertFalse(userService.updateUser(user3));
+        assertEquals(fail, userService.updateUser(user3, token1).getStatus());
+
         verify(userRepository, times(0)).saveAndFlush(any(User.class));
     }
 
@@ -190,6 +201,25 @@ public class UserServiceTest {
     void testlogoutUserRightToken() {
         assertEquals(new StatusResponse(success, "Successfully logged out."),
                 userService.logout("random7"));
+    }
+
+    @Test
+    void tokenRight() {
+        assertEquals(StatusResponse.Status.success,
+                userService.authenticate(token1).getStatus());
+
+    }
+
+    @Test
+    void tokenWrong() {
+        assertEquals(StatusResponse.Status.success,
+                userService.authenticate("abc2").getStatus());
+    }
+
+    @Test
+    void tokenPermission() {
+        assertTrue(
+                userService.authenticate("abc3").isType());
     }
 
     @Test

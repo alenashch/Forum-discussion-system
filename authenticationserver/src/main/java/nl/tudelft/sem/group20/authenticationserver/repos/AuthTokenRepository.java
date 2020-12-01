@@ -1,7 +1,7 @@
 package nl.tudelft.sem.group20.authenticationserver.repos;
 
 import java.util.Optional;
-import nl.tudelft.sem.group20.authenticationserver.embeddable.AuthToken;
+import nl.tudelft.sem.group20.authenticationserver.entities.AuthToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 

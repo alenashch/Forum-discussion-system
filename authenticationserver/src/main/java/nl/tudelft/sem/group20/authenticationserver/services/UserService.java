@@ -6,11 +6,11 @@ import static nl.tudelft.sem.group20.authenticationserver.embeddable.StatusRespo
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
 import java.util.Optional;
-import nl.tudelft.sem.group20.authenticationserver.embeddable.AuthToken;
+import nl.tudelft.sem.group20.authenticationserver.embeddable.AuthResponse;
 import nl.tudelft.sem.group20.authenticationserver.embeddable.RegisterRequest;
 import nl.tudelft.sem.group20.authenticationserver.embeddable.StatusResponse;
+import nl.tudelft.sem.group20.authenticationserver.entities.AuthToken;
 import nl.tudelft.sem.group20.authenticationserver.entities.User;
 import nl.tudelft.sem.group20.authenticationserver.repos.AuthTokenRepository;
 import nl.tudelft.sem.group20.authenticationserver.repos.UserRepository;
@@ -34,9 +34,9 @@ public class UserService {
     }
 
 
-    public List<User> getUsers() {
+    /*public List<User> getUsers() {
         return userRepository.findAll();
-    }
+    }*/
 
     /**
      * Creates a User and adds it to the database.
@@ -80,7 +80,7 @@ public class UserService {
                     Optional<AuthToken> optionalAuthToken = authTokenRepository.findByToken(token);
                     if (optionalAuthToken.isEmpty()) {
                         AuthToken loginToken =
-                                new AuthToken(token);
+                                new AuthToken(token, user.isType());
                         authTokenRepository.save(loginToken);
 
                         return loginToken;
@@ -105,19 +105,39 @@ public class UserService {
         }
         return new StatusResponse(fail, "You are already logged out.");
     }
+
+    /**
+     * Checks if token is valid.
+     *
+     * @param tokenStr to check
+     * @return StatusResponse with fail or success
+     */
+    public AuthResponse authenticate(String tokenStr) {
+        Optional<AuthToken> tokenOptional = authTokenRepository.findByToken(tokenStr);
+        if (tokenOptional.isPresent()) {
+            AuthToken token = tokenOptional.get();
+
+            return new AuthResponse(token.isType());
+        }
+        return new  AuthResponse();
+    }
+
     /**
      * Updates a User in the database.
      *
      * @param toUpdate - the user to be updated.
-     * @return false if the User does not exist in the database, and true otherwise.
+     * @return StatusResponse with response
      */
-
-    public boolean updateUser(User toUpdate) {
-        if (userRepository.getByEmail(toUpdate.getEmail()).isEmpty()) {
-            return false;
+    public StatusResponse updateUser(User toUpdate, String token) {
+        AuthResponse authResponse = authenticate(token);
+        if (authResponse.getStatus().equals(success) && authResponse.isType()) {
+            if (userRepository.getByUsername(toUpdate.getUsername()).isEmpty()) {
+                return new StatusResponse(fail, "Does not exist");
+            }
+            userRepository.saveAndFlush(toUpdate);
+            return new StatusResponse(success, "Success!");
         }
-        userRepository.saveAndFlush(toUpdate);
-        return true;
+        return new StatusResponse(fail, "Not allowed");
     }
 
     private String getRandomToken(int length) {

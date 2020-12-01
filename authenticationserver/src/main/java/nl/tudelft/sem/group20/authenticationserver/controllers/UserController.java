@@ -1,16 +1,14 @@
 package nl.tudelft.sem.group20.authenticationserver.controllers;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import nl.tudelft.sem.group20.authenticationserver.embeddable.AuthToken;
+
+import nl.tudelft.sem.group20.authenticationserver.embeddable.AuthRequest;
+import nl.tudelft.sem.group20.authenticationserver.embeddable.EditRequest;
 import nl.tudelft.sem.group20.authenticationserver.embeddable.LoginRequest;
 import nl.tudelft.sem.group20.authenticationserver.embeddable.RegisterRequest;
 import nl.tudelft.sem.group20.authenticationserver.embeddable.StatusResponse;
-import nl.tudelft.sem.group20.authenticationserver.entities.User;
+import nl.tudelft.sem.group20.authenticationserver.entities.AuthToken;
 import nl.tudelft.sem.group20.authenticationserver.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -53,38 +51,51 @@ public class UserController {
     /**
      * Logs a user out.
      *
-     * @param token - the token to delete from the database.
-     * @return - Statusresponse telling if it was a success or not.
+     * @param authRequest - the token to delete from the database.
+     * @return - StatusResponse telling if it was a success or not.
      */
     @PostMapping("/logout")
     @ResponseBody
-    public StatusResponse logout(@RequestBody String token) {
-        return userService.logout(token);
+    public StatusResponse logout(@RequestBody AuthRequest authRequest) {
+        return userService.logout(authRequest.getToken());
     }
 
     /**
+     * Logs a user in.
+     *
+     * @param authRequest to process
+     * @return Token response of status
+     */
+    @PostMapping("/authenticate")
+    @ResponseBody
+    public StatusResponse authenticate(@RequestBody AuthRequest authRequest) {
+        return userService.authenticate(authRequest.getToken());
+    }
+
+    /*
      * Get posts request.
      *
      * @return JSON containing list of all users.
-     */
+     *
     @GetMapping("/get")
     @ResponseBody
     public List<User> getUsers() {
 
         return userService.getUsers();
-    }
+    }*/
 
     /**
      * Edit user request.
      *
-     * @param user - User to be edited. With the old ID and new parameters to be set.
+     * @param editRequest - Request to be done
      * @return JSON containing a boolean signifying success.
      */
     @PostMapping("/edit")
     @ResponseBody
-    public Map<String, Boolean> editUser(@RequestBody User user) {
+    public StatusResponse editUser(@RequestBody EditRequest editRequest) {
 
-        return Collections.singletonMap("success", userService.updateUser(user));
+        return userService.updateUser(editRequest.getUser(),
+                 editRequest.getAuthRequest().getToken());
     }
 
     /**
