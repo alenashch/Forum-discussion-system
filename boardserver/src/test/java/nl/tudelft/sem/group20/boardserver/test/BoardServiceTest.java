@@ -1,6 +1,7 @@
 package nl.tudelft.sem.group20.boardserver.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -10,23 +11,23 @@ import static org.mockito.Mockito.verify;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import nl.tudelft.sem.group20.boardserver.Board;
-import nl.tudelft.sem.group20.boardserver.BoardRepository;
 import nl.tudelft.sem.group20.boardserver.BoardServer;
-import nl.tudelft.sem.group20.boardserver.BoardService;
+import nl.tudelft.sem.group20.boardserver.entities.Board;
+import nl.tudelft.sem.group20.boardserver.repos.BoardRepository;
+import nl.tudelft.sem.group20.boardserver.services.BoardService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.ContextConfiguration;
 
 
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = BoardServer.class)
+@AutoConfigureMockMvc
+@WebMvcTest(BoardService.class)
+@ContextConfiguration(classes = BoardServer.class)
 public class BoardServiceTest {
     transient Board board1;
     transient long id1;
@@ -85,6 +86,9 @@ public class BoardServiceTest {
         Mockito.when(boardRepository.getById(2))
                 .thenReturn(Optional.of(board2));
 
+        Mockito.when(boardRepository.getOne(2L)).thenReturn(board2);
+        Mockito.when(boardRepository.getOne(3L)).thenReturn(null);
+
 
         boardService = new BoardService(boardRepository);
     }
@@ -121,6 +125,16 @@ public class BoardServiceTest {
         board3.setName("New name 3");
         assertFalse(boardService.updateBoard(board3));
         verify(boardRepository, times(0)).saveAndFlush(board3);
+    }
+
+    @Test
+    public void testGetByIdSuccess() {
+        assertEquals(boardService.getById(2L), board2);
+    }
+
+    @Test
+    public void testGetByIdFail() {
+        assertNull(boardService.getById(3L));
     }
 
 }

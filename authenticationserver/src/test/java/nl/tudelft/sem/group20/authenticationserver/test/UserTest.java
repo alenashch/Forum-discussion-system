@@ -7,13 +7,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import nl.tudelft.sem.group20.authenticationserver.AuthenticationServer;
-import nl.tudelft.sem.group20.authenticationserver.User;
+import nl.tudelft.sem.group20.authenticationserver.entities.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 
-@SpringBootTest(classes = AuthenticationServer.class)
+@SpringBootTest(classes = User.class)
 public class UserTest {
     transient User user1;
     transient User user2;
@@ -35,7 +35,7 @@ public class UserTest {
         password1 = "pwd";
         email1 = "test@gmail.com";
         type1 = false;
-        user2 = new User(id1, username1, password1, email1, type1);
+        user2 = new User(username1, password1, email1, type1);
     }
 
     /**
@@ -52,7 +52,7 @@ public class UserTest {
     @Test
     void testNonEmptyConstructor() {
         assertNotNull(user2);
-        assertTrue(user2.getId() == (id1)
+        assertTrue(user2.getId() == (0)
                 && user2.getUsername().equals(username1)
                 && user2.getPassword().equals(password1)
                 && user2.getEmail().equals(email1)
@@ -117,7 +117,7 @@ public class UserTest {
      */
     @Test
     void testEqualsTrue() {
-        User user2Copy = new User(12345, "Test", "pwd", "test@gmail.com", false);
+        User user2Copy = new User("Test", "pwd", "test@gmail.com", false);
         assertTrue(user2Copy.equals(user2));
     }
 
@@ -160,7 +160,7 @@ public class UserTest {
     void testToString() {
         String string =
                 "User{"
-                + "id= 12345"
+                + "id= 0"
                 + "username='"
                 + "Test"
                 + '\''

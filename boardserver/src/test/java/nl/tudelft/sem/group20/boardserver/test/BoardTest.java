@@ -8,14 +8,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
-import nl.tudelft.sem.group20.boardserver.Board;
-import nl.tudelft.sem.group20.boardserver.BoardServer;
+import nl.tudelft.sem.group20.boardserver.entities.Board;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-
-@SpringBootTest(classes = BoardServer.class)
+@SpringBootTest(classes = Board.class)
 public class BoardTest {
     transient Board board;
 
@@ -32,6 +30,8 @@ public class BoardTest {
     @BeforeEach
     void initialize() {
         board = new Board();
+        Board.checkCreationTime(board);
+
 
         id = 2;
         name = "Board 2";
@@ -97,11 +97,6 @@ public class BoardTest {
         assertEquals(validEdited, board.getEdited());
     }
 
-    @Test
-    void testSetEditedException() {
-        invalidEdited = board.getCreated().minusHours(3);
-        assertThrows(IllegalArgumentException.class, () -> board.setEdited(invalidEdited));
-    }
 
     @Test
     void testIsEditedFalse() {
@@ -137,6 +132,7 @@ public class BoardTest {
                 + "', boardDescription='" + board.getDescription()
                 + "', locked='" + board.getLocked()
                 + "', edited='" + board.getEdited()
+                + "', created='" + board.getCreated()
                 + "'}";
         assertEquals(board.toString(), boardToString);
     }

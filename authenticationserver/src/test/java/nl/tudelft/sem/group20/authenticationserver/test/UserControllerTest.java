@@ -1,5 +1,6 @@
 package nl.tudelft.sem.group20.authenticationserver.test;
 
+import static nl.tudelft.sem.group20.authenticationserver.embeddable.StatusResponse.Status.success;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
@@ -15,20 +16,31 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import java.util.List;
 import nl.tudelft.sem.group20.authenticationserver.AuthenticationServer;
-import nl.tudelft.sem.group20.authenticationserver.User;
-import nl.tudelft.sem.group20.authenticationserver.UserController;
-import nl.tudelft.sem.group20.authenticationserver.UserService;
+import nl.tudelft.sem.group20.authenticationserver.controllers.UserController;
+import nl.tudelft.sem.group20.authenticationserver.embeddable.AuthRequest;
+import nl.tudelft.sem.group20.authenticationserver.embeddable.AuthResponse;
+import nl.tudelft.sem.group20.authenticationserver.embeddable.RegisterRequest;
+import nl.tudelft.sem.group20.authenticationserver.embeddable.StatusResponse;
+import nl.tudelft.sem.group20.authenticationserver.entities.AuthToken;
+import nl.tudelft.sem.group20.authenticationserver.entities.User;
+import nl.tudelft.sem.group20.authenticationserver.services.UserService;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
 
+//@AutoConfigureMockMvc
+//@RunWith(SpringJUnit4ClassRunner.class)
+//@ContextConfiguration(classes = AuthenticationServer.class)
+//@SpringBootTest(classes = UserController.class)
 @AutoConfigureMockMvc
-@SpringBootTest(classes = UserController.class)
+@WebMvcTest(UserController.class)
 @ContextConfiguration(classes = AuthenticationServer.class)
 class UserControllerTest {
     @Autowired
@@ -37,11 +49,14 @@ class UserControllerTest {
     @Autowired
     private transient MockMvc mockMvc;
 
+
+
     @Test
     void createUserTest() {
-
+        RegisterRequest registerRequest = new RegisterRequest("pwd", "test@gmal.com", "test");
         User user = constructDefaultUser();
-        when(userService.createUser(user)).thenReturn(1L);
+        when(userService.createUser(registerRequest));
+        //.thenReturn(new StatusResponse(success, "A new user was succesfully made"));
 
         try {
             mockMvc.perform(post("/user/create")
@@ -61,6 +76,74 @@ class UserControllerTest {
     }
 
     @Test
+    void loginUserTest() {
+        when(userService.login("test", "test1"))
+                .thenReturn(new AuthToken("abc", false));
+
+        JSONObject data = new JSONObject();
+
+        try {
+            data.put("email", "test");
+            data.put("password", "test1");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            mockMvc.perform(post("/user/login")
+                    .contentType(APPLICATION_JSON)
+                    .content(data.toString()))
+                    .andDo(print())
+                    .andExpect(
+                            jsonPath("$.token")
+                                    .value("abc"))
+                    .andExpect(
+                            jsonPath("$.type")
+                                    .value(false));
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+
+    }
+
+    @Test
+    void authenticateTest() {
+        when(userService.authenticate("abc1"))
+                .thenReturn(new AuthResponse(false));
+
+        JSONObject data = new JSONObject();
+
+        try {
+            data.put("token", "abc1");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            mockMvc.perform(post("/user/authenticate")
+                    .contentType(APPLICATION_JSON)
+                    .content(data.toString()))
+                    .andDo(print())
+                    .andExpect(
+                            jsonPath("$.status")
+                                    .value("success"))
+                    .andExpect(
+                            jsonPath("$.type")
+                                    .value(false));
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+
+    }
+
+
+    /*@Test
     void getUsersTest() {
 
         User user = constructDefaultUser();
@@ -81,27 +164,81 @@ class UserControllerTest {
             e.printStackTrace();
         }
 
-    }
+    }*/
 
-    @Test
+    /*@Test
     void editUsersTest() {
+        User user = new User("Bob", "123", "bob@gmail.com", false);
+        AuthRequest authRequest = new AuthRequest("token1");
+        when(userService.updateUser(user,authRequest))
+                .thenReturn(new StatusResponse(success,"reason"));
 
-        User user = constructDefaultUser();
+        JSONObject data = new JSONObject();
 
-        given(userService.updateUser(any(User.class))).willReturn(true);
+        JSONObject userJS = new JSONObject();
+
+        JSONObject tokenJS = new JSONObject();
+
         try {
+            userJS.put("username", "Bob");
+            userJS.put("password", "123");
+            userJS.put("email", "bob@gmail.com");
+            userJS.put("type", false);
 
+            tokenJS.put("token","token1");
+
+            data.put("user", user.toString());
+            data.put("token", tokenJS.toString());
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        try {
             mockMvc.perform(post("/user/edit")
-                .contentType(APPLICATION_JSON)
-                .content(createJsonRequest(user)))
-                .andDo(print())
-                    .andExpect((ResultMatcher) jsonPath("$.success").value(true));
+                    .contentType(APPLICATION_JSON)
+                    .content(data.toString()))
+                    .andDo(print())
+                    .andExpect(
+                            jsonPath("$.status")
+                                    .value("success"));
 
         } catch (Exception e) {
 
             e.printStackTrace();
         }
 
+
+    }*/
+
+    @Test
+    void logoutUserTest() {
+        when(userService.logout("random7"))
+                .thenReturn(new StatusResponse(success, "Successfully logged out."));
+
+        JSONObject data = new JSONObject();
+
+        try {
+            data.put("token", "random7");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            mockMvc.perform(post("/user/logout")
+                    .contentType(APPLICATION_JSON)
+                    .content(data.toString()))
+                    .andDo(print())
+                    .andExpect(
+                            jsonPath("$.status")
+                                    .value("success"))
+                    .andExpect(
+                            jsonPath("$.message")
+                                    .value("Successfully logged out."));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -116,7 +253,7 @@ class UserControllerTest {
 
     private User constructDefaultUser() {
 
-        return new User(1, "Bob", "123", "bob@gmail.com", false);
+        return new User("Bob", "123", "bob@gmail.com", false);
     }
 
 }
