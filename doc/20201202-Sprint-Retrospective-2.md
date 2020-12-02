@@ -16,7 +16,7 @@
 | Standardize API Conventions | 41 | 1 hour | 1 hour | Yes | |
 |Password hashing and  unique email | 52 | 40 min | 2 h 15 min | Yes |
 |Logout method | 54 | 30 min | 1 h 30 min | Yes |
-
+|DB relation between Thread and Post| 39 | 1 hour | -  | No | We did not have enough time to thoroughly implement this DB relation. This is going to be the first thing on our to-do list during next sprint |
 
 
 **Project:** Student/Teacher forum
