@@ -1,5 +1,7 @@
 package nl.tudelft.sem.group20.contentserver.controller;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
 import java.util.List;
 import nl.tudelft.sem.group20.contentserver.entities.Post;
 import nl.tudelft.sem.group20.contentserver.services.PostService;
@@ -26,7 +28,7 @@ public class PostController {
      * @param post - new post to be created.
      * @return JSON file containing the ID of a new post.
      */
-    @PostMapping("/create")
+    @PostMapping(value = "/create")
     @ResponseBody
     public ResponseEntity<String> createPost(@RequestBody Post post) {
 
@@ -36,7 +38,7 @@ public class PostController {
             return new ResponseEntity<>("This post could not be created, it may already exist",
                 HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>("A new post with ID:" + newId + " has been created",
+        return new ResponseEntity<>("A new post with ID: " + newId + " has been created",
             HttpStatus.CREATED);
     }
 
@@ -67,7 +69,7 @@ public class PostController {
             return new ResponseEntity<>("The post with ID: " + post.getId() + " has been updated",
                 HttpStatus.OK);
         }
-        return new ResponseEntity<>("Post with ID: " + post.getId() + "could not be updated",
+        return new ResponseEntity<>("Post with ID: " + post.getId() + " could not be updated",
             HttpStatus.BAD_REQUEST);
     }
 

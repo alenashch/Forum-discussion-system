@@ -17,19 +17,12 @@ import nl.tudelft.sem.group20.contentserver.repositories.PostRepository;
 import nl.tudelft.sem.group20.contentserver.services.PostService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.junit4.SpringRunner;
 
-//@RunWith(SpringRunner.class)
-//@RunWith(SpringJUnit4ClassRunner.class)
-//@SpringBootTest(classes = PostService.class)
 @AutoConfigureMockMvc
 @WebMvcTest(PostService.class)
 @ContextConfiguration(classes = ContentServer.class)
