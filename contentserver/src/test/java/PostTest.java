@@ -37,8 +37,9 @@ public class PostTest {
         demoNumber2 = 1;
         demoBody2 = "This is a demo post.";
         demoCreated2 = LocalDateTime.now();
-        demoPost2 = new Post(demoId2, demoNumber2, demoBody2, demoCreated2);
-        demoPost2Copy = new Post(demoPost2.getId(), demoPost2.getPostNumber(), demoPost2.getBody(),
+        demoPost2 = new Post(demoId2, demoNumber2, demoBody2, null, demoCreated2);
+        demoPost2Copy = new Post(demoPost2.getId(), demoPost2.getPostNumber(),
+            demoPost2.getBody(), null,
                 demoPost2.getCreated());
     }
 
@@ -153,5 +154,11 @@ public class PostTest {
                 + ", edited=" + demoPost2.getEdited()
                 + '}';
         assertEquals(string, demoPost2.toString());
+    }
+
+    @Test
+    void testSetBoard() {
+
+
     }
 }

@@ -71,9 +71,9 @@ public class PostServiceTest {
         demoCreated2 = LocalDateTime.now().plusHours(2);
         demoCreated3 = LocalDateTime.now().minusDays(1);
 
-        demoPost1 = new Post(demoId1, demoNumber1, demoBody1, demoCreated1);
-        demoPost2 = new Post(demoId2, demoNumber2, demoBody2, demoCreated2);
-        demoPost3 = new Post(demoId3, demoNumber3, demoBody3, demoCreated3);
+        demoPost1 = new Post(demoId1, demoNumber1, demoBody1, null, demoCreated1);
+        demoPost2 = new Post(demoId2, demoNumber2, demoBody2, null, demoCreated2);
+        demoPost3 = new Post(demoId3, demoNumber3, demoBody3, null, demoCreated3);
 
         posts = new ArrayList<>();
         posts.add(demoPost1);

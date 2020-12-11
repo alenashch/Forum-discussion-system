@@ -1,19 +1,23 @@
 package nl.tudelft.sem.group20.contentserver.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import nl.tudelft.sem.group20.contentserver.serialization.LocalDateTimeDeserializer;
-import nl.tudelft.sem.group20.contentserver.serialization.LocalDateTimeSerializer;
-
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.time.LocalDateTime;
-import java.util.Objects;
+import nl.tudelft.sem.group20.contentserver.serialization.LocalDateTimeDeserializer;
+import nl.tudelft.sem.group20.contentserver.serialization.LocalDateTimeSerializer;
 
-@Entity
+@Entity(name = "thread")
 @Table(name = "thread")
 public class BoardThread {
 
@@ -33,9 +37,13 @@ public class BoardThread {
 
     private boolean locked;        //locked thread or not
 
+    @OneToMany(mappedBy = "thread", cascade = CascadeType.REMOVE)
+    @JsonManagedReference
+    List<Post> posts = new ArrayList<>();
+
+
     /**
      * Empty constructor of Board Thread
-     *
      */
 
     public BoardThread() {
@@ -109,12 +117,34 @@ public class BoardThread {
         this.locked = locked;
     }
 
+    public void setPosts(List<Post> posts) {
+        this.posts = posts;
+    }
+
+    public List<Post> getPosts() {
+        return this.posts;
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         BoardThread that = (BoardThread) o;
         return id.equals(that.id);
+    }
+
+    public void addPost(Post post) {
+
+        posts.add(post);
+    }
+
+    public void removePost(Post post) {
+
+        posts.remove(post);
     }
 
 
@@ -126,13 +156,13 @@ public class BoardThread {
     @Override
     public String toString() {
         return "Thread{"
-                + "id=" + id
-                + ", threadTitle='" + threadTitle + '\''
-                + ", statement='" + statement + '\''
-                + ", threadCreator='" + threadCreator + '\''
-                + ", created=" + created
-                + ", locked=" + locked
-                + '}';
+            + "id=" + id
+            + ", threadTitle='" + threadTitle + '\''
+            + ", statement='" + statement + '\''
+            + ", threadCreator='" + threadCreator + '\''
+            + ", created=" + created
+            + ", locked=" + locked
+            + '}';
     }
 
 }
