@@ -34,9 +34,9 @@ public class ThreadService {
         BoardThread toCreate = new BoardThread(request.getTitle(), request.getStatement(),
             request.getCreatorId(), LocalDateTime.now(), false);
 
-        if (threadRepository.getById(toCreate.getId()).isPresent()) {
-            return -1;
-        }
+//        if (threadRepository.getById(request.getId()).isPresent()) {
+//            return -1;
+//        }
 
         threadRepository.saveAndFlush(toCreate);
         return toCreate.getId();

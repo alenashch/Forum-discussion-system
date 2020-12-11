@@ -23,7 +23,7 @@ public class BoardThread {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private long id;
 
     private String threadTitle;    //title of thread
 
@@ -91,7 +91,7 @@ public class BoardThread {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -152,7 +152,7 @@ public class BoardThread {
             return false;
         }
         BoardThread that = (BoardThread) o;
-        return id.equals(that.id);
+        return id == that.id;
     }
 
     public void addPost(Post post) {

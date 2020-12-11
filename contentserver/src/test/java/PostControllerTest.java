@@ -132,8 +132,8 @@ class PostControllerTest {
                 .contentType(APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(editPostRequest)).accept(APPLICATION_JSON))
                 .andDo(print()).andExpect(status().isOk())
-                .andExpect(content().string("The post with ID: " + builder.getPostId() + " has " +
-                    "been updated"));
+                .andExpect(content().string("The post with ID: " + builder.getPostId() + " has "
+                    + "been updated"));
             //.andExpect((ResultMatcher) jsonPath("$.success").value(true));
 
 
@@ -159,8 +159,8 @@ class PostControllerTest {
                 .content(new ObjectMapper().writeValueAsString(editPostRequest))
                 .accept(APPLICATION_JSON))
                 .andDo(print()).andExpect(status().isBadRequest())
-                .andExpect(content().string("Post with ID: " + editPostRequest.getPostId() +
-                    " could not be updated"));
+                .andExpect(content().string("Post with ID: " + editPostRequest.getPostId()
+                    + " could not be updated"));
             //.andExpect((ResultMatcher) jsonPath("$.success").value(true));
 
 

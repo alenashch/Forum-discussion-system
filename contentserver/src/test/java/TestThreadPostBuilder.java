@@ -6,6 +6,9 @@ import nl.tudelft.sem.group20.contentserver.requests.CreatePostRequest;
 import nl.tudelft.sem.group20.contentserver.requests.EditBoardThreadRequest;
 import nl.tudelft.sem.group20.contentserver.requests.EditPostRequest;
 
+/**
+ * A simple class builder to facilitate Content testing.
+ */
 public class TestThreadPostBuilder {
 
     public int postNumber = 123;
