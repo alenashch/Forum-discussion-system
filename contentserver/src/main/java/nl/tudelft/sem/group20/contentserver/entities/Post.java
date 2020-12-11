@@ -25,6 +25,8 @@ public class Post {
 
     private String body;
 
+    private long creatorId;
+
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime created;
@@ -49,7 +51,7 @@ public class Post {
      * @param body       - the body of a Post.
      * @param created    - LocalDateTime showing when a Post was created.
      */
-    public Post(long id, int postNumber, String body, BoardThread boardThread,
+    public Post(long id, long creatorId, int postNumber, String body, BoardThread boardThread,
                 LocalDateTime created) {
         this.id = id;
         this.postNumber = postNumber;
@@ -58,21 +60,25 @@ public class Post {
         //initially, set this field the same as the created field
         this.edited = created;
         this.boardThread = boardThread;
+        this.creatorId = creatorId;
     }
 
     /**
      * Non-empty constructor for Post class.
      *
      * @param postNumber - the number of the Post (to identify it within a thread).
-     * @param body - the body of a Post.
-     * @param created - LocalDateTime showing when a Post was created.
+     * @param body       - the body of a Post.
+     * @param created    - LocalDateTime showing when a Post was created.
      */
-    public Post(int postNumber, String body, LocalDateTime created) {
+    public Post(int postNumber, long creatorId, String body, BoardThread boardThread,
+                LocalDateTime created) {
         this.postNumber = postNumber;
         this.body = body;
         this.created = created;
         //initially, set this field the same as the created field
         this.edited = created;
+        this.creatorId = creatorId;
+        this.boardThread = boardThread;
     }
 
     public long getId() {
@@ -118,6 +124,14 @@ public class Post {
 
     public boolean isEdited() {
         return !this.edited.isEqual(this.created);
+    }
+
+    public long getCreatorId() {
+        return creatorId;
+    }
+
+    public void setCreatorId(long creatorId) {
+        this.creatorId = creatorId;
     }
 
     public void setBoardThread(BoardThread boardThread) {

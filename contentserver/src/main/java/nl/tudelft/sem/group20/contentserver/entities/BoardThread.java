@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -29,7 +29,7 @@ public class BoardThread {
 
     private String statement;      //Main question or statement of thread
 
-    private String threadCreator;  //name of thread creator
+    private long threadCreatorId;  //name of thread creator
 
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
@@ -39,7 +39,7 @@ public class BoardThread {
 
     @OneToMany(mappedBy = "thread", cascade = CascadeType.REMOVE)
     @JsonManagedReference
-    List<Post> posts = new ArrayList<>();
+    Set<Post> posts = new HashSet<>();
 
 
     /**
@@ -53,18 +53,36 @@ public class BoardThread {
     /**
      * Non-empty constructor of BoardThread
      *
-     * @param id id of item
-     * @param threadTitle title of thread
-     * @param statement general statment of thread
-     * @param threadCreator person who created thread
-     * @param locked locked or not
+     * @param id              id of item
+     * @param threadTitle     title of thread
+     * @param statement       general statment of thread
+     * @param threadCreatorId person who created thread
+     * @param locked          locked or not
      */
-    public BoardThread(Long id, String threadTitle, String statement, String threadCreator, LocalDateTime created,
+    public BoardThread(Long id, String threadTitle, String statement, long threadCreatorId,
+                       LocalDateTime created,
                        boolean locked) {
         this.id = id;
         this.threadTitle = threadTitle;
         this.statement = statement;
-        this.threadCreator = threadCreator;
+        this.threadCreatorId = threadCreatorId;
+        this.created = created;
+        this.locked = locked;
+    }
+
+    /**
+     * Non-empty constructor of BoardThread
+     *
+     * @param threadTitle     title of thread
+     * @param statement       general statment of thread
+     * @param threadCreatorId person who created thread
+     * @param locked          locked or not
+     */
+    public BoardThread(String threadTitle, String statement, long threadCreatorId,
+                       LocalDateTime created, boolean locked) {
+        this.threadTitle = threadTitle;
+        this.statement = statement;
+        this.threadCreatorId = threadCreatorId;
         this.created = created;
         this.locked = locked;
     }
@@ -93,14 +111,6 @@ public class BoardThread {
         this.statement = statement;
     }
 
-    public String getThreadCreator() {
-        return threadCreator;
-    }
-
-    public void setThreadCreator(String threadCreator) {
-        this.threadCreator = threadCreator;
-    }
-
     public LocalDateTime getCreated() {
         return created;
     }
@@ -117,12 +127,20 @@ public class BoardThread {
         this.locked = locked;
     }
 
-    public void setPosts(List<Post> posts) {
-        this.posts = posts;
+    public long getThreadCreatorId() {
+        return threadCreatorId;
     }
 
-    public List<Post> getPosts() {
-        return this.posts;
+    public void setThreadCreatorId(long threadCreatorId) {
+        this.threadCreatorId = threadCreatorId;
+    }
+
+    public Set<Post> getPosts() {
+        return posts;
+    }
+
+    public void setPosts(Set<Post> posts) {
+        this.posts = posts;
     }
 
     @Override
@@ -159,7 +177,7 @@ public class BoardThread {
             + "id=" + id
             + ", threadTitle='" + threadTitle + '\''
             + ", statement='" + statement + '\''
-            + ", threadCreator='" + threadCreator + '\''
+            + ", threadCreatorId='" + threadCreatorId + '\''
             + ", created=" + created
             + ", locked=" + locked
             + '}';
