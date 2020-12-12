@@ -19,25 +19,25 @@ public class ThreadTest {
     transient String demoTitle2;
     transient LocalDateTime demoCreated2;
     transient String demoStatement2;
-    transient String threadCreator;
+    transient long threadCreator;
     transient boolean locked;
 
     @BeforeEach
     void initialize() {
         demoThread1 = new BoardThread();
 
-        demoId2         = 2;
-        demoTitle2      = "This is a demo board.";
-        demoStatement2  = "This is the question";
-        threadCreator   = "Jayson";
-        demoCreated2    = LocalDateTime.now();
-        locked          = true;
+        demoId2 = 2;
+        demoTitle2 = "This is a demo board.";
+        demoStatement2 = "This is the question";
+        threadCreator = 5L;
+        demoCreated2 = LocalDateTime.now();
+        locked = true;
 
         demoThread2 = new BoardThread(demoId2, demoTitle2, demoStatement2,
-                threadCreator, demoCreated2, locked);
-        demoThread2Copy = new BoardThread(demoThread2.getId(), demoThread2.getThreadTitle(),
-                demoThread2.getStatement(), demoThread2.getThreadCreator(),
-                demoThread2.getCreated(), demoThread2.isLocked());
+            threadCreator, demoCreated2, locked);
+        demoThread2Copy = new BoardThread(demoId2, demoThread2.getThreadTitle(),
+            demoThread2.getStatement(), demoThread2.getThreadCreatorId(),
+            demoThread2.getCreated(), demoThread2.isLocked());
     }
 
     @Test
@@ -49,11 +49,11 @@ public class ThreadTest {
     void testNonEmptyConstructor() {
         assertNotNull(demoThread2);
         assertTrue(demoThread2.getId() == demoId2
-                && demoThread2.getThreadTitle() == demoTitle2
-                && demoThread2.getStatement().equals(demoStatement2)
-                && demoThread2.getCreated().equals(demoCreated2)
-                && demoThread2.getThreadCreator().equals(threadCreator)
-                && demoThread2.isLocked() == locked);
+            && demoThread2.getThreadTitle().equals(demoTitle2)
+            && demoThread2.getStatement().equals(demoStatement2)
+            && demoThread2.getCreated().equals(demoCreated2)
+            && demoThread2.getThreadCreatorId() == threadCreator
+            && demoThread2.isLocked() == locked);
     }
 
     @Test
@@ -83,8 +83,8 @@ public class ThreadTest {
 
     @Test
     void testGetAndSetCreated() {
-        demoThread2.setThreadCreator("jackie");
-        assertEquals("jackie", demoThread2.getThreadCreator());
+        demoThread2.setThreadCreatorId(10L);
+        assertEquals(10L, demoThread2.getThreadCreatorId());
     }
 
     @Test
@@ -95,13 +95,13 @@ public class ThreadTest {
     @Test
     void testToString() {
         String string = "Thread{"
-                + "id=" + demoThread2.getId()
-                + ", threadTitle='" + demoThread2.getThreadTitle() + '\''
-                + ", statement='" + demoThread2.getStatement() + '\''
-                + ", threadCreator='" + demoThread2.getThreadCreator() + '\''
-                + ", created=" + demoThread2.getCreated()
-                + ", locked=" + demoThread2.isLocked()
-                + '}';
+            + "id=" + demoThread2.getId()
+            + ", threadTitle='" + demoThread2.getThreadTitle() + '\''
+            + ", statement='" + demoThread2.getStatement() + '\''
+            + ", threadCreatorId='" + demoThread2.getThreadCreatorId() + '\''
+            + ", created=" + demoThread2.getCreated()
+            + ", locked=" + demoThread2.isLocked()
+            + '}';
 
         assertEquals(string, demoThread2.toString());
     }

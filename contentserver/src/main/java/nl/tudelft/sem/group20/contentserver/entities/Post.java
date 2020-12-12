@@ -1,13 +1,17 @@
 package nl.tudelft.sem.group20.contentserver.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import nl.tudelft.sem.group20.contentserver.serialization.LocalDateTimeDeserializer;
 import nl.tudelft.sem.group20.contentserver.serialization.LocalDateTimeSerializer;
 
@@ -21,6 +25,8 @@ public class Post {
 
     private String body;
 
+    private long creatorId;
+
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime created;
@@ -29,39 +35,50 @@ public class Post {
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime edited;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "thread_id", referencedColumnName = "id")
+    @JsonManagedReference
+    private BoardThread boardThread;
+
     public Post() {
     }
 
     /**
      * Non-empty constructor for Post class.
      *
-     * @param id - id of the Post.
+     * @param id         - id of the Post.
      * @param postNumber - the number of the Post (to identify it within a thread).
-     * @param body - the body of a Post.
-     * @param created - LocalDateTime showing when a Post was created.
+     * @param body       - the body of a Post.
+     * @param created    - LocalDateTime showing when a Post was created.
      */
-    public Post(long id, int postNumber, String body, LocalDateTime created) {
+    public Post(long id, long creatorId, int postNumber, String body, BoardThread boardThread,
+                LocalDateTime created) {
         this.id = id;
         this.postNumber = postNumber;
         this.body = body;
         this.created = created;
         //initially, set this field the same as the created field
         this.edited = created;
+        this.boardThread = boardThread;
+        this.creatorId = creatorId;
     }
 
     /**
      * Non-empty constructor for Post class.
      *
      * @param postNumber - the number of the Post (to identify it within a thread).
-     * @param body - the body of a Post.
-     * @param created - LocalDateTime showing when a Post was created.
+     * @param body       - the body of a Post.
+     * @param created    - LocalDateTime showing when a Post was created.
      */
-    public Post(int postNumber, String body, LocalDateTime created) {
+    public Post(int postNumber, long creatorId, String body, BoardThread boardThread,
+                LocalDateTime created) {
         this.postNumber = postNumber;
         this.body = body;
         this.created = created;
         //initially, set this field the same as the created field
         this.edited = created;
+        this.creatorId = creatorId;
+        this.boardThread = boardThread;
     }
 
     public long getId() {
@@ -107,6 +124,24 @@ public class Post {
 
     public boolean isEdited() {
         return !this.edited.isEqual(this.created);
+    }
+
+    public long getCreatorId() {
+        return creatorId;
+    }
+
+    public void setCreatorId(long creatorId) {
+        this.creatorId = creatorId;
+    }
+
+    public void setBoardThread(BoardThread boardThread) {
+
+        this.boardThread = boardThread;
+    }
+
+    public BoardThread getBoardThread() {
+
+        return this.boardThread;
     }
 
     @Override
