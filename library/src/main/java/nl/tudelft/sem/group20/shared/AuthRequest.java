@@ -7,11 +7,21 @@ import javax.persistence.Embeddable;
 public class AuthRequest {
 
 
-    @Column(name = "token")
+    //@Column(name = "token")
     private transient String token;
+
+    public AuthRequest() {
+    }
+
+    public AuthRequest(String token) {
+        this.token = token;
+    }
 
     public String getToken() {
         return token;
     }
 
+    public void setToken(String token) {
+        this.token = token;
+    }
 }
