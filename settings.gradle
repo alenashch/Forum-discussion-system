@@ -1,3 +1,4 @@
 rootProject.name = 'application'
-include 'eurekaserver', 'authenticationserver', 'boardserver', 'contentserver'
+include 'library', 'eurekaserver', 'authenticationserver', 'boardserver', 'contentserver'
+
 

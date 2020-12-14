@@ -18,12 +18,12 @@ public class AuthTokenTest {
 
     @BeforeEach
     void setUp() {
-        authToken = new AuthToken(token, false);
+        authToken = new AuthToken(token, false, "abc");
     }
 
     @Test
     void constructorTest() {
-        authToken = new AuthToken(token, false);
+        authToken = new AuthToken(token, false, "abc");
         assertEquals(token, authToken.getToken());
         assertFalse(authToken.isType());
     }

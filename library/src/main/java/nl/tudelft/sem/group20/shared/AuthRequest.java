@@ -1,4 +1,4 @@
-package nl.tudelft.sem.group20.authenticationserver.embeddable;
+package nl.tudelft.sem.group20.shared;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;

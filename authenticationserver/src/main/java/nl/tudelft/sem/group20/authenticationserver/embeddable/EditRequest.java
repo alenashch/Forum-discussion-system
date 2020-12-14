@@ -2,8 +2,8 @@ package nl.tudelft.sem.group20.authenticationserver.embeddable;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import nl.tudelft.sem.group20.authenticationserver.entities.AuthToken;
 import nl.tudelft.sem.group20.authenticationserver.entities.User;
+import nl.tudelft.sem.group20.shared.AuthRequest;
 
 
 @Embeddable

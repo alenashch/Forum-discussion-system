@@ -1,8 +1,7 @@
 package nl.tudelft.sem.group20.authenticationserver.test;
 
-import static nl.tudelft.sem.group20.authenticationserver.embeddable.StatusResponse.Status.success;
+import static nl.tudelft.sem.group20.shared.StatusResponse.Status.success;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -14,16 +13,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import java.util.List;
 import nl.tudelft.sem.group20.authenticationserver.AuthenticationServer;
 import nl.tudelft.sem.group20.authenticationserver.controllers.UserController;
-import nl.tudelft.sem.group20.authenticationserver.embeddable.AuthRequest;
-import nl.tudelft.sem.group20.authenticationserver.embeddable.AuthResponse;
 import nl.tudelft.sem.group20.authenticationserver.embeddable.RegisterRequest;
-import nl.tudelft.sem.group20.authenticationserver.embeddable.StatusResponse;
 import nl.tudelft.sem.group20.authenticationserver.entities.AuthToken;
 import nl.tudelft.sem.group20.authenticationserver.entities.User;
 import nl.tudelft.sem.group20.authenticationserver.services.UserService;
+import nl.tudelft.sem.group20.shared.AuthResponse;
+import nl.tudelft.sem.group20.shared.StatusResponse;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
@@ -33,7 +30,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultMatcher;
 
 //@AutoConfigureMockMvc
 //@RunWith(SpringJUnit4ClassRunner.class)
@@ -78,7 +74,7 @@ class UserControllerTest {
     @Test
     void loginUserTest() {
         when(userService.login("test", "test1"))
-                .thenReturn(new AuthToken("abc", false));
+                .thenReturn(new AuthToken("abc", false, "abc2"));
 
         JSONObject data = new JSONObject();
 
@@ -99,8 +95,10 @@ class UserControllerTest {
                                     .value("abc"))
                     .andExpect(
                             jsonPath("$.type")
-                                    .value(false));
-
+                                    .value(false))
+                    .andExpect(
+                            jsonPath("$.username")
+                                    .value("abc2"));
         } catch (Exception e) {
 
             e.printStackTrace();
@@ -112,7 +110,7 @@ class UserControllerTest {
     @Test
     void authenticateTest() {
         when(userService.authenticate("abc1"))
-                .thenReturn(new AuthResponse(false));
+                .thenReturn(new AuthResponse(false, "abc2"));
 
         JSONObject data = new JSONObject();
 

@@ -1,4 +1,4 @@
-package nl.tudelft.sem.group20.authenticationserver.embeddable;
+package nl.tudelft.sem.group20.shared;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -9,14 +9,26 @@ public class AuthResponse extends StatusResponse {
     @Column(name = "type")
     private boolean type;
 
+    @Column(name = "username")
+    private String username;
+
 
     public AuthResponse() {
         super(Status.fail, "Token invalid");
     }
 
-    public AuthResponse(boolean type) {
+    public AuthResponse(boolean type, String username) {
         super(Status.success, "Success!");
         this.type = type;
+        this.username = username;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public boolean isType() {

@@ -1,13 +1,12 @@
 package nl.tudelft.sem.group20.authenticationserver.controllers;
 
-
-import nl.tudelft.sem.group20.authenticationserver.embeddable.AuthRequest;
 import nl.tudelft.sem.group20.authenticationserver.embeddable.EditRequest;
 import nl.tudelft.sem.group20.authenticationserver.embeddable.LoginRequest;
 import nl.tudelft.sem.group20.authenticationserver.embeddable.RegisterRequest;
-import nl.tudelft.sem.group20.authenticationserver.embeddable.StatusResponse;
 import nl.tudelft.sem.group20.authenticationserver.entities.AuthToken;
 import nl.tudelft.sem.group20.authenticationserver.services.UserService;
+import nl.tudelft.sem.group20.shared.AuthRequest;
+import nl.tudelft.sem.group20.shared.StatusResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
