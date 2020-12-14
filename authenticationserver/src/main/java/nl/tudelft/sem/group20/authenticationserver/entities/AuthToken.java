@@ -14,7 +14,7 @@ public class AuthToken extends StatusResponse {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private transient long id;
+    private long id;
 
 
     @Column(name = "token")
@@ -27,12 +27,11 @@ public class AuthToken extends StatusResponse {
     private String username;
 
 
-    /**
+    /*
      * Creates a failed login token message.
-     *
-     */
+    */
     public AuthToken() {
-        super(Status.fail, "Login failed");
+        super(Status.fail,"Login failed");
     }
 
     /**

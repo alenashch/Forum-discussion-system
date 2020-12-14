@@ -180,13 +180,13 @@ public class UserServiceTest {
 
     @Test
     void loginUserNonExisting() {
-        AuthToken token = new AuthToken();
+        AuthToken token = new AuthToken(id);
         assertEquals(token, userService.login("asdasd", "asdas"));
     }
 
     @Test
     void loginUserWrongPassword() {
-        AuthToken token = new AuthToken();
+        AuthToken token = new AuthToken(id);
         assertEquals(token, userService.login("frodo@gmail.com", "ring2"));
     }
 

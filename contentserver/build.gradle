@@ -1,59 +1,33 @@
-/*buildscript {
-    dependencies {
-        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.5.2'
-    }
-}
-plugins {
-    id 'application'
-}
-
-apply plugin: 'application'
-
-mainClassName = 'nl.tudelft.sem.group20.contentserver.ContentServer'
-
-bootJar {
-    launchScript() // optional
-}*/
-
 buildscript {
     dependencies {
         classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.5.2'
     }
 }
-
 plugins {
-    id 'java'
     id 'application'
 }
 
 apply plugin: 'application'
 
-
-sourceCompatibility = '11'
 mainClassName = 'nl.tudelft.sem.group20.contentserver.ContentServer'
 
-repositories {
-    mavenCentral()
-    maven { url 'https://repo.spring.io/milestone' }
-}
-
-ext {
-    set('springCloudVersion', "2020.0.0-M5")
-}
 
 dependencies {
-    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
+    compile 'javax.xml.bind:jaxb-api:2.3.0'
+    implementation 'org.springframework.cloud:spring-cloud-starter-config'
+    implementation project(':library')
+
+    compile project(':library')
+    compile 'com.sun.xml.bind:jaxb-impl:2.3.0'
+    compile 'org.glassfish.jaxb:jaxb-runtime:2.3.0'
+    compile 'javax.activation:activation:1.1.1'
+
     compile 'org.springframework.boot:spring-boot-starter-web'
     compile 'org.springframework.boot:spring-boot-starter-webflux'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-}
-
-
-
-repositories {
-    mavenCentral()
-    maven { url 'https://repo.spring.io/milestone' }
 }
 
 dependencyManagement {
@@ -62,12 +36,12 @@ dependencyManagement {
     }
 }
 
-test {
-    useJUnitPlatform()
-}
-
-apply plugin: 'io.spring.dependency-management'
 
 bootJar {
     launchScript() // optional
 }
+
+repositories {
+    maven { url "http://repo.spring.io/libs-milestone" }
+}
+

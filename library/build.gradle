@@ -43,6 +43,7 @@ bootJar {
 repositories {
     maven { url "http://repo.spring.io/libs-milestone" }
 }
+
 bootJar {
     enabled = false
 }
