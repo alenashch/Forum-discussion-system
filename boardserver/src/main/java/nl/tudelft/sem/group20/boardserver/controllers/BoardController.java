@@ -2,6 +2,7 @@ package nl.tudelft.sem.group20.boardserver.controllers;
 
 import nl.tudelft.sem.group20.boardserver.entities.Board;
 import nl.tudelft.sem.group20.boardserver.services.BoardService;
+import nl.tudelft.sem.group20.shared.AuthRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.nio.file.AccessDeniedException;
 
 @RestController
 @RequestMapping("/board")
@@ -28,8 +31,13 @@ public class BoardController {
      */
     @PostMapping("/create")
     @ResponseBody
-    public ResponseEntity<?> createBoard(@RequestBody Board board) {
-        long assignedId = boardService.createBoard(board);
+    public ResponseEntity<?> createBoard(@RequestBody Board board, @RequestBody AuthRequest tokenRequest) {
+        long assignedId = 0;
+        try {
+            assignedId = boardService.createBoard(board, tokenRequest);
+        } catch (AccessDeniedException e) {
+            e.printStackTrace();
+        }
 
         //board with this id already exists, no board was created
         if (assignedId == -1) {

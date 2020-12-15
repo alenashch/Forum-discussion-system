@@ -14,15 +14,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import java.nio.file.AccessDeniedException;
 import java.util.Collections;
 import java.util.List;
 import nl.tudelft.sem.group20.boardserver.BoardServer;
 import nl.tudelft.sem.group20.boardserver.controllers.BoardController;
 import nl.tudelft.sem.group20.boardserver.entities.Board;
 import nl.tudelft.sem.group20.boardserver.services.BoardService;
-import org.junit.Before;
-import org.junit.jupiter.api.Assertions;
+import nl.tudelft.sem.group20.shared.AuthRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -32,7 +31,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
 @AutoConfigureMockMvc
 @WebMvcTest(BoardController.class)
@@ -60,7 +58,11 @@ class BoardControllerTest {
     @Test
     void testCreateBoardSuccessful() {
 
-        when(boardService.createBoard(board)).thenReturn(1L);
+        try {
+            when(boardService.createBoard(board, new AuthRequest())).thenReturn(1L);
+        } catch (AccessDeniedException e) {
+            e.printStackTrace();
+        }
 
         try {
             mockMvc.perform(post("/board/create")
@@ -82,7 +84,11 @@ class BoardControllerTest {
     @Test
     void testCreateBoardFailure() {
 
-        when(boardService.createBoard(board)).thenReturn(-1L);
+        try {
+            when(boardService.createBoard(board, new AuthRequest())).thenReturn(-1L);
+        } catch (AccessDeniedException e) {
+            e.printStackTrace();
+        }
 
         try {
             mockMvc.perform(post("/board/create")
