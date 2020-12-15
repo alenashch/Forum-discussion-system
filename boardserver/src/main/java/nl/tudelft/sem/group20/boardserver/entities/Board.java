@@ -1,29 +1,40 @@
 package nl.tudelft.sem.group20.boardserver.entities;
 
-import org.apache.tomcat.jni.Local;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "board")
 public class Board {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @Column
     private String name;
 
+    @Column
     private String description;
 
+    @Column
     private boolean locked;
 
+    @UpdateTimestamp
+    @Column
     private LocalDateTime edited;
 
+    @CreationTimestamp
+    @Column
     transient private LocalDateTime created;
 
     public Board() {
@@ -49,7 +60,7 @@ public class Board {
     }
 
     /**
-     * For testing purposes: constructor with no id.
+     * Constructor with no id.
      *
      * @param name - board name.
      * @param description - details about the board.
