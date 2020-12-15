@@ -37,7 +37,9 @@ public class BoardThread {
 
     private boolean locked;        //locked thread or not
 
-    @OneToMany(mappedBy = "thread", cascade = CascadeType.REMOVE)
+    private long boardId;          //board it belongs to
+
+    @OneToMany(mappedBy = "boardThread", cascade = CascadeType.REMOVE)
     @JsonManagedReference
     Set<Post> posts = new HashSet<>();
 
@@ -51,7 +53,7 @@ public class BoardThread {
     }
 
     /**
-     * Non-empty constructor of BoardThread
+     * Non-empty constructor of BoardThread.
      *
      * @param id              id of item
      * @param threadTitle     title of thread
@@ -71,7 +73,7 @@ public class BoardThread {
     }
 
     /**
-     * Non-empty constructor of BoardThread
+     * Non-empty constructor of BoardThread.
      *
      * @param threadTitle     title of thread
      * @param statement       general statment of thread
@@ -85,6 +87,24 @@ public class BoardThread {
         this.threadCreatorId = threadCreatorId;
         this.created = created;
         this.locked = locked;
+    }
+
+    /**
+     * Non-empty constructor of BoardThread.
+     *
+     * @param threadTitle     title of thread
+     * @param statement       general statment of thread
+     * @param threadCreatorId person who created thread
+     * @param locked          locked or not
+     */
+    public BoardThread(String threadTitle, String statement, long threadCreatorId,
+                       LocalDateTime created, boolean locked, long boardId) {
+        this.threadTitle = threadTitle;
+        this.statement = statement;
+        this.threadCreatorId = threadCreatorId;
+        this.created = created;
+        this.locked  = locked;
+        this.boardId = boardId;
     }
 
     public Long getId() {
@@ -125,6 +145,15 @@ public class BoardThread {
 
     public void setLocked(boolean locked) {
         this.locked = locked;
+    }
+
+
+    public void setBoardId(long boardId) {
+        this.boardId = boardId;
+    }
+
+    public long getBoardId() {
+        return boardId;
     }
 
     public long getThreadCreatorId() {

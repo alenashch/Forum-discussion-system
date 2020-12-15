@@ -22,6 +22,11 @@ public class TestThreadPostBuilder {
     public boolean locked = false;
 
 
+    /**
+     * Class instantiate.
+     *
+     * @return Post
+     */
     public Post createTestPost() {
         LocalDateTime time = LocalDateTime.now();
         return new Post(postId, creatorId, postNumber, body, createTestBoardThread(),
