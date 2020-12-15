@@ -2,21 +2,43 @@ package nl.tudelft.sem.group20.contentserver.services;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+import nl.tudelft.sem.group20.classes.Board;
 import nl.tudelft.sem.group20.contentserver.entities.BoardThread;
 import nl.tudelft.sem.group20.contentserver.repositories.ThreadRepository;
 import nl.tudelft.sem.group20.contentserver.requests.CreateBoardThreadRequest;
 import nl.tudelft.sem.group20.contentserver.requests.EditBoardThreadRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 public class ThreadService {
 
+    @Autowired
     private final transient ThreadRepository threadRepository;
+
+    @Autowired
+    private transient RestTemplate restTemplate;
 
     public ThreadService(ThreadRepository threadRepository) {
         this.threadRepository = threadRepository;
     }
 
+    public boolean authenticateUser (CreateBoardThreadRequest request) {
+
+        Board wow2 = restTemplate.getForObject("http://board-server/board/get/1", Board.class);
+
+        return true;
+
+    }
+
+
+    /**
+     * Get all thraeds in database.
+     *
+     * @return List of BoardThread
+     */
     public List<BoardThread> getThreads() {
         return threadRepository.findAll();
     }
@@ -32,7 +54,7 @@ public class ThreadService {
     public long createThread(CreateBoardThreadRequest request) {
 
         BoardThread toCreate = new BoardThread(request.getTitle(), request.getStatement(),
-            request.getCreatorId(), LocalDateTime.now(), false);
+            request.getCreatorId(), LocalDateTime.now(), false, request.getBoardId());
 
 //        if (threadRepository.getById(request.getId()).isPresent()) {
 //            return -1;

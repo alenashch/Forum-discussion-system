@@ -37,9 +37,9 @@ public class BoardThread {
 
     private boolean locked;        //locked thread or not
 
-    private long boardId; //board it belongs to
+    private long boardId;          //board it belongs to
 
-    @OneToMany(mappedBy = "thread", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "boardThread", cascade = CascadeType.REMOVE)
     @JsonManagedReference
     Set<Post> posts = new HashSet<>();
 
@@ -87,6 +87,24 @@ public class BoardThread {
         this.threadCreatorId = threadCreatorId;
         this.created = created;
         this.locked = locked;
+    }
+
+    /**
+     * Non-empty constructor of BoardThread.
+     *
+     * @param threadTitle     title of thread
+     * @param statement       general statment of thread
+     * @param threadCreatorId person who created thread
+     * @param locked          locked or not
+     */
+    public BoardThread(String threadTitle, String statement, long threadCreatorId,
+                       LocalDateTime created, boolean locked, long boardId) {
+        this.threadTitle = threadTitle;
+        this.statement = statement;
+        this.threadCreatorId = threadCreatorId;
+        this.created = created;
+        this.locked  = locked;
+        this.boardId = boardId;
     }
 
     public Long getId() {

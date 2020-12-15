@@ -26,7 +26,6 @@ public class AuthToken extends StatusResponse {
     @Column(name = "username")
     private String username;
 
-
     /*
      * Creates a failed login token message.
     */

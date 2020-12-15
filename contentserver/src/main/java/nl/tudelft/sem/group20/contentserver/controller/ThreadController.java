@@ -1,7 +1,7 @@
 package nl.tudelft.sem.group20.contentserver.controller;
 
 import java.util.List;
-import nl.tudelft.sem.group20.contentserver.entities.Board;
+import nl.tudelft.sem.group20.classes.Board;
 import nl.tudelft.sem.group20.contentserver.entities.BoardThread;
 import nl.tudelft.sem.group20.contentserver.requests.CreateBoardThreadRequest;
 import nl.tudelft.sem.group20.contentserver.requests.EditBoardThreadRequest;
@@ -47,6 +47,9 @@ public class ThreadController {
             return new ResponseEntity<>("This thread could not be created, it may already exist",
                 HttpStatus.BAD_REQUEST);
         }
+        //ResponseEntity<String> wow = new ResponseEntity<>("A new thread with ID:" + newId + " has been created",
+         //       HttpStatus.CREATED);
+
         return new ResponseEntity<>("A new thread with ID:" + newId + " has been created",
             HttpStatus.CREATED);
     }
@@ -66,7 +69,7 @@ public class ThreadController {
         //Board[] wow = restTemplate.getForObject("http://board-server/board/get", Board[].class);
 
         try {
-            Board   wow2 = restTemplate.getForObject("http://board-server/board/get/2", Board.class);
+            Board   wow2 = restTemplate.getForObject("http://board-server/board/get/1", Board.class);
             System.out.println(wow2);
         } catch (Exception e) {
             //System.out.println("error");
