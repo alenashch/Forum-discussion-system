@@ -5,14 +5,12 @@ import nl.tudelft.sem.group20.contentserver.entities.Post;
 import nl.tudelft.sem.group20.contentserver.requests.CreatePostRequest;
 import nl.tudelft.sem.group20.contentserver.requests.EditPostRequest;
 import nl.tudelft.sem.group20.contentserver.services.PostService;
-import nl.tudelft.sem.group20.shared.AuthRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,8 +30,7 @@ public class PostController {
      */
     @PostMapping(value = "/create")
     @ResponseBody
-    public ResponseEntity<String> createPost(@RequestHeader AuthRequest authRequest,
-                                             @RequestBody CreatePostRequest request) {
+    public ResponseEntity<String> createPost(@RequestBody CreatePostRequest request) {
 
         long newId = postService.createPost(request);
         if (newId == -1) {
@@ -70,8 +67,8 @@ public class PostController {
 
         if (postService.updatePost(request)) {
 
-            return new ResponseEntity<>("The post with ID: " + request.getPostId() + " has been " +
-                "updated",
+            return new ResponseEntity<>("The post with ID: " + request.getPostId() + " has been "
+                    + "updated",
                 HttpStatus.OK);
         }
         return new ResponseEntity<>(

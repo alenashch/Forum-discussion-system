@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 
 public class AuthRequestTest {
+    
     transient String token;
     transient AuthRequest authRequest1;
     transient AuthRequest authRequest2;
@@ -37,7 +38,7 @@ public class AuthRequestTest {
     @Test
     void testNonEmptyConstructor() {
         assertNotNull(authRequest2);
-        assertTrue(authRequest2.getToken().equals(token));
+        assertEquals(authRequest2.getToken(), token);
     }
 
     /**

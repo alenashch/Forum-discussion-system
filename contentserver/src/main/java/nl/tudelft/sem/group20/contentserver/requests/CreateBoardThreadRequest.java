@@ -1,23 +1,22 @@
 package nl.tudelft.sem.group20.contentserver.requests;
 
-/**
- * Request used to create a new thread.
- */
 public class CreateBoardThreadRequest {
 
     private String title;
 
     private String statement;
 
-    private long creatorId;
+    private Long creatorId;
+
+    private Long boardId;
 
     /**
-     * Constructs a new CreateBoardThreadRequest.
-     * @param title title of a new thread as a String.
-     * @param statement 
-     * @param creatorId
+     * Board Thread Request.
+     * @param title title
+     * @param statement statement
+     * @param creatorId creatorId
      */
-    public CreateBoardThreadRequest(String title, String statement, long creatorId) {
+    public CreateBoardThreadRequest(String title, String statement, Long creatorId) {
 
         this.title = title;
         this.statement = statement;
@@ -47,4 +46,13 @@ public class CreateBoardThreadRequest {
     public void setCreatorId(long creatorId) {
         this.creatorId = creatorId;
     }
+
+    public long getBoardId() {
+        return boardId;
+    }
+
+    public void setBoardId(long boardId) {
+        this.boardId = boardId;
+    }
+
 }
