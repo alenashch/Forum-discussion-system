@@ -6,14 +6,17 @@ import java.util.Optional;
 import nl.tudelft.sem.group20.boardserver.repos.BoardRepository;
 import nl.tudelft.sem.group20.boardserver.entities.Board;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 public class BoardService {
 
     private final transient BoardRepository boardRepository;
+    private final transient RestTemplate restTemplate;
 
-    public BoardService(BoardRepository boardRepository) {
+    public BoardService(BoardRepository boardRepository, RestTemplate restTemplate) {
         this.boardRepository = boardRepository;
+        this.restTemplate = restTemplate;
     }
 
     public List<Board> getBoards() {
@@ -31,6 +34,7 @@ public class BoardService {
         if (boardRepository.getById(newBoard.getId()).isPresent()) {
             return -1;
         }
+
         Board.checkCreationTime(newBoard);
         boardRepository.saveAndFlush(newBoard);
         return newBoard.getId();

@@ -22,7 +22,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
-
+import org.springframework.web.client.RestTemplate;
 
 
 @AutoConfigureMockMvc
@@ -56,6 +56,9 @@ public class BoardServiceTest {
 
     @MockBean
     transient BoardRepository boardRepository;
+
+    @MockBean
+    transient RestTemplate restTemplate;
 
     @BeforeEach
     void initialize() {
@@ -96,7 +99,7 @@ public class BoardServiceTest {
         Mockito.when(boardRepository.getOne(3L)).thenReturn(null);
 
 
-        boardService = new BoardService(boardRepository);
+        boardService = new BoardService(boardRepository, restTemplate);
     }
 
     @Test
