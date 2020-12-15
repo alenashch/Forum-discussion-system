@@ -12,7 +12,6 @@ import nl.tudelft.sem.group20.shared.StatusResponse;
 public class AuthToken extends StatusResponse {
 
     @Id
-    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
@@ -25,7 +24,6 @@ public class AuthToken extends StatusResponse {
 
     @Column(name = "username")
     private String username;
-
 
     /*
      * Creates a failed login token message.
@@ -47,7 +45,7 @@ public class AuthToken extends StatusResponse {
     }
 
     public long getId() {
-        return id;
+        return this.id;
     }
 
     public void setId(long id) {

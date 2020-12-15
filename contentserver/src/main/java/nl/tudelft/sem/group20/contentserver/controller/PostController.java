@@ -67,8 +67,8 @@ public class PostController {
 
         if (postService.updatePost(request)) {
 
-            return new ResponseEntity<>("The post with ID: " + request.getPostId() + " has been " +
-                "updated",
+            return new ResponseEntity<>("The post with ID: " + request.getPostId() + " has been "
+                    + "updated",
                 HttpStatus.OK);
         }
         return new ResponseEntity<>(

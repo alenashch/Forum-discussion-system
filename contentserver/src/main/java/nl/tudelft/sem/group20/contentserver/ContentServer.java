@@ -14,8 +14,8 @@ public class ContentServer {
     /**
      * To communicate with other microservices.
      **/
-    @LoadBalanced
     @Bean
+    @LoadBalanced
     public RestTemplate getRestTemplate() {
         return new RestTemplate();
     }
