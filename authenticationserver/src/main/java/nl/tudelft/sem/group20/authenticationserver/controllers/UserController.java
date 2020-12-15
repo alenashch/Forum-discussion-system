@@ -6,6 +6,7 @@ import nl.tudelft.sem.group20.authenticationserver.embeddable.RegisterRequest;
 import nl.tudelft.sem.group20.authenticationserver.entities.AuthToken;
 import nl.tudelft.sem.group20.authenticationserver.services.UserService;
 import nl.tudelft.sem.group20.shared.AuthRequest;
+import nl.tudelft.sem.group20.shared.AuthResponse;
 import nl.tudelft.sem.group20.shared.StatusResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -67,7 +68,7 @@ public class UserController {
      */
     @PostMapping("/authenticate")
     @ResponseBody
-    public StatusResponse authenticate(@RequestBody AuthRequest authRequest) {
+    public AuthResponse authenticate(@RequestBody AuthRequest authRequest) {
         return userService.authenticate(authRequest.getToken());
     }
 
