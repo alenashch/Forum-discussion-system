@@ -2,12 +2,11 @@ package nl.tudelft.sem.group20.boardserver.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -15,6 +14,10 @@ import nl.tudelft.sem.group20.boardserver.BoardServer;
 import nl.tudelft.sem.group20.boardserver.entities.Board;
 import nl.tudelft.sem.group20.boardserver.repos.BoardRepository;
 import nl.tudelft.sem.group20.boardserver.services.BoardService;
+import nl.tudelft.sem.group20.exceptions.UserNotFoundException;
+import nl.tudelft.sem.group20.shared.AuthRequest;
+import nl.tudelft.sem.group20.shared.AuthResponse;
+import nl.tudelft.sem.group20.shared.StatusResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -50,6 +53,11 @@ public class BoardServiceTest {
     transient boolean locked3;
     transient long userId3;
 
+    AuthRequest tokenRequest;
+    StatusResponse failed;
+    StatusResponse studentResponse;
+    StatusResponse teacherResponse;
+
     transient List<Board> boardsList;
 
     transient BoardService boardService;
@@ -80,6 +88,12 @@ public class BoardServiceTest {
         locked3 = false;
         userId3 = 3;
 
+        tokenRequest = new AuthRequest("A random token.");
+
+        failed = new AuthResponse();
+        studentResponse = new AuthResponse(false, "student");
+        teacherResponse = new AuthResponse(true, "teacher");
+
         board1 = new Board(id1, name1, description1, locked1, userId1);
         board2 = new Board(id2, name2, description2, locked2, userId2);
         board3 = new Board(id3, name3, description3, locked3, userId3);
@@ -109,15 +123,33 @@ public class BoardServiceTest {
     }
 
     @Test
-    public void testCreateBoard() {
-        assertEquals(boardService.createBoard(board3), board3.getId());
+    public void testCreateBoardSuccessful() {
+        Mockito.when(restTemplate.postForObject(BoardService.getAuthenticateUserUrl(), tokenRequest, StatusResponse.class))
+                .thenReturn(teacherResponse);
+        assertEquals(boardService.createBoard(board3, tokenRequest), board3.getId());
         verify(boardRepository, times(1)).saveAndFlush(board3);
+    }
+
+    @Test
+    public void testCreateBoardUserNotFound() {
+        Mockito.when(restTemplate.postForObject(BoardService.getAuthenticateUserUrl(), tokenRequest, StatusResponse.class))
+                .thenReturn(failed);
+        assertThrows(UserNotFoundException.class, () -> boardService.createBoard(board1, tokenRequest));
+        verify(boardRepository, times(0)).saveAndFlush(board1);
+    }
+
+    @Test
+    public void testCreateBoardPermissionDenied() {
+        Mockito.when(restTemplate.postForObject(BoardService.getAuthenticateUserUrl(), tokenRequest, StatusResponse.class))
+                .thenReturn(studentResponse);
+        assertThrows(AccessDeniedException.class, () -> boardService.createBoard(board2, tokenRequest));
+        verify(boardRepository, times(0)).saveAndFlush(board2);
     }
 
     @Test
     public void testCreateExistingBoard() {
         //Doesn't create a board if it already exists in the database
-        assertEquals(boardService.createBoard(board2), -1);
+        assertEquals(boardService.createBoard(board2, tokenRequest), -1);
         verify(boardRepository, times(0)).saveAndFlush(board2);
     }
 
