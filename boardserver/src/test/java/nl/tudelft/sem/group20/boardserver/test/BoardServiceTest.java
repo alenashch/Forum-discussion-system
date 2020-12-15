@@ -40,21 +40,21 @@ public class BoardServiceTest {
     transient String name1;
     transient String description1;
     transient boolean locked1;
-    transient long userId1;
+    transient String user1;
 
     transient Board board2;
     transient long id2;
     transient String name2;
     transient String description2;
     transient boolean locked2;
-    transient long userId2;
+    transient String user2;
 
     transient Board board3;
     transient long id3;
     transient String name3;
     transient String description3;
     transient boolean locked3;
-    transient long userId3;
+    transient String user3;
 
     transient AuthRequest tokenRequest;
     transient StatusResponse failed;
@@ -77,19 +77,19 @@ public class BoardServiceTest {
         name1 = "name 1";
         description1 = "description 1";
         locked1 = false;
-        userId1 = 1;
+        user1 = "user1";
 
         id2 = 2;
         name2 = "name 2";
         description2 = "description 2";
         locked2 = false;
-        userId2 = 2;
+        user2 = "user2";
 
         id3 = 3;
         name3 = "name 3";
         description3 = "description 3";
         locked3 = false;
-        userId3 = 3;
+        user3 = "user3";
 
         tokenRequest = new AuthRequest("A random token.");
 
@@ -97,9 +97,9 @@ public class BoardServiceTest {
         studentResponse = new AuthResponse(false, "student");
         teacherResponse = new AuthResponse(true, "teacher");
 
-        board1 = new Board(id1, name1, description1, locked1, userId1);
-        board2 = new Board(id2, name2, description2, locked2, userId2);
-        board3 = new Board(id3, name3, description3, locked3, userId3);
+        board1 = new Board(id1, name1, description1, locked1, user1);
+        board2 = new Board(id2, name2, description2, locked2, user2);
+        board3 = new Board(id3, name3, description3, locked3, user3);
 
 
         boardsList = new ArrayList<>();
@@ -179,7 +179,13 @@ public class BoardServiceTest {
     @Test
     public void testUpdateBoard() {
         board2.setName("New name 2");
-        assertTrue(boardService.updateBoard(board2));
+
+        try {
+            assertTrue(boardService.updateBoard(board2, tokenRequest));
+        } catch (AccessDeniedException e) {
+            e.printStackTrace();
+        }
+
         verify(boardRepository, times(1)).saveAndFlush(board2);
     }
 
@@ -187,7 +193,13 @@ public class BoardServiceTest {
     public void testUpdateNonExistingBoard() {
         //Doesn't update a board that is not in the database
         board3.setName("New name 3");
-        assertFalse(boardService.updateBoard(board3));
+
+        try {
+            assertFalse(boardService.updateBoard(board3, tokenRequest));
+        } catch (AccessDeniedException e) {
+            e.printStackTrace();
+        }
+
         verify(boardRepository, times(0)).saveAndFlush(board3);
     }
 

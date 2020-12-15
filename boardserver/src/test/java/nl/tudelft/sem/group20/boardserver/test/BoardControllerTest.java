@@ -50,7 +50,7 @@ class BoardControllerTest {
 
     @BeforeEach
     void initialize() {
-        board = new Board(1, "Board 1", "description", false, 1);
+        board = new Board(1, "Board 1", "description", false, "user");
         list = Collections.singletonList(board);
     }
 
@@ -130,7 +130,11 @@ class BoardControllerTest {
     @Test
     void editBoardSuccessful() {
 
-        when(boardService.updateBoard(board)).thenReturn(true);
+        try {
+            when(boardService.updateBoard(board, new AuthRequest())).thenReturn(true);
+        } catch (AccessDeniedException e) {
+            e.printStackTrace();
+        }
 
         try {
             mockMvc.perform(post("/board/edit")
@@ -151,7 +155,11 @@ class BoardControllerTest {
     @Test
     void editBoardFailure() {
 
-        when(boardService.updateBoard(board)).thenReturn(false);
+        try {
+            when(boardService.updateBoard(board, new AuthRequest())).thenReturn(false);
+        } catch (AccessDeniedException e) {
+            e.printStackTrace();
+        }
 
         try {
             mockMvc.perform(post("/board/edit")

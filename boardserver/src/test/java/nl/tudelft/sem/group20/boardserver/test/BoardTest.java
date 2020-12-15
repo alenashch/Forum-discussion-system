@@ -22,7 +22,7 @@ public class BoardTest {
     transient String description;
     transient boolean locked;
     transient LocalDateTime validEdited;
-    transient long userId;
+    transient String user;
     transient Board board2;
     transient Board board2Copy;
 
@@ -37,11 +37,11 @@ public class BoardTest {
         name = "Board 2";
         description = "Description of board 2";
         locked = false;
-        userId = 1;
+        user = "user";
 
-        board2 = new Board(id, name, description, locked, userId);
+        board2 = new Board(id, name, description, locked, user);
         board2Copy = new Board(board2.getId(), board2.getName(), board2.getDescription(),
-                board2.isLocked(), userId);
+                board2.isLocked(), user);
 
     }
 
@@ -87,8 +87,8 @@ public class BoardTest {
 
     @Test
     public void testGetAndSetUserId() {
-        board.setUserId(2);
-        assertEquals(2, board.getUserId());
+        board.setUsername("user2");
+        assertEquals("user2", board.getUsername());
     }
 
     @Test

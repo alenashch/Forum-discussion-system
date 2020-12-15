@@ -19,7 +19,8 @@ public class BoardService {
     private final transient BoardRepository boardRepository;
     private final transient RestTemplate restTemplate;
 
-    private final static transient String authenticateUserUrl = "http://user/authenticate";
+    private final static transient String authenticateUserUrl =
+            "http://authentication-server/user/authenticate";
 
     public BoardService(BoardRepository boardRepository, RestTemplate restTemplate) {
         this.boardRepository = boardRepository;
@@ -71,7 +72,9 @@ public class BoardService {
      * @param updatedBoard - a board to be updated.
      * @return false if the Board does not exist in the database, true otherwise.
      */
-    public boolean updateBoard(Board updatedBoard) {
+    public boolean updateBoard(Board updatedBoard, AuthRequest tokenRequest) throws UserNotFoundException, AccessDeniedException {
+        StatusResponse response = restTemplate.postForObject(authenticateUserUrl, tokenRequest, StatusResponse.class);
+
         if (boardRepository.getById(updatedBoard.getId()).isEmpty()) {
             return false;
         }
