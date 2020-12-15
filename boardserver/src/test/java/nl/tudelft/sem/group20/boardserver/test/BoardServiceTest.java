@@ -57,9 +57,10 @@ public class BoardServiceTest {
     transient String user3;
 
     transient AuthRequest tokenRequest;
-    transient StatusResponse failed;
-    transient StatusResponse studentResponse;
-    transient StatusResponse teacherResponse;
+    transient AuthResponse failed;
+    transient AuthResponse studentResponse;
+    transient AuthResponse teacherResponse;
+    transient AuthResponse randomUserResponse;
 
     transient List<Board> boardsList;
 
@@ -77,13 +78,13 @@ public class BoardServiceTest {
         name1 = "name 1";
         description1 = "description 1";
         locked1 = false;
-        user1 = "user1";
+        user1 = "student";
 
         id2 = 2;
         name2 = "name 2";
         description2 = "description 2";
         locked2 = false;
-        user2 = "user2";
+        user2 = "teacher";
 
         id3 = 3;
         name3 = "name 3";
@@ -94,10 +95,11 @@ public class BoardServiceTest {
         tokenRequest = new AuthRequest("A random token.");
 
         failed = new AuthResponse();
-        studentResponse = new AuthResponse(false, "student");
-        teacherResponse = new AuthResponse(true, "teacher");
+        studentResponse = new AuthResponse(false, user1);
+        teacherResponse = new AuthResponse(true, user2);
+        randomUserResponse = new AuthResponse(true, user3);
 
-        board1 = new Board(id1, name1, description1, locked1, user1);
+        board1 = new Board(id1, name1, description1, locked1, user2);
         board2 = new Board(id2, name2, description2, locked2, user2);
         board3 = new Board(id3, name3, description3, locked3, user3);
 
@@ -128,35 +130,39 @@ public class BoardServiceTest {
     @Test
     public void testCreateBoardSuccessful() {
         Mockito.when(restTemplate.postForObject(BoardService.getAuthenticateUserUrl(),
-                        tokenRequest, StatusResponse.class))
+                        tokenRequest, AuthResponse.class))
                 .thenReturn(teacherResponse);
 
         try {
-            assertEquals(boardService.createBoard(board3, tokenRequest), board3.getId());
+            assertEquals(boardService.createBoard(board1, tokenRequest), board1.getId());
         } catch (AccessDeniedException e) {
             e.printStackTrace();
         }
 
-        verify(boardRepository, times(1)).saveAndFlush(board3);
+        verify(boardRepository, times(1)).saveAndFlush(board1);
     }
 
     @Test
     public void testCreateBoardUserNotFound() {
         Mockito.when(restTemplate.postForObject(BoardService.getAuthenticateUserUrl(),
-                        tokenRequest, StatusResponse.class))
+                        tokenRequest, AuthResponse.class))
                 .thenReturn(failed);
+
         assertThrows(UserNotFoundException.class,
                         () -> boardService.createBoard(board1, tokenRequest));
+
         verify(boardRepository, times(0)).saveAndFlush(board1);
     }
 
     @Test
     public void testCreateBoardPermissionDenied() {
         Mockito.when(restTemplate.postForObject(BoardService.getAuthenticateUserUrl(),
-                        tokenRequest, StatusResponse.class))
+                        tokenRequest, AuthResponse.class))
                 .thenReturn(studentResponse);
+
         assertThrows(AccessDeniedException.class,
                         () -> boardService.createBoard(board2, tokenRequest));
+
         verify(boardRepository, times(0)).saveAndFlush(board2);
     }
 
@@ -164,7 +170,7 @@ public class BoardServiceTest {
     public void testCreateExistingBoard() {
         //Doesn't create a board if it already exists in the database
         Mockito.when(restTemplate.postForObject(BoardService.getAuthenticateUserUrl(),
-                        tokenRequest, StatusResponse.class))
+                        tokenRequest, AuthResponse.class))
                 .thenReturn(teacherResponse);
 
         try {
@@ -178,7 +184,9 @@ public class BoardServiceTest {
 
     @Test
     public void testUpdateBoard() {
-        board2.setName("New name 2");
+        Mockito.when(restTemplate.postForObject(BoardService.getAuthenticateUserUrl(),
+                tokenRequest, AuthResponse.class))
+                .thenReturn(teacherResponse);
 
         try {
             assertTrue(boardService.updateBoard(board2, tokenRequest));
@@ -190,9 +198,36 @@ public class BoardServiceTest {
     }
 
     @Test
+    public void testUpdateBoardUserNotFound() {
+        Mockito.when(restTemplate.postForObject(BoardService.getAuthenticateUserUrl(),
+                tokenRequest, AuthResponse.class))
+                .thenReturn(failed);
+
+        assertThrows(UserNotFoundException.class,
+                () -> boardService.updateBoard(board1, tokenRequest));
+
+        verify(boardRepository, times(0)).saveAndFlush(board1);
+    }
+
+    @Test
+    public void testUpdateBoardPermissionDenied() {
+        Mockito.when(restTemplate.postForObject(BoardService.getAuthenticateUserUrl(),
+                tokenRequest, AuthResponse.class))
+                .thenReturn(studentResponse);
+
+        assertThrows(AccessDeniedException.class,
+                () -> boardService.updateBoard(board1, tokenRequest));
+
+        verify(boardRepository, times(0)).saveAndFlush(board1);
+    }
+
+    @Test
     public void testUpdateNonExistingBoard() {
         //Doesn't update a board that is not in the database
         board3.setName("New name 3");
+        Mockito.when(restTemplate.postForObject(BoardService.getAuthenticateUserUrl(),
+                tokenRequest, AuthResponse.class))
+                .thenReturn(randomUserResponse);
 
         try {
             assertFalse(boardService.updateBoard(board3, tokenRequest));
