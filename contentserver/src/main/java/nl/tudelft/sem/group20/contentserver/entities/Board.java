@@ -1,11 +1,12 @@
 package nl.tudelft.sem.group20.contentserver.entities;
 
+import java.time.LocalDateTime;
+import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.time.LocalDateTime;
-import java.util.Objects;
+
 
 @Entity
 public class Board {
@@ -125,8 +126,8 @@ public class Board {
         return Objects.equals(id, board.getId());
     }
 
-    public static void checkCreationTime(Board board){
-        if(board.getCreated()==null){
+    public static void checkCreationTime(Board board) {
+        if (board.getCreated() == null) {
             board.setCreated(LocalDateTime.now());
             board.setEdited(LocalDateTime.now());
         }

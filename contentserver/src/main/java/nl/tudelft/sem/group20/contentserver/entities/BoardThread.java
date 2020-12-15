@@ -1,31 +1,35 @@
 package nl.tudelft.sem.group20.contentserver.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import nl.tudelft.sem.group20.contentserver.serialization.LocalDateTimeDeserializer;
-import nl.tudelft.sem.group20.contentserver.serialization.LocalDateTimeSerializer;
-
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.time.LocalDateTime;
-import java.util.Objects;
+import nl.tudelft.sem.group20.contentserver.serialization.LocalDateTimeDeserializer;
+import nl.tudelft.sem.group20.contentserver.serialization.LocalDateTimeSerializer;
 
-@Entity
+@Entity(name = "thread")
 @Table(name = "thread")
 public class BoardThread {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private long id;
 
     private String threadTitle;    //title of thread
 
     private String statement;      //Main question or statement of thread
 
-    private String threadCreator;  //name of thread creator
+    private long threadCreatorId;  //name of thread creator
 
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
@@ -35,9 +39,13 @@ public class BoardThread {
 
     private long boardId; //board it belongs to
 
+    @OneToMany(mappedBy = "thread", cascade = CascadeType.REMOVE)
+    @JsonManagedReference
+    Set<Post> posts = new HashSet<>();
+
+
     /**
      * Empty constructor of Board Thread
-     *
      */
 
     public BoardThread() {
@@ -45,20 +53,38 @@ public class BoardThread {
     }
 
     /**
-     * Non-empty constructor of BoardThread
+     * Non-empty constructor of BoardThread.
      *
-     * @param id id of item
-     * @param threadTitle title of thread
-     * @param statement general statment of thread
-     * @param threadCreator person who created thread
-     * @param locked locked or not
+     * @param id              id of item
+     * @param threadTitle     title of thread
+     * @param statement       general statment of thread
+     * @param threadCreatorId person who created thread
+     * @param locked          locked or not
      */
-    public BoardThread(Long id, String threadTitle, String statement, String threadCreator, LocalDateTime created,
+    public BoardThread(Long id, String threadTitle, String statement, long threadCreatorId,
+                       LocalDateTime created,
                        boolean locked) {
         this.id = id;
         this.threadTitle = threadTitle;
         this.statement = statement;
-        this.threadCreator = threadCreator;
+        this.threadCreatorId = threadCreatorId;
+        this.created = created;
+        this.locked = locked;
+    }
+
+    /**
+     * Non-empty constructor of BoardThread.
+     *
+     * @param threadTitle     title of thread
+     * @param statement       general statment of thread
+     * @param threadCreatorId person who created thread
+     * @param locked          locked or not
+     */
+    public BoardThread(String threadTitle, String statement, long threadCreatorId,
+                       LocalDateTime created, boolean locked) {
+        this.threadTitle = threadTitle;
+        this.statement = statement;
+        this.threadCreatorId = threadCreatorId;
         this.created = created;
         this.locked = locked;
     }
@@ -67,7 +93,7 @@ public class BoardThread {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -87,14 +113,6 @@ public class BoardThread {
         this.statement = statement;
     }
 
-    public String getThreadCreator() {
-        return threadCreator;
-    }
-
-    public void setThreadCreator(String threadCreator) {
-        this.threadCreator = threadCreator;
-    }
-
     public LocalDateTime getCreated() {
         return created;
     }
@@ -111,6 +129,7 @@ public class BoardThread {
         this.locked = locked;
     }
 
+
     public void setBoardId(long boardId) {
         this.boardId = boardId;
     }
@@ -119,12 +138,42 @@ public class BoardThread {
         return boardId;
     }
 
+    public long getThreadCreatorId() {
+        return threadCreatorId;
+    }
+
+    public void setThreadCreatorId(long threadCreatorId) {
+        this.threadCreatorId = threadCreatorId;
+    }
+
+    public Set<Post> getPosts() {
+        return posts;
+    }
+
+    public void setPosts(Set<Post> posts) {
+        this.posts = posts;
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         BoardThread that = (BoardThread) o;
-        return id.equals(that.id);
+        return id == that.id;
+    }
+
+    public void addPost(Post post) {
+
+        posts.add(post);
+    }
+
+    public void removePost(Post post) {
+
+        posts.remove(post);
     }
 
 
@@ -136,13 +185,13 @@ public class BoardThread {
     @Override
     public String toString() {
         return "Thread{"
-                + "id=" + id
-                + ", threadTitle='" + threadTitle + '\''
-                + ", statement='" + statement + '\''
-                + ", threadCreator='" + threadCreator + '\''
-                + ", created=" + created
-                + ", locked=" + locked
-                + '}';
+            + "id=" + id
+            + ", threadTitle='" + threadTitle + '\''
+            + ", statement='" + statement + '\''
+            + ", threadCreatorId='" + threadCreatorId + '\''
+            + ", created=" + created
+            + ", locked=" + locked
+            + '}';
     }
 
 }

@@ -1,19 +1,19 @@
 package nl.tudelft.sem.group20.authenticationserver.services;
 
-import static nl.tudelft.sem.group20.authenticationserver.embeddable.StatusResponse.Status.fail;
-import static nl.tudelft.sem.group20.authenticationserver.embeddable.StatusResponse.Status.success;
+import static nl.tudelft.sem.group20.shared.StatusResponse.Status.fail;
+import static nl.tudelft.sem.group20.shared.StatusResponse.Status.success;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
-import nl.tudelft.sem.group20.authenticationserver.embeddable.AuthResponse;
 import nl.tudelft.sem.group20.authenticationserver.embeddable.RegisterRequest;
-import nl.tudelft.sem.group20.authenticationserver.embeddable.StatusResponse;
 import nl.tudelft.sem.group20.authenticationserver.entities.AuthToken;
 import nl.tudelft.sem.group20.authenticationserver.entities.User;
 import nl.tudelft.sem.group20.authenticationserver.repos.AuthTokenRepository;
 import nl.tudelft.sem.group20.authenticationserver.repos.UserRepository;
+import nl.tudelft.sem.group20.shared.AuthResponse;
+import nl.tudelft.sem.group20.shared.StatusResponse;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -79,8 +79,8 @@ public class UserService {
                     String token = getRandomToken(20);
                     Optional<AuthToken> optionalAuthToken = authTokenRepository.findByToken(token);
                     if (optionalAuthToken.isEmpty()) {
-                        AuthToken loginToken =
-                                new AuthToken(token, user.isType());
+                        AuthToken loginToken = new AuthToken(token,
+                                user.isType(), user.getUsername());
                         authTokenRepository.save(loginToken);
 
                         return loginToken;
@@ -117,7 +117,7 @@ public class UserService {
         if (tokenOptional.isPresent()) {
             AuthToken token = tokenOptional.get();
 
-            return new AuthResponse(token.isType());
+            return new AuthResponse(token.isType(), token.getUsername());
         }
         return new  AuthResponse();
     }

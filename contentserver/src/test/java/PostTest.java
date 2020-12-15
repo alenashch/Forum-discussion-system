@@ -2,17 +2,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
-import nl.tudelft.sem.group20.contentserver.ContentServer;
 import nl.tudelft.sem.group20.contentserver.entities.Post;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 
 //@RunWith(SpringJUnit4ClassRunner.class)
@@ -37,9 +33,11 @@ public class PostTest {
         demoNumber2 = 1;
         demoBody2 = "This is a demo post.";
         demoCreated2 = LocalDateTime.now();
-        demoPost2 = new Post(demoId2, demoNumber2, demoBody2, demoCreated2);
-        demoPost2Copy = new Post(demoPost2.getId(), demoPost2.getPostNumber(), demoPost2.getBody(),
-                demoPost2.getCreated());
+        demoPost2 = new Post(demoId2, demoId2, demoNumber2, demoBody2, null, demoCreated2);
+        demoPost2Copy = new Post(demoPost2.getId(), demoPost2.getCreatorId(),
+            demoPost2.getPostNumber(),
+            demoPost2.getBody(), null,
+            demoPost2.getCreated());
     }
 
     @Test
@@ -153,5 +151,11 @@ public class PostTest {
                 + ", edited=" + demoPost2.getEdited()
                 + '}';
         assertEquals(string, demoPost2.toString());
+    }
+
+    @Test
+    void testSetBoard() {
+
+
     }
 }

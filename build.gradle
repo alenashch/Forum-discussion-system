@@ -52,7 +52,6 @@ subprojects {
 	apply plugin: 'info.solidsoft.pitest'
 
 
-
 	group = 'nl.tudelft.cse.sem.group20'
 	version = '0.0.1-SNAPSHOT'
 	sourceCompatibility = 11
@@ -69,6 +68,7 @@ subprojects {
 
 
 	dependencies {
+
 		implementation 'org.springframework.boot:spring-boot-starter'
 		implementation 'org.springframework.boot:spring-boot-starter-web'
 		implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -145,6 +145,7 @@ subprojects {
 	pmd {
 		incrementalAnalysis = true
 	}
+
 
 	apply plugin: 'info.solidsoft.pitest'
 	apply plugin: 'io.spring.dependency-management'
