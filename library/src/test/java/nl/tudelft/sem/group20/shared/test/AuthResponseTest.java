@@ -1,15 +1,15 @@
-package nl.tudelft.sem.group20.authenticationserver.test;
+package nl.tudelft.sem.group20.shared.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import nl.tudelft.sem.group20.shared.AuthResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class AuthResponseTest {
 
+
+public class AuthResponseTest {
     private transient AuthResponse statusRes;
 
     @BeforeEach
@@ -33,3 +33,5 @@ public class AuthResponseTest {
         assertEquals("abc", statusRes.getUsername());
     }
 }
+
+

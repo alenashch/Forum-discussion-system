@@ -1,7 +1,7 @@
 package nl.tudelft.sem.group20.authenticationserver.test;
 
-import static nl.tudelft.sem.group20.authenticationserver.embeddable.StatusResponse.Status.fail;
-import static nl.tudelft.sem.group20.authenticationserver.embeddable.StatusResponse.Status.success;
+import static nl.tudelft.sem.group20.shared.StatusResponse.Status.fail;
+import static nl.tudelft.sem.group20.shared.StatusResponse.Status.success;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -15,14 +15,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import nl.tudelft.sem.group20.authenticationserver.AuthenticationServer;
-import nl.tudelft.sem.group20.authenticationserver.embeddable.AuthRequest;
 import nl.tudelft.sem.group20.authenticationserver.embeddable.RegisterRequest;
-import nl.tudelft.sem.group20.authenticationserver.embeddable.StatusResponse;
 import nl.tudelft.sem.group20.authenticationserver.entities.AuthToken;
 import nl.tudelft.sem.group20.authenticationserver.entities.User;
 import nl.tudelft.sem.group20.authenticationserver.repos.AuthTokenRepository;
 import nl.tudelft.sem.group20.authenticationserver.repos.UserRepository;
 import nl.tudelft.sem.group20.authenticationserver.services.UserService;
+import nl.tudelft.sem.group20.shared.StatusResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -123,9 +122,9 @@ public class UserServiceTest {
 
         token1 = "abc";
 
-        AuthToken authToken = new AuthToken(token1, true);
-        AuthToken authToken2 = new AuthToken("abc2", true);
-        AuthToken authToken3 = new AuthToken("abc3", true);
+        AuthToken authToken = new AuthToken(token1, true, "abc4");
+        AuthToken authToken2 = new AuthToken("abc2", true, "abc5");
+        AuthToken authToken3 = new AuthToken("abc3", true, "abc6");
 
         authTokens.add(authToken);
         authTokens.add(authToken2);
@@ -141,7 +140,7 @@ public class UserServiceTest {
                 .then(returnsFirstArg());
 
         Mockito.when(tokenRepository.findByToken("random7"))
-                .thenReturn(Optional.of(new AuthToken("random7", false)));
+                .thenReturn(Optional.of(new AuthToken("random7", false, "abc7")));
 
         userService = new UserService(userRepository, tokenRepository);
     }
