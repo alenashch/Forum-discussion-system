@@ -34,18 +34,21 @@ public class BoardServiceTest {
     transient String name1;
     transient String description1;
     transient boolean locked1;
+    transient long userId1;
 
     transient Board board2;
     transient long id2;
     transient String name2;
     transient String description2;
     transient boolean locked2;
+    transient long userId2;
 
     transient Board board3;
     transient long id3;
     transient String name3;
     transient String description3;
     transient boolean locked3;
+    transient long userId3;
 
     transient List<Board> boardsList;
 
@@ -60,20 +63,23 @@ public class BoardServiceTest {
         name1 = "name 1";
         description1 = "description 1";
         locked1 = false;
+        userId1 = 1;
 
         id2 = 2;
         name2 = "name 2";
         description2 = "description 2";
         locked2 = false;
+        userId2 = 2;
 
         id3 = 3;
         name3 = "name 3";
         description3 = "description 3";
         locked3 = false;
+        userId3 = 3;
 
-        board1 = new Board(id1, name1, description1, locked1);
-        board2 = new Board(id2, name2, description2, locked2);
-        board3 = new Board(id3, name3, description3, locked3);
+        board1 = new Board(id1, name1, description1, locked1, userId1);
+        board2 = new Board(id2, name2, description2, locked2, userId2);
+        board3 = new Board(id3, name3, description3, locked3, userId3);
 
 
         boardsList = new ArrayList<>();

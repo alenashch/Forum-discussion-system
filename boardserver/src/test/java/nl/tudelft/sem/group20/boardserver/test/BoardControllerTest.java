@@ -52,8 +52,8 @@ class BoardControllerTest {
 
     @BeforeEach
     void initialize() {
-        board = new Board(1, "Board 1", "description", false);
-        list = Collections.singletonList(new Board(1, "Board 1", "description", false));
+        board = new Board(1, "Board 1", "description", false, 1);
+        list = Collections.singletonList(board);
     }
 
 
