@@ -35,7 +35,10 @@ public class Board {
 
     @CreationTimestamp
     @Column
-    transient private LocalDateTime created;
+    private LocalDateTime created;
+
+    @Column
+    private long userId;
 
     public Board() {
 
@@ -50,13 +53,14 @@ public class Board {
      * @param locked Indicates whether the board is locked or not.
      */
 
-    public Board(long id, String name, String description, boolean locked) {
+    public Board(long id, String name, String description, boolean locked, long userId) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.locked = locked;
         this.created = LocalDateTime.now();
         this.edited = created;
+        this.userId = userId;
     }
 
     /**
@@ -66,12 +70,13 @@ public class Board {
      * @param description - details about the board.
      * @param locked - true if a board is locked, false otherwise.
      */
-    public Board(String name, String description, boolean locked) {
+    public Board(String name, String description, boolean locked, long userId) {
         this.name = name;
         this.description = description;
         this.locked = locked;
         this.created = LocalDateTime.now();
         this.edited = created;
+        this.userId = userId;
     }
 
     public long getId() {
@@ -98,7 +103,7 @@ public class Board {
         this.description = description;
     }
 
-    public boolean getLocked() {
+    public boolean isLocked() {
         return locked;
     }
 
@@ -124,6 +129,14 @@ public class Board {
 
     public void setEdited(LocalDateTime edited) {
         this.edited = edited;
+    }
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
     }
 
     @Override
