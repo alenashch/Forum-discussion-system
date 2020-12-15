@@ -33,6 +33,8 @@ public class BoardThread {
 
     private boolean locked;        //locked thread or not
 
+    private long boardId; //board it belongs to
+
     /**
      * Empty constructor of Board Thread
      *
@@ -107,6 +109,14 @@ public class BoardThread {
 
     public void setLocked(boolean locked) {
         this.locked = locked;
+    }
+
+    public void setBoardId(long boardId) {
+        this.boardId = boardId;
+    }
+
+    public long getBoardId() {
+        return boardId;
     }
 
     @Override
