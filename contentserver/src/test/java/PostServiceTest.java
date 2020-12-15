@@ -4,8 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -14,6 +16,7 @@ import java.util.Optional;
 import nl.tudelft.sem.group20.contentserver.ContentServer;
 import nl.tudelft.sem.group20.contentserver.entities.Post;
 import nl.tudelft.sem.group20.contentserver.repositories.PostRepository;
+import nl.tudelft.sem.group20.contentserver.repositories.ThreadRepository;
 import nl.tudelft.sem.group20.contentserver.services.PostService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,11 +53,17 @@ public class PostServiceTest {
 
     transient PostService postService;
 
+    private transient TestThreadPostBuilder builder;
+
     @MockBean
     transient PostRepository postRepository;
 
+    @MockBean
+    transient ThreadRepository threadRepository;
+
     @BeforeEach
     void initialize() {
+
         demoId1 = 1;
         demoId2 = 2;
         demoId3 = 3;
@@ -71,23 +80,26 @@ public class PostServiceTest {
         demoCreated2 = LocalDateTime.now().plusHours(2);
         demoCreated3 = LocalDateTime.now().minusDays(1);
 
-        demoPost1 = new Post(demoId1, demoNumber1, demoBody1, demoCreated1);
-        demoPost2 = new Post(demoId2, demoNumber2, demoBody2, demoCreated2);
-        demoPost3 = new Post(demoId3, demoNumber3, demoBody3, demoCreated3);
+        demoPost1 = new Post(demoNumber1, demoId1, demoBody1, null, demoCreated1);
+        demoPost2 = new Post(demoNumber2, demoId2, demoBody2, null, demoCreated2);
+        demoPost3 = new Post(demoNumber3, demoId3, demoBody3, null, demoCreated3);
 
         posts = new ArrayList<>();
         posts.add(demoPost1);
         posts.add(demoPost2);
 
         postRepository = Mockito.mock(PostRepository.class);
-        Mockito.when(postRepository.findAll())
-                .thenReturn(posts);
-        Mockito.when(postRepository.saveAndFlush(any(Post.class)))
-                .then(returnsFirstArg());
-        Mockito.when(postRepository.getById(2))
-                .thenReturn(Optional.of(demoPost2));
 
-        postService = new PostService(postRepository);
+        builder = new TestThreadPostBuilder();
+
+        Mockito.when(postRepository.findAll())
+            .thenReturn(posts);
+        Mockito.when(postRepository.saveAndFlush(any(Post.class)))
+            .then(returnsFirstArg());
+        Mockito.when(postRepository.getById(builder.getPostId()))
+            .thenReturn(Optional.of(demoPost2));
+
+        postService = new PostService(postRepository, threadRepository);
     }
 
     @Test
@@ -97,14 +109,20 @@ public class PostServiceTest {
 
     @Test
     void testCreatePostSuccessful() {
-        assertEquals(postService.createPost(demoPost3), demoPost3.getId());
 
-        verify(postRepository, times(1)).saveAndFlush(demoPost3);
+        when(threadRepository.getById(builder.getThreadId()))
+            .thenReturn(Optional.of(builder.createTestBoardThread()));
+        builder.setPostId(demoPost2.getId());
+        assertEquals(0, postService.createPost(builder.createTestCreatePostRequest()));
+
+        verify(postRepository, times(1)).saveAndFlush(any());
     }
 
     @Test
     void testCreatePostUnsuccessful() {
-        assertEquals(-1, postService.createPost(demoPost2));
+
+        builder.setPostId(demoPost2.getId());
+        assertEquals(-1, postService.createPost(builder.createTestCreatePostRequest()));
 
         //check that no post was added
         verify(postRepository, times(0)).saveAndFlush(any(Post.class));
@@ -114,16 +132,25 @@ public class PostServiceTest {
     void updatePostSuccessful() {
         demoPost2.setBody("Updated body.");
 
-        assertTrue(postService.updatePost(demoPost2));
-        verify(postRepository, times(1)).saveAndFlush(demoPost2);
+        builder.setBody(demoPost2.getBody());
+        builder.setPostId(demoPost2.getId());
+
+        when(postRepository.getById(anyLong()))
+            .thenReturn(Optional.of(builder.createTestPost()));
+        when(threadRepository.getById(anyLong()))
+            .thenReturn(Optional.of(builder.createTestBoardThread()));
+
+        assertTrue(postService.updatePost(builder.createTestEditPostRequest()));
+        verify(postRepository, times(1)).saveAndFlush(any());
     }
 
     @Test
     void updatePostUnsuccessful() {
         Mockito.when(postRepository.getById(3))
-                .thenReturn(Optional.empty());
+            .thenReturn(Optional.empty());
 
-        assertFalse(postService.updatePost(demoPost3));
+        builder.setPostId(3);
+        assertFalse(postService.updatePost(builder.createTestEditPostRequest()));
         verify(postRepository, times(0)).saveAndFlush(any(Post.class));
     }
 
