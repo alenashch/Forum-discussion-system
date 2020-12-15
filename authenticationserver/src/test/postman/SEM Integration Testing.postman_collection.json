@@ -1,0 +1,229 @@
+{
+	"info": {
+		"_postman_id": "ed6393be-c815-4bd7-b637-4ab79e5fc754",
+		"name": "SEM Integration Testing",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Test Create User",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \n\t\"username\":\"abc\",\n\t\"email\":\"abc@abc.nl\",\n\t\"password\":\"test123\"\n}"
+				},
+				"url": {
+					"raw": "localhost:authentication-server:8083/create",
+					"host": [
+						"localhost:authentication-server"
+					],
+					"port": "8083",
+					"path": [
+						"create"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "Abc",
+							"disabled": true
+						},
+						{
+							"key": "email",
+							"value": "abc@abc.nl",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "Kaas",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Test Login User",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \n\t\"email\":\"abc@abc.nl\",\n\t\"password\":\"test123\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8083/user/login",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"user",
+						"login"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "Abc",
+							"disabled": true
+						},
+						{
+							"key": "email",
+							"value": "abc@abc.nl",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "Kaas",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Test Authenticate True",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \n\t\"email\":\"abc@abc.nl\",\n\t\"password\":\"test123\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8083/user/login",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"user",
+						"login"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "Abc",
+							"disabled": true
+						},
+						{
+							"key": "email",
+							"value": "abc@abc.nl",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "Kaas",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Test Authenticate False",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \n\t\"token\":\"abc\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8083/user/authenticate",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"user",
+						"authenticate"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "Abc",
+							"disabled": true
+						},
+						{
+							"key": "email",
+							"value": "abc@abc.nl",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "Kaas",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Test Logout",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \n\t\"token\":\"\\\\H@TlL6NPo;x^rfEKGi8\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8083/user/logout",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"user",
+						"logout"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "Abc",
+							"disabled": true
+						},
+						{
+							"key": "email",
+							"value": "abc@abc.nl",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "Kaas",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

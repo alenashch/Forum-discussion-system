@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.google.inject.internal.cglib.reflect.$FastClass;
 import nl.tudelft.sem.group20.authenticationserver.entities.AuthToken;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,12 +17,12 @@ public class AuthTokenTest {
 
     @BeforeEach
     void setUp() {
-        authToken = new AuthToken(token, false);
+        authToken = new AuthToken(token, false, "abc");
     }
 
     @Test
     void constructorTest() {
-        authToken = new AuthToken(token, false);
+        authToken = new AuthToken(token, false, "abc");
         assertEquals(token, authToken.getToken());
         assertFalse(authToken.isType());
     }
