@@ -43,18 +43,15 @@ public class BoardService {
      *      if creation was successful.
      */
     public long createBoard(Board newBoard, AuthRequest tokenRequest) throws UserNotFoundException, AccessDeniedException {
-        StatusResponse response = restTemplate.postForObject(authenticateUserUrl, tokenRequest, StatusResponse.class);
+        AuthResponse response = restTemplate.postForObject(authenticateUserUrl, tokenRequest, AuthResponse.class);
 
         assert response != null;
 
         if (response.getStatus() == StatusResponse.Status.fail) {
             throw new UserNotFoundException(
                     "This token does not belong to a legitimate user. Board cannot be created");
-        } else {
-            AuthResponse castResponse = (AuthResponse) response;
-            if (!castResponse.isType()) {
-                throw new AccessDeniedException("This type of user cannot create a board.");
-            }
+        } else if (!response.isType()) {
+            throw new AccessDeniedException("This type of user cannot create a board.");
         }
 
         if (boardRepository.getById(newBoard.getId()).isPresent()) {
@@ -73,7 +70,17 @@ public class BoardService {
      * @return false if the Board does not exist in the database, true otherwise.
      */
     public boolean updateBoard(Board updatedBoard, AuthRequest tokenRequest) throws UserNotFoundException, AccessDeniedException {
-        StatusResponse response = restTemplate.postForObject(authenticateUserUrl, tokenRequest, StatusResponse.class);
+        AuthResponse response = restTemplate.postForObject(authenticateUserUrl, tokenRequest, AuthResponse.class);
+
+        assert response != null;
+
+        if (response.getStatus() == StatusResponse.Status.fail) {
+            throw new UserNotFoundException(
+                    "This token does not belong to a legitimate user. Board cannot be created");
+        } else {
+            if (!updatedBoard.getUsername().equals(response.getUsername()))
+                throw new AccessDeniedException("This user does not have the permission to edit this board.");
+        }
 
         if (boardRepository.getById(updatedBoard.getId()).isEmpty()) {
             return false;
