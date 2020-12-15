@@ -1,7 +1,9 @@
 package nl.tudelft.sem.group20.contentserver.controller;
 
+import java.util.Arrays;
 import java.util.List;
 
+import nl.tudelft.sem.group20.contentserver.entities.Board;
 import nl.tudelft.sem.group20.contentserver.entities.BoardThread;
 import nl.tudelft.sem.group20.contentserver.services.ThreadService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 @RestController
 @RequestMapping(path = "/thread")
@@ -21,6 +24,9 @@ public class ThreadController {
 
     @Autowired
     private transient ThreadService threadService;
+
+    @Autowired
+    private transient RestTemplate restTemplate;
 
 
     /**
@@ -53,6 +59,20 @@ public class ThreadController {
     @GetMapping("/get")
     @ResponseBody
     public List<BoardThread> getThreads() {
+        RestTemplate rest = new RestTemplate();
+
+        System.out.println("here");//BOARD-SERVER
+        //restTemplate.get
+        Board[] wow = restTemplate.getForObject("http://board-server/board/get", Board[].class);
+
+        try{
+            Board   wow2 = restTemplate.getForObject("http://board-server/board/get/2", Board.class);
+            System.out.println(wow2);
+        } catch (Exception e) {
+            //System.out.println("error");
+            System.out.println(e);
+        }
+
 
         return threadService.getThreads();
     }
