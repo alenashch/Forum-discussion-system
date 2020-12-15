@@ -2,7 +2,10 @@ package nl.tudelft.sem.group20.boardserver.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertNull;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -124,32 +127,52 @@ public class BoardServiceTest {
 
     @Test
     public void testCreateBoardSuccessful() {
-        Mockito.when(restTemplate.postForObject(BoardService.getAuthenticateUserUrl(), tokenRequest, StatusResponse.class))
+        Mockito.when(restTemplate.postForObject(BoardService.getAuthenticateUserUrl(),
+                        tokenRequest, StatusResponse.class))
                 .thenReturn(teacherResponse);
-        assertEquals(boardService.createBoard(board3, tokenRequest), board3.getId());
+
+        try {
+            assertEquals(boardService.createBoard(board3, tokenRequest), board3.getId());
+        } catch (AccessDeniedException e) {
+            e.printStackTrace();
+        }
+
         verify(boardRepository, times(1)).saveAndFlush(board3);
     }
 
     @Test
     public void testCreateBoardUserNotFound() {
-        Mockito.when(restTemplate.postForObject(BoardService.getAuthenticateUserUrl(), tokenRequest, StatusResponse.class))
+        Mockito.when(restTemplate.postForObject(BoardService.getAuthenticateUserUrl(),
+                        tokenRequest, StatusResponse.class))
                 .thenReturn(failed);
-        assertThrows(UserNotFoundException.class, () -> boardService.createBoard(board1, tokenRequest));
+        assertThrows(UserNotFoundException.class,
+                        () -> boardService.createBoard(board1, tokenRequest));
         verify(boardRepository, times(0)).saveAndFlush(board1);
     }
 
     @Test
     public void testCreateBoardPermissionDenied() {
-        Mockito.when(restTemplate.postForObject(BoardService.getAuthenticateUserUrl(), tokenRequest, StatusResponse.class))
+        Mockito.when(restTemplate.postForObject(BoardService.getAuthenticateUserUrl(),
+                        tokenRequest, StatusResponse.class))
                 .thenReturn(studentResponse);
-        assertThrows(AccessDeniedException.class, () -> boardService.createBoard(board2, tokenRequest));
+        assertThrows(AccessDeniedException.class,
+                        () -> boardService.createBoard(board2, tokenRequest));
         verify(boardRepository, times(0)).saveAndFlush(board2);
     }
 
     @Test
     public void testCreateExistingBoard() {
         //Doesn't create a board if it already exists in the database
-        assertEquals(boardService.createBoard(board2, tokenRequest), -1);
+        Mockito.when(restTemplate.postForObject(BoardService.getAuthenticateUserUrl(),
+                        tokenRequest, StatusResponse.class))
+                .thenReturn(teacherResponse);
+
+        try {
+            assertEquals(boardService.createBoard(board2, tokenRequest), -1);
+        } catch (AccessDeniedException e) {
+            e.printStackTrace();
+        }
+
         verify(boardRepository, times(0)).saveAndFlush(board2);
     }
 
