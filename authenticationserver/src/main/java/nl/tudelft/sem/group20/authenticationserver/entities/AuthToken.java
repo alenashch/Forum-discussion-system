@@ -12,9 +12,8 @@ import nl.tudelft.sem.group20.shared.StatusResponse;
 public class AuthToken extends StatusResponse {
 
     @Id
-    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private static long id;
+    private long id;
 
 
     @Column(name = "token")
@@ -43,6 +42,14 @@ public class AuthToken extends StatusResponse {
         this.token = token;
         this.type = type;
         this.username = username;
+    }
+
+    public long getId() {
+        return this.id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getToken() {

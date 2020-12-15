@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,18 +38,17 @@ public class ThreadController {
      */
     @PostMapping(path = "/create")
     public @ResponseBody
-    ResponseEntity<String> createThread(CreateBoardThreadRequest request) {
+    ResponseEntity<String> createThread(@RequestHeader String token,
+                                        CreateBoardThreadRequest request) {
         // @ResponseBody means the returned String is the response, not a view name
         // @RequestParam means it is a parameter from the GET or POST request
 
-        long newId = threadService.createThread(request);
+        long newId = threadService.createThread(token, request);
         if (newId == -1) {
 
             return new ResponseEntity<>("This thread could not be created, it may already exist",
                 HttpStatus.BAD_REQUEST);
         }
-        //ResponseEntity<String> wow = new ResponseEntity<>("A new thread with ID:" + newId + " has been created",
-         //       HttpStatus.CREATED);
 
         return new ResponseEntity<>("A new thread with ID:" + newId + " has been created",
             HttpStatus.CREATED);
