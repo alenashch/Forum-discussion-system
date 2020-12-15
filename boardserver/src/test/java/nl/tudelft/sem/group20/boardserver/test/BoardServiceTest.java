@@ -56,10 +56,10 @@ public class BoardServiceTest {
     transient boolean locked3;
     transient long userId3;
 
-    AuthRequest tokenRequest;
-    StatusResponse failed;
-    StatusResponse studentResponse;
-    StatusResponse teacherResponse;
+    transient AuthRequest tokenRequest;
+    transient StatusResponse failed;
+    transient StatusResponse studentResponse;
+    transient StatusResponse teacherResponse;
 
     transient List<Board> boardsList;
 

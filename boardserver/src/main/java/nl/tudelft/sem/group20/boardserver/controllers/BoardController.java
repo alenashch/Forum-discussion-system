@@ -31,13 +31,8 @@ public class BoardController {
      */
     @PostMapping("/create")
     @ResponseBody
-    public ResponseEntity<?> createBoard(@RequestBody Board board, @RequestBody AuthRequest tokenRequest) {
-        long assignedId = 0;
-        try {
-            assignedId = boardService.createBoard(board, tokenRequest);
-        } catch (AccessDeniedException e) {
-            e.printStackTrace();
-        }
+    public ResponseEntity<?> createBoard (@RequestBody Board board, @RequestBody AuthRequest tokenRequest) throws AccessDeniedException {
+        long assignedId = boardService.createBoard(board, tokenRequest);
 
         //board with this id already exists, no board was created
         if (assignedId == -1) {

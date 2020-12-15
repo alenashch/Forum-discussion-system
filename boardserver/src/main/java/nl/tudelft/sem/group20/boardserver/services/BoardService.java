@@ -47,7 +47,8 @@ public class BoardService {
         assert response != null;
 
         if (response.getStatus() == StatusResponse.Status.fail) {
-            throw new UserNotFoundException("This token does not belong to a legitimate user. Board cannot be created");
+            throw new UserNotFoundException(
+                    "This token does not belong to a legitimate user. Board cannot be created");
         } else {
             AuthResponse castResponse = (AuthResponse) response;
             if (!castResponse.isType()) {
