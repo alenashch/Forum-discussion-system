@@ -184,11 +184,9 @@ public class PostServiceTest {
             Mockito.any(AuthRequest.class),
             Mockito.eq(AuthResponse.class))).thenReturn(authResponse);
 
-        demoPost2.setBody("Updated body.");
-
-        builder.setBody(demoPost2.getBody());
+        builder.setBody("Updated body.");
         builder.setPostId(demoPost2.getId());
-
+        builder.setCreatorName("bob");
         when(postRepository.getById(anyLong()))
             .thenReturn(Optional.of(builder.createTestPost()));
         when(threadRepository.getById(anyLong()))
