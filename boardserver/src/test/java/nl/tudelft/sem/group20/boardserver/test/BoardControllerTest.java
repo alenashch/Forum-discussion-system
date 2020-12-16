@@ -19,6 +19,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import java.nio.file.AccessDeniedException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import nl.tudelft.sem.group20.boardserver.BoardServer;
@@ -26,6 +28,7 @@ import nl.tudelft.sem.group20.boardserver.controllers.BoardController;
 import nl.tudelft.sem.group20.boardserver.controllers.BoardControllerAdvice;
 import nl.tudelft.sem.group20.boardserver.entities.Board;
 import nl.tudelft.sem.group20.boardserver.services.BoardService;
+import nl.tudelft.sem.group20.classes.BoardThread;
 import nl.tudelft.sem.group20.exceptions.UserNotFoundException;
 import nl.tudelft.sem.group20.shared.AuthRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -293,9 +296,9 @@ class BoardControllerTest {
         }
     }
 
-    //Can't edit the board if it is not in the database
     @Test
     void editBoardFailure() {
+        //Can't edit the board if it is not in the database
 
         try {
             when(boardService.updateBoard(eq(board), any(AuthRequest.class))).thenReturn(false);
@@ -339,9 +342,9 @@ class BoardControllerTest {
 
     }
 
-    //Can't get the board if it is not in the database
     @Test
     void testGetBoardByIdFailure() {
+        //Can't get the board if it is not in the database
 
         when(boardService.getById(2)).thenReturn(null);
 
@@ -358,6 +361,57 @@ class BoardControllerTest {
 
     }
 
+
+    @Test
+    void testGetThreadsByBoardByIdSuccessful() {
+
+        List<BoardThread> threads = new ArrayList<>();
+        threads.add(new BoardThread("Thread 1", "statement 1", 2,
+                LocalDateTime.now(), false, 1));
+        threads.add(new BoardThread("Thread 2", "statement 2", 3,
+                LocalDateTime.now(), false, 1));
+
+        when(boardService.getById(1)).thenReturn(board);
+        when(boardService.getThreadsByBoardId(1)).thenReturn(threads);
+
+        try {
+
+            mockMvc.perform(get("/board/get/1/threads")
+                    .contentType(APPLICATION_JSON)).andDo(print())
+                    .andExpect(status().isOk());
+
+            Mockito.verify(boardService, times(1)).getThreadsByBoardId(1);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+        }
+    }
+
+
+    @Test
+    void testGetThreadsByBoardByIdUnsuccessful() {
+        //Doesnt return any threads if the board doesnt have any
+
+        List<BoardThread> threads = new ArrayList<>();
+
+        when(boardService.getById(2)).thenReturn(new Board(2,"Board 2", "description 2", false, "user"));
+        when(boardService.getThreadsByBoardId(2)).thenReturn(threads);
+
+        try {
+            mockMvc.perform(get("/board/get/2/threads")
+                    .contentType(APPLICATION_JSON)).andDo(print())
+                    .andExpect(status().isBadRequest());
+
+            Mockito.verify(boardService, times(1)).getThreadsByBoardId(2);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+        }
+    }
 
 
     private String createJsonRequest(Board board) throws JsonProcessingException {

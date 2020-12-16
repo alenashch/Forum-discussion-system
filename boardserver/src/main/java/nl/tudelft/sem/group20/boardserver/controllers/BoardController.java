@@ -99,9 +99,9 @@ public class BoardController {
         if(threads == null){
             return new ResponseEntity<>("This board does not exist.", HttpStatus.BAD_REQUEST);
         }
-        if(threads.size() == 0){
+        /*if(threads.size() == 0){
             return new ResponseEntity<>("This board does not have any threads.", HttpStatus.BAD_REQUEST);
-        }
+        }*/
         return new ResponseEntity<>(threads, HttpStatus.OK);
     }
 }
