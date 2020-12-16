@@ -98,7 +98,7 @@ public class ThreadService {
      *                thread.
      * @return false if the thread does not exist in the database, and true otherwise.
      */
-    public long updateThread(String token, EditBoardThreadRequest request) {
+    public boolean updateThread(String token, EditBoardThreadRequest request) {
 
 
         BoardThread thread = threadRepository.getById(request.getBoardId()).orElse(null);
@@ -117,6 +117,6 @@ public class ThreadService {
 
         threadRepository.saveAndFlush(thread);
 
-        return thread.getId();
+        return true;
     }
 }

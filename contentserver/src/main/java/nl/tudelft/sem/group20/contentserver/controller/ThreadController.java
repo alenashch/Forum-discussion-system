@@ -74,14 +74,13 @@ public class ThreadController {
     public ResponseEntity<String> editThread(@RequestHeader String token,
                                              @RequestBody EditBoardThreadRequest request) {
 
-        long id = threadService.updateThread(token, request);
-
+        if (threadService.updateThread(token, request)) {
+            return new ResponseEntity<>(
+                    "The thread with ID: " + request.getBoardThreadId() + " has been " + "updated", HttpStatus.OK);
+        }
         return new ResponseEntity<>(
-                "The thread with ID: " + id + " has been " + "updated", HttpStatus.OK);
-
-        /*return new ResponseEntity<>(
             "Thread with ID: " + request.getBoardThreadId() + " could not be updated",
-            HttpStatus.BAD_REQUEST);*/
+            HttpStatus.BAD_REQUEST);
     }
 
 }
