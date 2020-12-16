@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,19 +50,16 @@ class UserControllerTest {
 
     @Test
     void createUserTest() {
-        RegisterRequest registerRequest = new RegisterRequest("pwd", "test@gmal.com", "test");
+        RegisterRequest registerRequest = new RegisterRequest("pwd", "test@gmal.com", "test", false);
         User user = constructDefaultUser();
-        when(userService.createUser(registerRequest));
-        //.thenReturn(new StatusResponse(success, "A new user was succesfully made"));
+        when(userService.createUser(registerRequest)).thenReturn(new StatusResponse(success, "A new user was successfully made"));
 
         try {
             mockMvc.perform(post("/user/create")
                     .contentType(APPLICATION_JSON)
                     .content(createJsonRequest(user)))
                     .andDo(print())
-                    .andExpect(
-                            jsonPath("$.ID")
-                                    .value(1));
+                    .andExpect(status().isOk());
 
         } catch (Exception e) {
 

@@ -42,7 +42,7 @@ public class UserService {
      * Creates a User and adds it to the database.
      *
      * @param newRegisterRequest - the User to be added.
-     * @return statusresponse telling if it was successfull or not.
+     * @return statusresponse telling if it was successful or not.
      */
     public StatusResponse createUser(RegisterRequest newRegisterRequest) {
         //is the email address already in the database?
@@ -55,9 +55,9 @@ public class UserService {
         //Create a new user with the given name, password and email.
         // Hash the password and set the type to student (false).
         User newUser = new User(newRegisterRequest.getUsername(), getMd5(newRegisterRequest
-                .getPassword()), newRegisterRequest.getEmail(), false);
+                .getPassword()), newRegisterRequest.getEmail(), newRegisterRequest.getType());
         userRepository.saveAndFlush(newUser);
-        return new StatusResponse(success, "A new user was succesfully made");
+        return new StatusResponse(success, "A new user was successfully made");
     }
 
     /**
