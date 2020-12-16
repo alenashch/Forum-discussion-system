@@ -55,7 +55,7 @@ public class TestThreadPostBuilder {
 
     public EditBoardThreadRequest createTestEditBoardThreadRequest() {
 
-        return new EditBoardThreadRequest(title, statement, threadId);
+        return new EditBoardThreadRequest(title, statement, threadId, locked);
     }
 
     public int getPostNumber() {
