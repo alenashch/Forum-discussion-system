@@ -16,6 +16,7 @@ public class EditBoardThreadRequest extends CreateBoardThreadRequest {
     public EditBoardThreadRequest(String title, String statement, long boardThreadId) {
 
         super(title, statement, boardThreadId);
+        this.boardThreadId = boardThreadId;
     }
 
     public long getBoardThreadId() {
