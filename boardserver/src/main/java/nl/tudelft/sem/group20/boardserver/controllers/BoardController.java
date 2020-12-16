@@ -2,16 +2,17 @@ package nl.tudelft.sem.group20.boardserver.controllers;
 
 import nl.tudelft.sem.group20.boardserver.entities.Board;
 import nl.tudelft.sem.group20.boardserver.services.BoardService;
+import nl.tudelft.sem.group20.classes.BoardThread;
+import nl.tudelft.sem.group20.exceptions.UserNotFoundException;
+import nl.tudelft.sem.group20.shared.AuthRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
+
+import java.nio.file.AccessDeniedException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/board")
@@ -28,8 +29,8 @@ public class BoardController {
      */
     @PostMapping("/create")
     @ResponseBody
-    public ResponseEntity<?> createBoard(@RequestBody Board board) {
-        long assignedId = boardService.createBoard(board);
+    public ResponseEntity<?> createBoard (@RequestBody Board board, @RequestHeader("user-token") String token) throws UserNotFoundException, AccessDeniedException {
+        long assignedId = boardService.createBoard(board, new AuthRequest(token));
 
         //board with this id already exists, no board was created
         if (assignedId == -1) {
@@ -60,8 +61,8 @@ public class BoardController {
      */
     @PostMapping("/edit")
     @ResponseBody
-    public ResponseEntity<?> editBoard(@RequestBody Board board) {
-        boolean updatedSucceeded = boardService.updateBoard(board);
+    public ResponseEntity<?> editBoard(@RequestBody Board board, @RequestHeader("user-token") String token) throws AccessDeniedException, UserNotFoundException {
+        boolean updatedSucceeded = boardService.updateBoard(board, new AuthRequest(token));
 
         if (!updatedSucceeded) {
             return new ResponseEntity<>("This board does not exist.", HttpStatus.BAD_REQUEST);
@@ -85,4 +86,22 @@ public class BoardController {
             return new ResponseEntity<>(board, HttpStatus.OK);
     }
 
+
+    /**
+     *
+     * @param id - id of a board to be retrieved.
+     * @return JSON containing threads of a board.
+     */
+    @GetMapping("/get/{id}/threads")
+    @ResponseBody
+    public ResponseEntity<?> getThreadsByBoardId(@PathVariable long id) {
+        List<BoardThread> threads = boardService.getThreadsByBoardId(id);
+        if(threads == null){
+            return new ResponseEntity<>("This board does not exist.", HttpStatus.BAD_REQUEST);
+        }
+        if(threads.size() == 0){
+            return new ResponseEntity<>("This board does not have any threads.", HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(threads, HttpStatus.OK);
+    }
 }

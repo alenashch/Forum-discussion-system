@@ -1,8 +1,5 @@
 package nl.tudelft.sem.group20.contentserver.controller;
 
-import java.util.List;
-import nl.tudelft.sem.group20.classes.Board;
-import nl.tudelft.sem.group20.contentserver.entities.BoardThread;
 import nl.tudelft.sem.group20.contentserver.requests.CreateBoardThreadRequest;
 import nl.tudelft.sem.group20.contentserver.requests.EditBoardThreadRequest;
 import nl.tudelft.sem.group20.contentserver.services.ThreadService;
@@ -10,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -61,23 +59,19 @@ public class ThreadController {
      */
     @GetMapping("/get")
     @ResponseBody
-    public List<BoardThread> getThreads() {
-        //RestTemplate rest = new RestTemplate();
+    public ResponseEntity<?> getThreads() {
+        return new ResponseEntity<>(threadService.getThreads(), HttpStatus.OK);
+    }
 
-        System.out.println("here"); //BOARD-SERVER
-        //restTemplate.get
-        //Board[] wow = restTemplate.getForObject("http://board-server/board/get", Board[].class);
-
-        try {
-            Board   wow2 = restTemplate.getForObject("http://board-server/board/get/1", Board.class);
-            System.out.println(wow2);
-        } catch (Exception e) {
-            //System.out.println("error");
-            System.out.println(e);
-        }
-
-
-        return threadService.getThreads();
+    /**
+     * Get thread request.
+     *
+     * @return JSON containing list of all threads.
+     */
+    @GetMapping("/get/{id}")
+    @ResponseBody
+    public ResponseEntity<?> getThread(@PathVariable long id) {
+        return new ResponseEntity<>(threadService.getSingleThread(id), HttpStatus.OK);
     }
 
     /**
@@ -89,13 +83,12 @@ public class ThreadController {
      */
     @PostMapping("/edit")
     @ResponseBody
-    public ResponseEntity<String> editThread(@RequestBody EditBoardThreadRequest request) {
+    public ResponseEntity<String> editThread(@RequestHeader String token,
+                                             @RequestBody EditBoardThreadRequest request) {
 
-        if (threadService.updateThread(request)) {
-
+        if (threadService.updateThread(token, request)) {
             return new ResponseEntity<>(
-                "The thread with ID: " + request.getBoardThreadId() + " has been "
-                    + "updated", HttpStatus.OK);
+                    "The thread with ID: " + request.getBoardThreadId() + " has been " + "updated", HttpStatus.OK);
         }
         return new ResponseEntity<>(
             "Thread with ID: " + request.getBoardThreadId() + " could not be updated",

@@ -21,8 +21,8 @@ public class BoardTest {
     transient String name;
     transient String description;
     transient boolean locked;
-    transient LocalDateTime invalidEdited;
     transient LocalDateTime validEdited;
+    transient String user;
     transient Board board2;
     transient Board board2Copy;
 
@@ -37,10 +37,11 @@ public class BoardTest {
         name = "Board 2";
         description = "Description of board 2";
         locked = false;
+        user = "user";
 
-        board2 = new Board(id, name, description, locked);
+        board2 = new Board(id, name, description, locked, user);
         board2Copy = new Board(board2.getId(), board2.getName(), board2.getDescription(),
-                board2.getLocked());
+                board2.isLocked(), user);
 
     }
 
@@ -55,7 +56,7 @@ public class BoardTest {
         assertTrue(board2.getId() == id
                 && board2.getName().equals(name)
                 && board2.getDescription().equals(description)
-                && board2.getLocked() == locked);
+                && board2.isLocked() == locked);
     }
 
 
@@ -81,7 +82,13 @@ public class BoardTest {
     @Test
     public void testGetAndSetLocked() {
         board.setLocked(true);
-        assertEquals(true, board.getLocked());
+        assertEquals(true, board.isLocked());
+    }
+
+    @Test
+    public void testGetAndSetUsername() {
+        board.setUsername("user2");
+        assertEquals("user2", board.getUsername());
     }
 
     @Test
@@ -127,13 +134,15 @@ public class BoardTest {
 
     @Test
     public void testBoardToString() {
-        String boardToString = "Board{boardId='" + board.getId()
-                + "', boardName='" + board.getName()
-                + "', boardDescription='" + board.getDescription()
-                + "', locked='" + board.getLocked()
-                + "', edited='" + board.getEdited()
-                + "', created='" + board.getCreated()
-                + "'}";
+        String boardToString = "Board{"
+                + "boardId='" + board.getId() + '\''
+                + ", boardName='" + board.getName() + '\''
+                + ", boardDescription='" + board.getDescription() + '\''
+                + ", locked='" + board.isLocked() + '\''
+                + ", edited='" + board.getEdited() + '\''
+                + ", created='" + board.getCreated() + '\''
+                + ", username='" + board.getUsername() + '\''
+                + '}';
         assertEquals(board.toString(), boardToString);
     }
 }

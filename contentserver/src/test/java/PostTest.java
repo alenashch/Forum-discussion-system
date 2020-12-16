@@ -16,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 public class PostTest {
     transient Post demoPost1;
 
+    transient String demoName;
     transient long demoId2;
     transient int demoNumber2;
     transient String demoBody2;
@@ -29,15 +30,16 @@ public class PostTest {
     void initialize() {
         demoPost1 = new Post();
 
+        demoName = "Bob";
         demoId2 = 2;
         demoNumber2 = 1;
         demoBody2 = "This is a demo post.";
         demoCreated2 = LocalDateTime.now();
-        demoPost2 = new Post(demoId2, demoId2, demoNumber2, demoBody2, null, demoCreated2);
-        demoPost2Copy = new Post(demoPost2.getId(), demoPost2.getCreatorId(),
-            demoPost2.getPostNumber(),
-            demoPost2.getBody(), null,
-            demoPost2.getCreated());
+        demoPost2 = new Post(demoId2, demoNumber2, demoName, demoBody2, null, demoCreated2);
+        demoPost2Copy =
+            new Post(demoPost2.getId(), demoPost2.getPostNumber(), demoPost2.getCreatorName(),
+                demoPost2.getBody(), null,
+                demoPost2.getCreated());
     }
 
     @Test
@@ -49,10 +51,11 @@ public class PostTest {
     void testNonEmptyConstructor() {
         assertNotNull(demoPost2);
         assertTrue(demoPost2.getId() == demoId2
-                && demoPost2.getPostNumber() == demoNumber2
-                && demoPost2.getBody().equals(demoBody2)
-                && demoPost2.getCreated().equals(demoCreated2)
-                && demoPost2.getEdited().equals(demoCreated2));
+            && demoPost2.getCreatorName().equals(demoPost2Copy.getCreatorName())
+            && demoPost2.getPostNumber() == demoNumber2
+            && demoPost2.getBody().equals(demoBody2)
+            && demoPost2.getCreated().equals(demoCreated2)
+            && demoPost2.getEdited().equals(demoCreated2));
     }
 
     @Test
@@ -78,6 +81,13 @@ public class PostTest {
         LocalDateTime newCreated = demoCreated2.plusHours(3);
         demoPost2.setCreated(newCreated);
         assertEquals(newCreated, demoPost2.getCreated());
+    }
+
+    @Test
+    void testGetAndSetCreator() {
+        demoPost2.setCreatorName("Mike");
+        assertEquals("Mike", demoPost2.getCreatorName());
+
     }
 
     /*

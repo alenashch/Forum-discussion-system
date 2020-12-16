@@ -6,21 +6,19 @@ public class CreateBoardThreadRequest {
 
     private String statement;
 
-    private Long creatorId;
-
     private Long boardId;
 
     /**
      * Board Thread Request.
+     *
      * @param title title
      * @param statement statement
-     * @param creatorId creatorId
      */
-    public CreateBoardThreadRequest(String title, String statement, Long creatorId) {
+    public CreateBoardThreadRequest(String title, String statement, Long boardId) {
 
         this.title = title;
         this.statement = statement;
-        this.creatorId = creatorId;
+        this.boardId   = boardId;
     }
 
     public String getTitle() {
@@ -37,14 +35,6 @@ public class CreateBoardThreadRequest {
 
     public void setStatement(String statement) {
         this.statement = statement;
-    }
-
-    public long getCreatorId() {
-        return creatorId;
-    }
-
-    public void setCreatorId(long creatorId) {
-        this.creatorId = creatorId;
     }
 
     public long getBoardId() {
