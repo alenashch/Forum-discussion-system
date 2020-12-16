@@ -96,6 +96,9 @@ public class BoardController {
     @ResponseBody
     public ResponseEntity<?> getThreadsByBoardId(@PathVariable long id) {
         List<BoardThread> threads = boardService.getThreadsByBoardId(id);
+        if(threads == null){
+            return new ResponseEntity<>("This board does not exist.", HttpStatus.BAD_REQUEST);
+        }
         if(threads.size() == 0){
             return new ResponseEntity<>("This board does not have any threads.", HttpStatus.BAD_REQUEST);
         }

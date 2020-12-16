@@ -102,9 +102,12 @@ public class BoardService {
      * Gets all threads of a given Board in the database.
      *
      * @param id - an id of a board.
-     * @return list of threads belonging to a board.
+     * @return list of threads belonging to a board. If there is no board with the given id - null.
      */
     public List<BoardThread> getThreadsByBoardId(long id){
+        if(getById(id) == null)
+            return null;
+
         ParameterizedTypeReference<List<BoardThread>> threads = new ParameterizedTypeReference<List<BoardThread>>() {};
         ResponseEntity<List<BoardThread>> response = restTemplate.exchange(contentGetThreads, HttpMethod.GET, null, threads);
         List<BoardThread> allThreads = response.getBody();
