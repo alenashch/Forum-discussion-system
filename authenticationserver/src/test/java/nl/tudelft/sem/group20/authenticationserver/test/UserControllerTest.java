@@ -50,9 +50,11 @@ class UserControllerTest {
 
     @Test
     void createUserTest() {
-        RegisterRequest registerRequest = new RegisterRequest("pwd", "test@gmal.com", "test", false);
+        RegisterRequest registerRequest = new RegisterRequest(
+                "pwd", "test@gmal.com", "test", false);
         User user = constructDefaultUser();
-        when(userService.createUser(registerRequest)).thenReturn(new StatusResponse(success, "A new user was successfully made"));
+        when(userService.createUser(registerRequest)).thenReturn(
+                new StatusResponse(success, "A new user was successfully made"));
 
         try {
             mockMvc.perform(post("/user/create")

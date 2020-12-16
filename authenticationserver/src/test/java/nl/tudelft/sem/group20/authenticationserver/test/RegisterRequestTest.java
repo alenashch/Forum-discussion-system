@@ -113,7 +113,8 @@ public class RegisterRequestTest {
      */
     @Test
     void testEqualsTrue() {
-        RegisterRequest registerRequest1Copy = new RegisterRequest("pwd", "test@gmail.com", "Test", true);
+        RegisterRequest registerRequest1Copy = new RegisterRequest(
+                "pwd", "test@gmail.com", "Test", true);
         assertTrue(registerRequest1Copy.equals(registerRequest1));
     }
 
@@ -165,7 +166,7 @@ public class RegisterRequestTest {
                         + ", username='"
                         + "Test"
                         + '\''
-                        +", type='"
+                        + ", type='"
                         + "true"
                         + '}';
         assertEquals(string, registerRequest1.toString());
