@@ -26,7 +26,7 @@ public class BoardController {
      */
     @PostMapping("/create")
     @ResponseBody
-    public ResponseEntity<?> createBoard (@RequestBody Board board, @RequestHeader String token) throws UserNotFoundException, AccessDeniedException {
+    public ResponseEntity<?> createBoard (@RequestBody Board board, @RequestHeader("user-token") String token) throws UserNotFoundException, AccessDeniedException {
         long assignedId = boardService.createBoard(board, new AuthRequest(token));
 
         //board with this id already exists, no board was created
@@ -58,7 +58,7 @@ public class BoardController {
      */
     @PostMapping("/edit")
     @ResponseBody
-    public ResponseEntity<?> editBoard(@RequestBody Board board, @RequestHeader String token) throws AccessDeniedException, UserNotFoundException {
+    public ResponseEntity<?> editBoard(@RequestBody Board board, @RequestHeader("user-token") String token) throws AccessDeniedException, UserNotFoundException {
         boolean updatedSucceeded = boardService.updateBoard(board, new AuthRequest(token));
 
         if (!updatedSucceeded) {

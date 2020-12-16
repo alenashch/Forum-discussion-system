@@ -17,6 +17,6 @@ public class BoardControllerAdvice {
 
     @ExceptionHandler({AccessDeniedException.class})
     public ResponseEntity<String> handleAccessDeniedException() {
-        return new ResponseEntity<>("This user does not exist.", HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>("Unauthorized action.", HttpStatus.UNAUTHORIZED);
     }
 }
