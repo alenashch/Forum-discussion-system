@@ -72,7 +72,7 @@ class BoardControllerTest {
         try {
             mockMvc.perform(post("/board/create")
                     .contentType(APPLICATION_JSON)
-                    .param(token)
+                    .header(token)
                     .content(objectMapper.writeValueAsString(board)))
                     .andDo(print())
                     .andExpect(status().isCreated())
@@ -99,7 +99,7 @@ class BoardControllerTest {
         try {
             mockMvc.perform(post("/board/create")
                     .contentType(APPLICATION_JSON)
-                    .param(token)
+                    .header(token)
                     .content(objectMapper.writeValueAsString(board)))
                     .andDo(print())
                     .andExpect(status().isBadRequest())
@@ -146,7 +146,7 @@ class BoardControllerTest {
         try {
             mockMvc.perform(post("/board/edit")
                     .contentType(APPLICATION_JSON)
-                    .param(token)
+                    .header(token)
                     .content(objectMapper.writeValueAsString(board)))
                     .andDo(print())
                     .andExpect(status().isOk())
@@ -172,7 +172,7 @@ class BoardControllerTest {
         try {
             mockMvc.perform(post("/board/edit")
                     .contentType(APPLICATION_JSON)
-                    .param(token)
+                    .header(token)
                     .content(objectMapper.writeValueAsString(board)))
                     .andDo(print())
                     .andExpect(status().isBadRequest())
