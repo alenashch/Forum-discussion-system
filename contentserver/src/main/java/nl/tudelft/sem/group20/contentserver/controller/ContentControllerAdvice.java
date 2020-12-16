@@ -35,6 +35,6 @@ public class ContentControllerAdvice {
     @ExceptionHandler({PostNotFoundException.class})
     ResponseEntity<String> handlePostNotFoundException(RuntimeException exception) {
 
-        return new ResponseEntity<>(exception.getMessage(), HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }
