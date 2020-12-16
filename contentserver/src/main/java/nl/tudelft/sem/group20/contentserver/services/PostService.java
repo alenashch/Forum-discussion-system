@@ -13,6 +13,7 @@ import nl.tudelft.sem.group20.contentserver.requests.CreatePostRequest;
 import nl.tudelft.sem.group20.shared.AuthRequest;
 import nl.tudelft.sem.group20.shared.AuthResponse;
 import nl.tudelft.sem.group20.shared.StatusResponse;
+import org.junit.runners.model.FrameworkField;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -111,9 +112,13 @@ public class PostService {
             throw new PostNotFoundException();
         }
 
+        if(!toUpdate.getCreatorName().equals(authenticateUser(token))){
+
+            throw new AuthorizationFailedException("This post does not belong to the given user");
+        }
         toUpdate.setBody(request.getBody());
         toUpdate.setEdited(LocalDateTime.now());
-        toUpdate.setCreatorName(authenticateUser(token));
+
 
         if (request.getBoardThreadId() != toUpdate.getBoardThread().getId()) {
 
