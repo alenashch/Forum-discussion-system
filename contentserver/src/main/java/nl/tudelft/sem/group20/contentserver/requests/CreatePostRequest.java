@@ -1,10 +1,6 @@
 package nl.tudelft.sem.group20.contentserver.requests;
 
-import org.hibernate.dialect.function.DB2SubstringFunction;
-
 public class CreatePostRequest {
-
-    private long creatorId;
 
     private String body;
 
@@ -13,22 +9,12 @@ public class CreatePostRequest {
     /**
      * Builder for CreatePostRequest.
      *
-     * @param creatorId id of creator
      * @param body body of request
      * @param boardThreadId id of board thread
      */
-    public CreatePostRequest(long creatorId, String body, long boardThreadId) {
-        this.creatorId = creatorId;
+    public CreatePostRequest(String body, long boardThreadId) {
         this.body = body;
         this.boardThreadId = boardThreadId;
-    }
-
-    public long getCreatorId() {
-        return creatorId;
-    }
-
-    public void setCreatorId(long creatorId) {
-        this.creatorId = creatorId;
     }
 
     public String getBody() {

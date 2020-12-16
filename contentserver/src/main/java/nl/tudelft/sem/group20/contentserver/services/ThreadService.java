@@ -27,7 +27,6 @@ public class ThreadService {
         this.threadRepository = threadRepository;
     }
 
-
     private AuthResponse authenticateUser(String token) {
         try {
             return restTemplate.postForObject("http://authentication-server/user/authenticate",
@@ -63,7 +62,6 @@ public class ThreadService {
     /**
      * Creates a Thread in the database.
      *
-     *
      * @param token   - token to validate the user
      * @param request - CreateEditBoardThreadRequest with information necessary to create a new
      *                thread.
@@ -81,7 +79,7 @@ public class ThreadService {
 
 
         BoardThread toCreate = new BoardThread(request.getTitle(), request.getStatement(),
-            request.getCreatorId(), LocalDateTime.now(), false, request.getBoardId());
+            res.getUsername(), LocalDateTime.now(), false, request.getBoardId());
 
         threadRepository.saveAndFlush(toCreate);
         return toCreate.getId();
@@ -103,7 +101,7 @@ public class ThreadService {
             return false;
         }
 
-        BoardThread thread = threadRepository.getById(request.getBoardThreadId()).orElse(null);
+        BoardThread thread = threadRepository.getById(request.getBoardId()).orElse(null);
 
         if (thread == null) {
             return false;

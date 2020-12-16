@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,14 +31,11 @@ public class PostController {
      */
     @PostMapping(value = "/create")
     @ResponseBody
-    public ResponseEntity<String> createPost(@RequestBody CreatePostRequest request) {
+    public ResponseEntity<String> createPost(@RequestHeader String token,
+                                             @RequestBody CreatePostRequest request) {
 
-        long newId = postService.createPost(request);
-        if (newId == -1) {
+        long newId = postService.createPost(token, request);
 
-            return new ResponseEntity<>("This post could not be created, it may already exist",
-                HttpStatus.BAD_REQUEST);
-        }
         return new ResponseEntity<>("A new post with ID: " + newId + " has been created",
             HttpStatus.CREATED);
     }
@@ -45,13 +43,13 @@ public class PostController {
     /**
      * Get post request.
      *
-     * @return JSON containing list of all posts.
+     * @return JSON responseEntity containing list of all posts.
      */
     @GetMapping("/get")
     @ResponseBody
-    public List<Post> getPosts() {
+    public ResponseEntity<?> getPosts() {
 
-        return postService.getPosts();
+        return new ResponseEntity<>(postService.getPosts(), HttpStatus.OK);
     }
 
     /**
@@ -62,19 +60,14 @@ public class PostController {
      */
     @PostMapping("/edit")
     @ResponseBody
-    public ResponseEntity<String> editPost(@RequestBody EditPostRequest request) {
+    public ResponseEntity<String> editPost(@RequestHeader String token,
+                                           @RequestBody EditPostRequest request) {
 
 
-        if (postService.updatePost(request)) {
+        postService.updatePost(token, request);
 
-            return new ResponseEntity<>("The post with ID: " + request.getPostId() + " has been "
-                    + "updated",
-                HttpStatus.OK);
-        }
-        return new ResponseEntity<>(
-            "Post with ID: " + request.getPostId() + " could not be updated",
-            HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>("The post with ID: " + request.getPostId() + " has been "
+            + "updated",
+            HttpStatus.OK);
     }
-
-
 }
