@@ -2,6 +2,7 @@ package nl.tudelft.sem.group20.contentserver.services;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
 import nl.tudelft.sem.group20.classes.Board;
 import nl.tudelft.sem.group20.contentserver.entities.BoardThread;
 import nl.tudelft.sem.group20.contentserver.repositories.ThreadRepository;
@@ -26,7 +27,6 @@ public class ThreadService {
     public ThreadService(ThreadRepository threadRepository) {
         this.threadRepository = threadRepository;
     }
-
 
     private AuthResponse authenticateUser(String token) {
         try {
@@ -63,7 +63,6 @@ public class ThreadService {
     /**
      * Creates a Thread in the database.
      *
-     *
      * @param token   - token to validate the user
      * @param request - CreateEditBoardThreadRequest with information necessary to create a new
      *                thread.
@@ -81,7 +80,7 @@ public class ThreadService {
 
 
         BoardThread toCreate = new BoardThread(request.getTitle(), request.getStatement(),
-            request.getCreatorId(), LocalDateTime.now(), false, request.getBoardId());
+            res.getUsername(), LocalDateTime.now(), false, request.getBoardId());
 
         threadRepository.saveAndFlush(toCreate);
         return toCreate.getId();
@@ -103,7 +102,7 @@ public class ThreadService {
             return false;
         }
 
-        BoardThread thread = threadRepository.getById(request.getBoardThreadId()).orElse(null);
+        BoardThread thread = threadRepository.getById(request.getBoardId()).orElse(null);
 
         if (thread == null) {
             return false;

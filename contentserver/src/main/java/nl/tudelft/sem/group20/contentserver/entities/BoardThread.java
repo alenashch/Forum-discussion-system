@@ -29,7 +29,7 @@ public class BoardThread {
 
     private String statement;      //Main question or statement of thread
 
-    private long threadCreatorId;  //name of thread creator
+    private String threadCreator;  //name of thread creator
 
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
@@ -61,13 +61,13 @@ public class BoardThread {
      * @param threadCreatorId person who created thread
      * @param locked          locked or not
      */
-    public BoardThread(Long id, String threadTitle, String statement, long threadCreatorId,
+    public BoardThread(Long id, String threadTitle, String statement, String threadCreatorId,
                        LocalDateTime created,
                        boolean locked) {
         this.id = id;
         this.threadTitle = threadTitle;
         this.statement = statement;
-        this.threadCreatorId = threadCreatorId;
+        this.threadCreator = threadCreatorId;
         this.created = created;
         this.locked = locked;
     }
@@ -80,11 +80,11 @@ public class BoardThread {
      * @param threadCreatorId person who created thread
      * @param locked          locked or not
      */
-    public BoardThread(String threadTitle, String statement, long threadCreatorId,
+    public BoardThread(String threadTitle, String statement, String threadCreatorId,
                        LocalDateTime created, boolean locked) {
         this.threadTitle = threadTitle;
         this.statement = statement;
-        this.threadCreatorId = threadCreatorId;
+        this.threadCreator = threadCreatorId;
         this.created = created;
         this.locked = locked;
     }
@@ -97,13 +97,13 @@ public class BoardThread {
      * @param threadCreatorId person who created thread
      * @param locked          locked or not
      */
-    public BoardThread(String threadTitle, String statement, long threadCreatorId,
+    public BoardThread(String threadTitle, String statement, String threadCreatorId,
                        LocalDateTime created, boolean locked, long boardId) {
         this.threadTitle = threadTitle;
         this.statement = statement;
-        this.threadCreatorId = threadCreatorId;
+        this.threadCreator = threadCreatorId;
         this.created = created;
-        this.locked  = locked;
+        this.locked = locked;
         this.boardId = boardId;
     }
 
@@ -147,7 +147,6 @@ public class BoardThread {
         this.locked = locked;
     }
 
-
     public void setBoardId(long boardId) {
         this.boardId = boardId;
     }
@@ -156,12 +155,12 @@ public class BoardThread {
         return boardId;
     }
 
-    public long getThreadCreatorId() {
-        return threadCreatorId;
+    public String getThreadCreator() {
+        return threadCreator;
     }
 
-    public void setThreadCreatorId(long threadCreatorId) {
-        this.threadCreatorId = threadCreatorId;
+    public void setThreadCreator(String threadCreator) {
+        this.threadCreator = threadCreator;
     }
 
     public Set<Post> getPosts() {
@@ -206,7 +205,7 @@ public class BoardThread {
             + "id=" + id
             + ", threadTitle='" + threadTitle + '\''
             + ", statement='" + statement + '\''
-            + ", threadCreatorId='" + threadCreatorId + '\''
+            + ", threadCreatorId='" + threadCreator + '\''
             + ", created=" + created
             + ", locked=" + locked
             + '}';

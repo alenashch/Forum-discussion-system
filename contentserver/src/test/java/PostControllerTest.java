@@ -1,4 +1,5 @@
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -33,6 +34,8 @@ import org.springframework.test.web.servlet.MockMvc;
 @ContextConfiguration(classes = ContentServer.class)
 class PostControllerTest {
 
+    private transient String token = "1";
+    private transient String tokenName = "token";
 
     @Autowired
     @MockBean
@@ -55,11 +58,13 @@ class PostControllerTest {
     void createPostSuccessTest() {
 
         CreatePostRequest createPostRequest = builder.createTestCreatePostRequest();
-        when(postService.createPost(any(CreatePostRequest.class))).thenReturn(builder.getPostId());
+        when(postService.createPost(anyString(), any(CreatePostRequest.class)))
+            .thenReturn(builder.getPostId());
 
         try {
             mockMvc.perform(post("/post/create")
                 .contentType(APPLICATION_JSON)
+                .header(tokenName, token)
                 .content(objectMapper.writeValueAsString(createPostRequest)))
                 .andDo(print())
                 .andExpect(status().isCreated())
@@ -71,28 +76,6 @@ class PostControllerTest {
             e.printStackTrace();
         }
 
-
-    }
-
-    @Test
-    void createPostFailTest() {
-
-        CreatePostRequest createPostRequest = builder.createTestCreatePostRequest();
-        when(postService.createPost(any(CreatePostRequest.class))).thenReturn(-1L);
-
-        try {
-            mockMvc.perform(post("/post/create")
-                .contentType(APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(createPostRequest)))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(
-                    content().string("This post could not be created, it may already exist"));
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
-        }
 
     }
 
@@ -124,12 +107,12 @@ class PostControllerTest {
 
         EditPostRequest editPostRequest = builder.createTestEditPostRequest();
 
-        when(postService.updatePost(any(EditPostRequest.class))).thenReturn(true);
 
         //  given(postService.updatePost(any(Post.class))).willReturn(true);
         try {
             mockMvc.perform(post("/post/edit")
                 .contentType(APPLICATION_JSON)
+                .header(tokenName, token)
                 .content(objectMapper.writeValueAsString(editPostRequest)).accept(APPLICATION_JSON))
                 .andDo(print()).andExpect(status().isOk())
                 .andExpect(content().string("The post with ID: " + builder.getPostId() + " has "
@@ -144,34 +127,6 @@ class PostControllerTest {
 
 
     }
-
-    @Test
-    void editPostFailTest() {
-
-        EditPostRequest editPostRequest = builder.createTestEditPostRequest();
-
-        when(postService.updatePost(any(EditPostRequest.class))).thenReturn(false);
-
-        //  given(postService.updatePost(any(Post.class))).willReturn(true);
-        try {
-            mockMvc.perform(post("/post/edit")
-                .contentType(APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(editPostRequest))
-                .accept(APPLICATION_JSON))
-                .andDo(print()).andExpect(status().isBadRequest())
-                .andExpect(content().string("Post with ID: " + editPostRequest.getPostId()
-                    + " could not be updated"));
-            //.andExpect((ResultMatcher) jsonPath("$.success").value(true));
-
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
-        }
-
-
-    }
-
     /*
     private String createJsonRequest(Post post) throws JsonProcessingException {
 

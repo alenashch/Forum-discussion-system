@@ -1,5 +1,4 @@
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
@@ -45,6 +44,8 @@ public class ThreadServiceTest {
         long id2 = 2L;
         long id3 = 3L;
 
+        String creatorName = "Bob";
+
         String title1 = "title1";
         String title2 = "title2";
         String title3 = "title3";
@@ -61,9 +62,9 @@ public class ThreadServiceTest {
         boolean locked2 = true;
         boolean locked3 = false;
 
-        demoThread1 = new BoardThread(id1, title1, ques1, id1, time1, locked1);
-        demoThread2 = new BoardThread(id2, title2, ques2, id2, time2, locked2);
-        demoThread3 = new BoardThread(id3, title3, ques3, id3, time3, locked3);
+        demoThread1 = new BoardThread(id1, creatorName, title1, ques1, time1, locked1);
+        demoThread2 = new BoardThread(id2, creatorName, title2, ques2, time2, locked2);
+        demoThread3 = new BoardThread(id3, creatorName, title3, ques3, time3, locked3);
 
         threads = new ArrayList<>();
         threads.add(demoThread1);
