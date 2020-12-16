@@ -2,14 +2,17 @@ package nl.tudelft.sem.group20.boardserver.controllers;
 
 import nl.tudelft.sem.group20.boardserver.entities.Board;
 import nl.tudelft.sem.group20.boardserver.services.BoardService;
+import nl.tudelft.sem.group20.classes.BoardThread;
 import nl.tudelft.sem.group20.exceptions.UserNotFoundException;
 import nl.tudelft.sem.group20.shared.AuthRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.nio.file.AccessDeniedException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/board")
@@ -83,4 +86,19 @@ public class BoardController {
             return new ResponseEntity<>(board, HttpStatus.OK);
     }
 
+
+    /**
+     *
+     * @param id - id of a board to be retrieved.
+     * @return JSON containing threads of a board.
+     */
+    @GetMapping("/get/{id}/threads")
+    @ResponseBody
+    public ResponseEntity<?> getThreadsByBoardId(@PathVariable long id) {
+        List<BoardThread> threads = boardService.getThreadsByBoardId(id);
+        if(threads.size() == 0){
+            return new ResponseEntity<>("This board does not have any threads.", HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(threads, HttpStatus.OK);
+    }
 }

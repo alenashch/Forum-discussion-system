@@ -1,15 +1,20 @@
 package nl.tudelft.sem.group20.boardserver.services;
 
 import java.nio.file.AccessDeniedException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import nl.tudelft.sem.group20.boardserver.repos.BoardRepository;
 import nl.tudelft.sem.group20.boardserver.entities.Board;
+import nl.tudelft.sem.group20.classes.BoardThread;
 import nl.tudelft.sem.group20.exceptions.UserNotFoundException;
 import nl.tudelft.sem.group20.shared.AuthRequest;
 import nl.tudelft.sem.group20.shared.AuthResponse;
 import nl.tudelft.sem.group20.shared.StatusResponse;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -21,6 +26,8 @@ public class BoardService {
 
     private final static transient String authenticateUserUrl =
             "http://authentication-server/user/authenticate";
+    private final static transient String contentGetThreads =
+            "http://content-server/thread/get";
 
     public BoardService(BoardRepository boardRepository, RestTemplate restTemplate) {
         this.boardRepository = boardRepository;
@@ -89,6 +96,28 @@ public class BoardService {
         boardRepository.saveAndFlush(updatedBoard);
         return true;
     }
+
+
+    /**
+     * Gets all threads of a given Board in the database.
+     *
+     * @param id - an id of a board.
+     * @return list of threads belonging to a board.
+     */
+    public List<BoardThread> getThreadsByBoardId(long id){
+        ParameterizedTypeReference<List<BoardThread>> threads = new ParameterizedTypeReference<List<BoardThread>>() {};
+        ResponseEntity<List<BoardThread>> response = restTemplate.exchange(contentGetThreads, HttpMethod.GET, null, threads);
+        List<BoardThread> allThreads = response.getBody();
+
+        List<BoardThread> threadsPerBoard = new ArrayList<>();
+
+        for(BoardThread thread : allThreads){
+            if(thread.getBoardId() == id)
+                threadsPerBoard.add(thread);
+        }
+        return threadsPerBoard;
+    }
+
 
     /**
      * Retrieves a Board from the database.
