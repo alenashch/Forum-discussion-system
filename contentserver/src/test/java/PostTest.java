@@ -18,6 +18,7 @@ public class PostTest {
 
     transient long demoId2;
     transient int demoNumber2;
+    transient String username;
     transient String demoBody2;
     transient LocalDateTime demoCreated2;
     transient LocalDateTime invalidEdited;
@@ -30,11 +31,12 @@ public class PostTest {
         demoPost1 = new Post();
 
         demoId2 = 2;
+        username = "Jayson";
         demoNumber2 = 1;
         demoBody2 = "This is a demo post.";
         demoCreated2 = LocalDateTime.now();
-        demoPost2 = new Post(demoId2, demoId2, demoNumber2, demoBody2, null, demoCreated2);
-        demoPost2Copy = new Post(demoPost2.getId(), demoPost2.getCreatorId(),
+        demoPost2 = new Post(demoId2, username, demoNumber2, demoBody2, null, demoCreated2);
+        demoPost2Copy = new Post(demoPost2.getId(), demoPost2.getCreator(),
             demoPost2.getPostNumber(),
             demoPost2.getBody(), null,
             demoPost2.getCreated());
@@ -50,6 +52,7 @@ public class PostTest {
         assertNotNull(demoPost2);
         assertTrue(demoPost2.getId() == demoId2
                 && demoPost2.getPostNumber() == demoNumber2
+                && demoPost2.getCreator().equals(username)
                 && demoPost2.getBody().equals(demoBody2)
                 && demoPost2.getCreated().equals(demoCreated2)
                 && demoPost2.getEdited().equals(demoCreated2));

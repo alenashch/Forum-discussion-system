@@ -9,13 +9,13 @@ public class EditBoardThreadRequest extends CreateBoardThreadRequest {
      *
      * @param title title board thread
      * @param statement statement of board thread
-     * @param creatorId id of creator
+     * @param creator   id of creator
      * @param boardThreadId board thread id
      */
-    public EditBoardThreadRequest(String title, String statement, long creatorId,
+    public EditBoardThreadRequest(String title, String statement, String creator,
                                 long boardThreadId) {
 
-        super(title, statement, creatorId);
+        super(title, statement, creator);
         this.boardThreadId = boardThreadId;
     }
 

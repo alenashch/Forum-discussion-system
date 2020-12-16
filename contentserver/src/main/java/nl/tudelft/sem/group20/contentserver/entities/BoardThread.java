@@ -29,7 +29,7 @@ public class BoardThread {
 
     private String statement;      //Main question or statement of thread
 
-    private long threadCreatorId;  //name of thread creator
+    private String threadCreator;  //name of thread creator
 
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
@@ -58,18 +58,18 @@ public class BoardThread {
      * @param id              id of item
      * @param threadTitle     title of thread
      * @param statement       general statment of thread
-     * @param threadCreatorId person who created thread
+     * @param threadCreator person who created thread
      * @param locked          locked or not
      */
-    public BoardThread(Long id, String threadTitle, String statement, long threadCreatorId,
-                       LocalDateTime created,
-                       boolean locked) {
+    public BoardThread(Long id, String threadTitle, String statement, String threadCreator,
+                       LocalDateTime created, boolean locked, long boardId) {
         this.id = id;
         this.threadTitle = threadTitle;
         this.statement = statement;
-        this.threadCreatorId = threadCreatorId;
+        this.threadCreator = threadCreator;
         this.created = created;
         this.locked = locked;
+        this.boardId = boardId;
     }
 
     /**
@@ -77,31 +77,14 @@ public class BoardThread {
      *
      * @param threadTitle     title of thread
      * @param statement       general statment of thread
-     * @param threadCreatorId person who created thread
+     * @param threadCreator person who created thread
      * @param locked          locked or not
      */
-    public BoardThread(String threadTitle, String statement, long threadCreatorId,
-                       LocalDateTime created, boolean locked) {
-        this.threadTitle = threadTitle;
-        this.statement = statement;
-        this.threadCreatorId = threadCreatorId;
-        this.created = created;
-        this.locked = locked;
-    }
-
-    /**
-     * Non-empty constructor of BoardThread.
-     *
-     * @param threadTitle     title of thread
-     * @param statement       general statment of thread
-     * @param threadCreatorId person who created thread
-     * @param locked          locked or not
-     */
-    public BoardThread(String threadTitle, String statement, long threadCreatorId,
+    public BoardThread(String threadTitle, String statement, String threadCreator,
                        LocalDateTime created, boolean locked, long boardId) {
         this.threadTitle = threadTitle;
         this.statement = statement;
-        this.threadCreatorId = threadCreatorId;
+        this.threadCreator = threadCreator;
         this.created = created;
         this.locked  = locked;
         this.boardId = boardId;
@@ -156,12 +139,12 @@ public class BoardThread {
         return boardId;
     }
 
-    public long getThreadCreatorId() {
-        return threadCreatorId;
+    public String getThreadCreator() {
+        return threadCreator;
     }
 
-    public void setThreadCreatorId(long threadCreatorId) {
-        this.threadCreatorId = threadCreatorId;
+    public void setThreadCreator(String threadCreator) {
+        this.threadCreator = threadCreator;
     }
 
     public Set<Post> getPosts() {
@@ -206,7 +189,7 @@ public class BoardThread {
             + "id=" + id
             + ", threadTitle='" + threadTitle + '\''
             + ", statement='" + statement + '\''
-            + ", threadCreatorId='" + threadCreatorId + '\''
+            + ", threadCreatorId='" + threadCreator + '\''
             + ", created=" + created
             + ", locked=" + locked
             + '}';

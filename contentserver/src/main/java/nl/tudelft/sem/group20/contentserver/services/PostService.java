@@ -41,7 +41,7 @@ public class PostService {
         }
 
         int nextPostNumber = boardThread.getPosts().size();
-        Post toCreate = new Post(nextPostNumber, request.getCreatorId(),
+        Post toCreate = new Post(nextPostNumber, request.getCreator(),
             request.getBody(), boardThread, LocalDateTime.now());
 
         if (postRepository.getById(toCreate.getId()).isPresent()) {

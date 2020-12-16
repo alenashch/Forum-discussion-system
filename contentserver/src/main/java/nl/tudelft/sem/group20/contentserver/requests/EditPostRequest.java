@@ -10,11 +10,11 @@ public class EditPostRequest extends CreatePostRequest {
      * @param postId id of post
      * @param boardThreadId id of board thread
      * @param body body of post
-     * @param postCreatorId id of creator
+     * @param postCreator id of creator
      */
-    public EditPostRequest(long postId, long boardThreadId, String body, long postCreatorId) {
+    public EditPostRequest(long postId, long boardThreadId, String body, String postCreator) {
 
-        super(postCreatorId, body, boardThreadId);
+        super(postCreator, body, boardThreadId);
         this.postId = postId;
     }
 

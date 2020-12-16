@@ -11,15 +11,15 @@ import nl.tudelft.sem.group20.contentserver.requests.EditPostRequest;
  */
 public class TestThreadPostBuilder {
 
-    public int postNumber = 123;
-    public long creatorId = 5L;
-    public long postId = 1L;
-    public long threadId = 2L;
-    public String body = "abc";
-    public String title = "title";
-    public String statement = "statement";
+    public int    postNumber  = 123;
+    public String creator     = "Jayson";
+    public long   postId      = 1L;
+    public long   threadId    = 2L;
+    public String body        = "abc";
+    public String title       = "title";
+    public String statement   = "statement";
     public LocalDateTime time = LocalDateTime.now();
-    public boolean locked = false;
+    public boolean locked     = false;
 
 
     /**
@@ -29,33 +29,33 @@ public class TestThreadPostBuilder {
      */
     public Post createTestPost() {
         LocalDateTime time = LocalDateTime.now();
-        return new Post(postId, creatorId, postNumber, body, createTestBoardThread(),
+        return new Post(postId, creator, postNumber, body, createTestBoardThread(),
             time);
     }
 
     public BoardThread createTestBoardThread() {
 
-        return new BoardThread(postId, title, statement, creatorId, time, locked);
+        return new BoardThread(postId, title, statement, creator, time, locked);
     }
 
     public CreatePostRequest createTestCreatePostRequest() {
 
-        return new CreatePostRequest(creatorId, body, threadId);
+        return new CreatePostRequest(creator, body, threadId);
     }
 
     public EditPostRequest createTestEditPostRequest() {
 
-        return new EditPostRequest(postId, threadId, body, creatorId);
+        return new EditPostRequest(postId, threadId, body, creator);
     }
 
     public CreateBoardThreadRequest createTestCreateBoardThreadRequest() {
 
-        return new CreateBoardThreadRequest(title, statement, creatorId);
+        return new CreateBoardThreadRequest(title, statement, creator);
     }
 
     public EditBoardThreadRequest createTestEditBoardThreadRequest() {
 
-        return new EditBoardThreadRequest(title, statement, threadId, creatorId);
+        return new EditBoardThreadRequest(title, statement, creator, threadId);
     }
 
     public int getPostNumber() {
@@ -66,12 +66,12 @@ public class TestThreadPostBuilder {
         this.postNumber = postNumber;
     }
 
-    public long getCreatorId() {
-        return creatorId;
+    public String getCreator() {
+        return creator;
     }
 
-    public void setCreatorId(long creatorId) {
-        this.creatorId = creatorId;
+    public void setCreator(String creator) {
+        this.creator = creator;
     }
 
     public long getPostId() {

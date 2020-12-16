@@ -31,19 +31,19 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(classes = ContentServer.class)
 public class PostServiceTest {
 
-    transient long demoId1;
+    transient String user1;
     transient int demoNumber1;
     transient String demoBody1;
     transient LocalDateTime demoCreated1;
     transient Post demoPost1;
 
-    transient long demoId2;
+    transient String user2;
     transient int demoNumber2;
     transient String demoBody2;
     transient LocalDateTime demoCreated2;
     transient Post demoPost2;
 
-    transient long demoId3;
+    transient String user3;
     transient int demoNumber3;
     transient String demoBody3;
     transient LocalDateTime demoCreated3;
@@ -64,9 +64,9 @@ public class PostServiceTest {
     @BeforeEach
     void initialize() {
 
-        demoId1 = 1;
-        demoId2 = 2;
-        demoId3 = 3;
+        user1 = "Ja";
+        user2 = "ys";
+        user3 = "on";
 
         demoNumber1 = 12;
         demoNumber2 = 14;
@@ -80,9 +80,9 @@ public class PostServiceTest {
         demoCreated2 = LocalDateTime.now().plusHours(2);
         demoCreated3 = LocalDateTime.now().minusDays(1);
 
-        demoPost1 = new Post(demoNumber1, demoId1, demoBody1, null, demoCreated1);
-        demoPost2 = new Post(demoNumber2, demoId2, demoBody2, null, demoCreated2);
-        demoPost3 = new Post(demoNumber3, demoId3, demoBody3, null, demoCreated3);
+        demoPost1 = new Post(demoNumber1, user1, demoBody1, null, demoCreated1);
+        demoPost2 = new Post(demoNumber2, user2, demoBody2, null, demoCreated2);
+        demoPost3 = new Post(demoNumber3, user3, demoBody3, null, demoCreated3);
 
         posts = new ArrayList<>();
         posts.add(demoPost1);
