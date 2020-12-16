@@ -219,4 +219,23 @@ public class PostServiceTest {
         assertThrows(AuthorizationFailedException.class, () -> postService.updatePost(token,
             builder.createTestEditPostRequest()));
     }
+
+    @Test
+    void getPostByIdTest() {
+
+        Post post = builder.createTestPost();
+
+        when(postRepository.getById(builder.getPostId())).thenReturn(Optional.of(post));
+
+        assertEquals(post, postService.getPostById(builder.getPostId()));
+    }
+
+    @Test
+    void getPostByIdFailTest() {
+
+        when(postRepository.getById(builder.getPostId())).thenReturn(Optional.empty());
+
+        assertThrows(PostNotFoundException.class,
+            () -> postService.getPostById(builder.getPostId()));
+    }
 }

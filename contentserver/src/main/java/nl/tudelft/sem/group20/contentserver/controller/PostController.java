@@ -1,7 +1,5 @@
 package nl.tudelft.sem.group20.contentserver.controller;
 
-import java.util.List;
-import nl.tudelft.sem.group20.contentserver.entities.Post;
 import nl.tudelft.sem.group20.contentserver.requests.CreatePostRequest;
 import nl.tudelft.sem.group20.contentserver.requests.EditPostRequest;
 import nl.tudelft.sem.group20.contentserver.services.PostService;
@@ -9,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -69,5 +68,18 @@ public class PostController {
         return new ResponseEntity<>("The post with ID: " + request.getPostId() + " has been "
             + "updated",
             HttpStatus.OK);
+    }
+
+    /**
+     * Gets a post using its Id.
+     *
+     * @param id long representing id of the post.
+     * @return ResponseEntity containing the post.
+     */
+    @GetMapping("/get/{id}")
+    @ResponseBody
+    public ResponseEntity<?> getPost(@PathVariable long id) {
+
+        return new ResponseEntity<>(postService.getPostById(id), HttpStatus.OK);
     }
 }

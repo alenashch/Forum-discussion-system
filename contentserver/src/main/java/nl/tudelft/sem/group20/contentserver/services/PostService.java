@@ -139,4 +139,23 @@ public class PostService {
 
         postRepository.saveAndFlush(toUpdate);
     }
+
+    /**
+     * Returns post with a given id.
+     *
+     * @param id - id of the to be retrieved.
+     * @return the retrieved post.
+     * @throws PostNotFoundException when the post could not be found.
+     */
+    public Post getPostById(long id) throws PostNotFoundException {
+
+        Post post = postRepository.getById(id).orElse(null);
+
+        if (post == null) {
+
+            throw new PostNotFoundException();
+        }
+
+        return post;
+    }
 }

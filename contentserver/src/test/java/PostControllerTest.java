@@ -19,6 +19,7 @@ import nl.tudelft.sem.group20.contentserver.entities.Post;
 import nl.tudelft.sem.group20.contentserver.requests.CreatePostRequest;
 import nl.tudelft.sem.group20.contentserver.requests.EditPostRequest;
 import nl.tudelft.sem.group20.contentserver.services.PostService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -28,6 +29,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 @AutoConfigureMockMvc
 @WebMvcTest(PostController.class)
@@ -127,15 +129,26 @@ class PostControllerTest {
 
 
     }
-    /*
-    private String createJsonRequest(Post post) throws JsonProcessingException {
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
-        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+    @Test
+    public void getPostTest() {
 
-        return ow.writeValueAsString(post);
+        builder.setPostId(1L);
+        Post post = builder.createTestPost();
+        when(postService.getPostById(builder.getPostId())).thenReturn(post);
+
+        try {
+
+            MvcResult result = mockMvc.perform(get("/post/get/1"))
+                .andDo(print()).andExpect(status().isOk())
+                .andExpect(status().isOk()).andReturn();
+
+            Assertions.assertEquals(objectMapper.writeValueAsString(post),
+                result.getResponse().getContentAsString());
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
     }
-    */
 
 }

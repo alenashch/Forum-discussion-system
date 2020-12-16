@@ -7,10 +7,11 @@ public class EditBoardThreadRequest extends CreateBoardThreadRequest {
 
     /**
      * Builder for edit Board Thread Request.
-     *  @param title title board thread
-     * @param statement statement of board thread
-     * @param boardId board id
-     * @param isLocked if thread is locked or not
+     *
+     * @param title         title board thread
+     * @param statement     statement of board thread
+     * @param boardId       board id
+     * @param isLocked      if thread is locked or not
      * @param boardThreadId id of the thread
      */
 
