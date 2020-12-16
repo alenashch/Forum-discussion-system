@@ -1,5 +1,9 @@
 package nl.tudelft.sem.group20.boardserver.test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -14,15 +18,16 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import java.nio.file.AccessDeniedException;
 import java.util.Collections;
 import java.util.List;
 import nl.tudelft.sem.group20.boardserver.BoardServer;
 import nl.tudelft.sem.group20.boardserver.controllers.BoardController;
+import nl.tudelft.sem.group20.boardserver.controllers.BoardControllerAdvice;
 import nl.tudelft.sem.group20.boardserver.entities.Board;
 import nl.tudelft.sem.group20.boardserver.services.BoardService;
-import org.junit.Before;
-import org.junit.jupiter.api.Assertions;
+import nl.tudelft.sem.group20.exceptions.UserNotFoundException;
+import nl.tudelft.sem.group20.shared.AuthRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -32,7 +37,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 
 @AutoConfigureMockMvc
 @WebMvcTest(BoardController.class)
@@ -50,43 +55,126 @@ class BoardControllerTest {
     @Autowired
     private transient ObjectMapper objectMapper;
 
+    transient BoardControllerAdvice controllerAdvice;
+
+    transient String createUrl;
+    transient String editUrl;
+
+    transient String tokenHeaderName;
+    transient String token;
+
     @BeforeEach
     void initialize() {
-        board = new Board(1, "Board 1", "description", false);
-        list = Collections.singletonList(new Board(1, "Board 1", "description", false));
+        token = "A token.";
+        tokenHeaderName = "user-token";
+        controllerAdvice = new BoardControllerAdvice();
+
+        createUrl = "/board/create";
+        editUrl = "/board/edit";
+
+        board = new Board(1, "Board 1", "description", false, "user");
+        list = Collections.singletonList(board);
     }
 
 
     @Test
     void testCreateBoardSuccessful() {
-
-        when(boardService.createBoard(board)).thenReturn(1L);
-
         try {
-            mockMvc.perform(post("/board/create")
-                    .contentType(APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(board)))
-                    .andDo(print())
-                    .andExpect(status().isCreated())
-                    .andExpect(content().string("A new board with ID: 1 has been created"));
-
-        } catch (Exception e) {
-
+            when(boardService.createBoard(eq(board), any(AuthRequest.class)))
+                    .thenReturn(board.getId());
+        } catch (AccessDeniedException e) {
             e.printStackTrace();
         }
 
+        try {
+            mockMvc.perform(post(createUrl)
+                    .contentType(APPLICATION_JSON)
+                    .header(tokenHeaderName, token)
+                    .content(objectMapper.writeValueAsString(board)))
+                    .andDo(print())
+                    .andExpect(status().isCreated())
+                    .andExpect(content().string(
+                            "A new board with ID: " + board.getId() + " has been created"));
 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void testCreateBoardUserNotFound() {
+        //token is not valid
+
+        try {
+            when(boardService.createBoard(eq(board), any(AuthRequest.class)))
+                    .thenThrow(new UserNotFoundException("This user does not exist."));
+        } catch (AccessDeniedException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            mockMvc.perform(post(createUrl)
+                    .contentType(APPLICATION_JSON)
+                    .header(tokenHeaderName, token)
+                    .content(objectMapper.writeValueAsString(board)))
+                    .andDo(print())
+                    .andExpect(status().isNotFound())
+                    .andExpect(result ->
+                            assertTrue(result.getResolvedException()
+                                    instanceof UserNotFoundException))
+                    .andExpect(result ->
+                            assertEquals(controllerAdvice.handleUserNotFoundException().getBody(),
+                                    result.getResolvedException().getMessage()));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void testCreateBoardAccessDenied() {
+        //user is not a teacher
+
+        try {
+            when(boardService.createBoard(eq(board), any(AuthRequest.class)))
+                    .thenThrow(new AccessDeniedException("Unauthorized action."));
+        } catch (AccessDeniedException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            mockMvc.perform(post(createUrl)
+                    .contentType(APPLICATION_JSON)
+                    .header(tokenHeaderName, token)
+                    .content(objectMapper.writeValueAsString(board)))
+                    .andDo(print())
+                    .andExpect(status().isUnauthorized())
+                    .andExpect(result ->
+                            assertTrue(result.getResolvedException()
+                                    instanceof AccessDeniedException))
+                    .andExpect(result ->
+                            assertEquals(controllerAdvice.handleAccessDeniedException().getBody(),
+                                    result.getResolvedException().getMessage()));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     //Board is already in the database
     @Test
     void testCreateBoardFailure() {
 
-        when(boardService.createBoard(board)).thenReturn(-1L);
+        try {
+            when(boardService.createBoard(eq(board), any(AuthRequest.class))).thenReturn(-1L);
+        } catch (AccessDeniedException e) {
+            e.printStackTrace();
+        }
 
         try {
-            mockMvc.perform(post("/board/create")
+            mockMvc.perform(post(createUrl)
                     .contentType(APPLICATION_JSON)
+                    .header(tokenHeaderName, token)
                     .content(objectMapper.writeValueAsString(board)))
                     .andDo(print())
                     .andExpect(status().isBadRequest())
@@ -124,11 +212,16 @@ class BoardControllerTest {
     @Test
     void editBoardSuccessful() {
 
-        when(boardService.updateBoard(board)).thenReturn(true);
+        try {
+            when(boardService.updateBoard(eq(board), any(AuthRequest.class))).thenReturn(true);
+        } catch (AccessDeniedException e) {
+            e.printStackTrace();
+        }
 
         try {
-            mockMvc.perform(post("/board/edit")
+            mockMvc.perform(post(editUrl)
                     .contentType(APPLICATION_JSON)
+                    .header(tokenHeaderName, token)
                     .content(objectMapper.writeValueAsString(board)))
                     .andDo(print())
                     .andExpect(status().isOk())
@@ -138,18 +231,82 @@ class BoardControllerTest {
 
             e.printStackTrace();
         }
+    }
 
+    @Test
+    void testEditBoardUserNotFound() {
+        //token is invalid
+
+        try {
+            when(boardService.updateBoard(eq(board), any(AuthRequest.class)))
+                    .thenThrow(new UserNotFoundException("This user does not exist."));
+        } catch (AccessDeniedException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            mockMvc.perform(post(editUrl)
+                    .contentType(APPLICATION_JSON)
+                    .header(tokenHeaderName, token)
+                    .content(objectMapper.writeValueAsString(board)))
+                    .andDo(print())
+                    .andExpect(status().isNotFound())
+                    .andExpect(result ->
+                            assertTrue(result.getResolvedException()
+                                    instanceof UserNotFoundException))
+                    .andExpect(result ->
+                            assertEquals(controllerAdvice.handleUserNotFoundException().getBody(),
+                                    result.getResolvedException().getMessage()));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void testEditBoardAccessDenied() {
+        //user is not a teacher
+
+        try {
+            when(boardService.updateBoard(eq(board), any(AuthRequest.class)))
+                    .thenThrow(new AccessDeniedException("Unauthorized action."));
+        } catch (AccessDeniedException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            mockMvc.perform(post(editUrl)
+                    .contentType(APPLICATION_JSON)
+                    .header(tokenHeaderName, token)
+                    .content(objectMapper.writeValueAsString(board)))
+                    .andDo(print())
+                    .andExpect(status().isUnauthorized())
+                    .andExpect(result ->
+                            assertTrue(result.getResolvedException()
+                                    instanceof AccessDeniedException))
+                    .andExpect(result ->
+                            assertEquals(controllerAdvice.handleAccessDeniedException().getBody(),
+                                    result.getResolvedException().getMessage()));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     //Can't edit the board if it is not in the database
     @Test
     void editBoardFailure() {
 
-        when(boardService.updateBoard(board)).thenReturn(false);
+        try {
+            when(boardService.updateBoard(eq(board), any(AuthRequest.class))).thenReturn(false);
+        } catch (AccessDeniedException e) {
+            e.printStackTrace();
+        }
 
         try {
-            mockMvc.perform(post("/board/edit")
+            mockMvc.perform(post(editUrl)
                     .contentType(APPLICATION_JSON)
+                    .header(tokenHeaderName, token)
                     .content(objectMapper.writeValueAsString(board)))
                     .andDo(print())
                     .andExpect(status().isBadRequest())
