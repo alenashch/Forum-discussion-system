@@ -62,21 +62,6 @@ public class ThreadController {
     @GetMapping("/get")
     @ResponseBody
     public List<BoardThread> getThreads() {
-        //RestTemplate rest = new RestTemplate();
-
-        System.out.println("here"); //BOARD-SERVER
-        //restTemplate.get
-        //Board[] wow = restTemplate.getForObject("http://board-server/board/get", Board[].class);
-
-        try {
-            Board   wow2 = restTemplate.getForObject("http://board-server/board/get/1", Board.class);
-            System.out.println(wow2);
-        } catch (Exception e) {
-            //System.out.println("error");
-            System.out.println(e);
-        }
-
-
         return threadService.getThreads();
     }
 
@@ -89,9 +74,10 @@ public class ThreadController {
      */
     @PostMapping("/edit")
     @ResponseBody
-    public ResponseEntity<String> editThread(@RequestBody EditBoardThreadRequest request) {
+    public ResponseEntity<String> editThread(@RequestHeader String token,
+                                             @RequestBody EditBoardThreadRequest request) {
 
-        if (threadService.updateThread(request)) {
+        if (threadService.updateThread(token, request)) {
 
             return new ResponseEntity<>(
                 "The thread with ID: " + request.getBoardThreadId() + " has been "

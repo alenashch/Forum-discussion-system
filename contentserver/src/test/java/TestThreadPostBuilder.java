@@ -50,7 +50,7 @@ public class TestThreadPostBuilder {
 
     public CreateBoardThreadRequest createTestCreateBoardThreadRequest() {
 
-        return new CreateBoardThreadRequest(title, statement);
+        return new CreateBoardThreadRequest(title, statement, threadId);
     }
 
     public EditBoardThreadRequest createTestEditBoardThreadRequest() {

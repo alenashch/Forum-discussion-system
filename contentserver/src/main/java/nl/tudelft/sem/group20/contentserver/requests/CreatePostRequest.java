@@ -6,6 +6,12 @@ public class CreatePostRequest {
 
     private long boardThreadId;
 
+    /**
+     * Builder for CreatePostRequest.
+     *
+     * @param body body of request
+     * @param boardThreadId id of board thread
+     */
     public CreatePostRequest(String body, long boardThreadId) {
         this.body = body;
         this.boardThreadId = boardThreadId;

@@ -11,13 +11,14 @@ public class CreateBoardThreadRequest {
     /**
      * Board Thread Request.
      *
-     * @param title     title
+     * @param title title
      * @param statement statement
      */
-    public CreateBoardThreadRequest(String title, String statement) {
+    public CreateBoardThreadRequest(String title, String statement, Long boardId) {
 
         this.title = title;
         this.statement = statement;
+        this.boardId   = boardId;
     }
 
     public String getTitle() {

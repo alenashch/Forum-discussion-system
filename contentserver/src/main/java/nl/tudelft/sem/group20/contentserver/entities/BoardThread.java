@@ -45,7 +45,7 @@ public class BoardThread {
 
 
     /**
-     * Empty constructor of Board Thread
+     * Empty constructor of Board Thread.
      */
 
     public BoardThread() {
