@@ -25,7 +25,7 @@ public class Post {
 
     private String body;
 
-    private long creatorId;
+    private String creatorName;
 
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
@@ -51,7 +51,7 @@ public class Post {
      * @param body       - the body of a Post.
      * @param created    - LocalDateTime showing when a Post was created.
      */
-    public Post(long id, long creatorId, int postNumber, String body, BoardThread boardThread,
+    public Post(long id, String creatorName, int postNumber, String body, BoardThread boardThread,
                 LocalDateTime created) {
         this.id = id;
         this.postNumber = postNumber;
@@ -60,7 +60,7 @@ public class Post {
         //initially, set this field the same as the created field
         this.edited = created;
         this.boardThread = boardThread;
-        this.creatorId = creatorId;
+        this.creatorName = creatorName;
     }
 
     /**
@@ -70,14 +70,14 @@ public class Post {
      * @param body       - the body of a Post.
      * @param created    - LocalDateTime showing when a Post was created.
      */
-    public Post(int postNumber, long creatorId, String body, BoardThread boardThread,
+    public Post(int postNumber, String creatorName, String body, BoardThread boardThread,
                 LocalDateTime created) {
         this.postNumber = postNumber;
         this.body = body;
         this.created = created;
         //initially, set this field the same as the created field
         this.edited = created;
-        this.creatorId = creatorId;
+        this.creatorName = creatorName;
         this.boardThread = boardThread;
     }
 
@@ -126,12 +126,12 @@ public class Post {
         return !this.edited.isEqual(this.created);
     }
 
-    public long getCreatorId() {
-        return creatorId;
+    public String getCreatorName() {
+        return creatorName;
     }
 
-    public void setCreatorId(long creatorId) {
-        this.creatorId = creatorId;
+    public void setCreatorName(String creatorName) {
+        this.creatorName = creatorName;
     }
 
     public void setBoardThread(BoardThread boardThread) {

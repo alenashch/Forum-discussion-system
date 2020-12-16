@@ -4,10 +4,9 @@ public class EditBoardThreadRequest extends CreateBoardThreadRequest {
 
     private long boardThreadId;
 
-    public EditBoardThreadRequest(String title, String statement, long creatorId,
-                                long boardThreadId) {
+    public EditBoardThreadRequest(String title, String statement, long boardThreadId) {
 
-        super(title, statement, creatorId);
+        super(title, statement);
         this.boardThreadId = boardThreadId;
     }
 

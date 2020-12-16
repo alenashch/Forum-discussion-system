@@ -1,4 +1,5 @@
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -33,6 +34,8 @@ import org.springframework.test.web.servlet.MockMvc;
 @ContextConfiguration(classes = ContentServer.class)
 class PostControllerTest {
 
+    private transient String token = "1";
+    private transient String tokenName = "token";
 
     @Autowired
     @MockBean
@@ -55,11 +58,13 @@ class PostControllerTest {
     void createPostSuccessTest() {
 
         CreatePostRequest createPostRequest = builder.createTestCreatePostRequest();
-        when(postService.createPost(any(CreatePostRequest.class))).thenReturn(builder.getPostId());
+        when(postService.createPost(anyString(), any(CreatePostRequest.class)))
+            .thenReturn(builder.getPostId());
 
         try {
             mockMvc.perform(post("/post/create")
                 .contentType(APPLICATION_JSON)
+                .header(tokenName, token)
                 .content(objectMapper.writeValueAsString(createPostRequest)))
                 .andDo(print())
                 .andExpect(status().isCreated())
@@ -78,11 +83,12 @@ class PostControllerTest {
     void createPostFailTest() {
 
         CreatePostRequest createPostRequest = builder.createTestCreatePostRequest();
-        when(postService.createPost(any(CreatePostRequest.class))).thenReturn(-1L);
+        when(postService.createPost(anyString(), any(CreatePostRequest.class))).thenReturn(-1L);
 
         try {
             mockMvc.perform(post("/post/create")
                 .contentType(APPLICATION_JSON)
+                .header(tokenName, token)
                 .content(objectMapper.writeValueAsString(createPostRequest)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
@@ -130,6 +136,7 @@ class PostControllerTest {
         try {
             mockMvc.perform(post("/post/edit")
                 .contentType(APPLICATION_JSON)
+                .header(tokenName, token)
                 .content(objectMapper.writeValueAsString(editPostRequest)).accept(APPLICATION_JSON))
                 .andDo(print()).andExpect(status().isOk())
                 .andExpect(content().string("The post with ID: " + builder.getPostId() + " has "
@@ -156,6 +163,7 @@ class PostControllerTest {
         try {
             mockMvc.perform(post("/post/edit")
                 .contentType(APPLICATION_JSON)
+                .header(tokenName, token)
                 .content(new ObjectMapper().writeValueAsString(editPostRequest))
                 .accept(APPLICATION_JSON))
                 .andDo(print()).andExpect(status().isBadRequest())

@@ -2,7 +2,6 @@ package nl.tudelft.sem.group20.contentserver.services;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
 import nl.tudelft.sem.group20.contentserver.entities.BoardThread;
 import nl.tudelft.sem.group20.contentserver.repositories.ThreadRepository;
 import nl.tudelft.sem.group20.contentserver.requests.CreateBoardThreadRequest;
@@ -31,9 +30,8 @@ public class ThreadService {
         try {
 
             //restTemplate.postForObject();
-            AuthResponse res = restTemplate.postForObject("http://authentication-server/user/authenticate",
-                    new AuthRequest(token), AuthResponse.class);
-            return res;
+            return restTemplate.postForObject("http://authentication-server/user/authenticate",
+                new AuthRequest(token), AuthResponse.class);
 
         } catch (Exception e) {
             return null;
@@ -55,7 +53,7 @@ public class ThreadService {
      * Creates a Thread in the database.
      *
      *
-     * @param token
+     * @param token - String containing the authentication token.
      * @param request - CreateEditBoardThreadRequest with information necessary to create a new
      *                thread.
      * @return -1 if the Thread already exists in the database, or the id of the newly
@@ -69,7 +67,7 @@ public class ThreadService {
         //check if is locked by communicating with board
 
         BoardThread toCreate = new BoardThread(request.getTitle(), request.getStatement(),
-            request.getCreatorId(), LocalDateTime.now(), false, request.getBoardId());
+            res.getUsername(), LocalDateTime.now(), false, request.getBoardId());
 
         threadRepository.saveAndFlush(toCreate);
         return toCreate.getId();

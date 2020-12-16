@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,9 +31,10 @@ public class PostController {
      */
     @PostMapping(value = "/create")
     @ResponseBody
-    public ResponseEntity<String> createPost(@RequestBody CreatePostRequest request) {
+    public ResponseEntity<String> createPost(@RequestHeader String token,
+                                             @RequestBody CreatePostRequest request) {
 
-        long newId = postService.createPost(request);
+        long newId = postService.createPost(token, request);
         if (newId == -1) {
 
             return new ResponseEntity<>("This post could not be created, it may already exist",
@@ -62,13 +64,14 @@ public class PostController {
      */
     @PostMapping("/edit")
     @ResponseBody
-    public ResponseEntity<String> editPost(@RequestBody EditPostRequest request) {
+    public ResponseEntity<String> editPost(@RequestHeader String token,
+                                           @RequestBody EditPostRequest request) {
 
 
         if (postService.updatePost(request)) {
 
             return new ResponseEntity<>("The post with ID: " + request.getPostId() + " has been "
-                    + "updated",
+                + "updated",
                 HttpStatus.OK);
         }
         return new ResponseEntity<>(

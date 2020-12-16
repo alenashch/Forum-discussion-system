@@ -4,9 +4,9 @@ public class EditPostRequest extends CreatePostRequest{
 
     private long postId;
 
-    public EditPostRequest(long postId, long boardThreadId, String body, long postCreatorId) {
+    public EditPostRequest(long postId, long boardThreadId, String body) {
 
-        super(postCreatorId, body, boardThreadId);
+        super(body, boardThreadId);
         this.postId = postId;
     }
 
