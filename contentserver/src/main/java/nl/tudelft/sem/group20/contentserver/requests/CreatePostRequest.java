@@ -10,6 +10,13 @@ public class CreatePostRequest {
 
     private long boardThreadId;
 
+    /**
+     * Builder for CreatePostRequest.
+     *
+     * @param creatorId id of creator
+     * @param body body of request
+     * @param boardThreadId id of board thread
+     */
     public CreatePostRequest(long creatorId, String body, long boardThreadId) {
         this.creatorId = creatorId;
         this.body = body;

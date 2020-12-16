@@ -12,6 +12,7 @@ public class CreateBoardThreadRequest {
 
     /**
      * Board Thread Request.
+     *
      * @param title title
      * @param statement statement
      * @param creatorId creatorId

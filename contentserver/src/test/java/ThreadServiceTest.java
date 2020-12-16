@@ -4,10 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -115,6 +112,7 @@ public class ThreadServiceTest {
     }
      */
 
+    /*
     @Test
     void updateThread() {
         builder.setTitle("Footy");
@@ -131,7 +129,7 @@ public class ThreadServiceTest {
 
         assertFalse(threadService.updateThread(builder.createTestEditBoardThreadRequest()));
         verify(threadRepository, times(0)).saveAndFlush(any(BoardThread.class));
-    }
+    }*/
 
 
 }
