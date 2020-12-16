@@ -45,6 +45,7 @@ public class Post {
 
     /**
      * Non-empty constructor for Post class.
+     *
      *  @param id         - id of the Post.
      * @param postNumber - the number of the Post (to identify it within a thread).
      * @param creatorName - the name of the thread creator.

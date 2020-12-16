@@ -25,6 +25,13 @@ public class PostService {
 
     private transient RestTemplate restTemplate;
 
+    /**
+     * Constructor of PostService.
+     *
+     * @param postRepository   - PostRepository to use.
+     * @param threadRepository - ThreadRepository to use.
+     * @param restTemplate     - restTemplate to use.
+     */
     public PostService(PostRepository postRepository, ThreadRepository threadRepository,
                        RestTemplate restTemplate) {
         this.postRepository = postRepository;
@@ -45,8 +52,8 @@ public class PostService {
      */
     public String authenticateUser(String token) throws RuntimeException {
 
-        AuthResponse authResponse = restTemplate.postForObject("http://authentication-server/user" +
-                "/authenticate",
+        AuthResponse authResponse = restTemplate.postForObject("http://authentication-server/user"
+                + "/authenticate",
             new AuthRequest(token), AuthResponse.class);
 
         if (authResponse == null || authResponse.getStatus() == StatusResponse.Status.fail) {
@@ -62,7 +69,7 @@ public class PostService {
      *
      * @param request Request with information needed to create a new post.
      * @return -1 if the Post already exists in the database, or the id of the newly created post
-     * if creation was successful.
+     *      if creation was successful.
      * @throws RuntimeException One of the custom exception if something goes wrong.
      */
     public long createPost(String token, CreatePostRequest request) throws RuntimeException {

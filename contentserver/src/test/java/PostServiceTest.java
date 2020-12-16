@@ -1,12 +1,9 @@
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -27,7 +24,6 @@ import nl.tudelft.sem.group20.shared.AuthRequest;
 import nl.tudelft.sem.group20.shared.AuthResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -220,4 +216,24 @@ public class PostServiceTest {
             builder.createTestEditPostRequest()));
     }
 
+    @Test
+    void authenticateUserSuccessful() {
+
+        when(restTemplate.postForObject(Mockito.anyString(),
+            Mockito.any(AuthRequest.class),
+            Mockito.eq(AuthResponse.class))).thenReturn(authResponse);
+
+        assertEquals("bob", postService.authenticateUser(token));
+    }
+
+    @Test
+    void authenticateUserUnsuccessful() {
+
+        AuthResponse authResponse2 = new AuthResponse();
+        when(restTemplate.postForObject(Mockito.anyString(),
+            Mockito.any(AuthRequest.class),
+            Mockito.eq(AuthResponse.class))).thenReturn(authResponse2);
+
+        assertThrows(AuthorizationFailedException.class, () -> postService.authenticateUser(token));
+    }
 }
