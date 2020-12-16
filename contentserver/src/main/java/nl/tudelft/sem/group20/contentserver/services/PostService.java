@@ -30,7 +30,7 @@ public class PostService {
      *
      * @param request Request with information needed to create a new post.
      * @return -1 if the Post already exists in the database, or the id of the newly created post
-     * if creation was successful.
+     *         if creation was successful.
      */
     public long createPost(CreatePostRequest request) {
 
