@@ -15,7 +15,9 @@ import exceptions.PostNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import nl.tudelft.sem.group20.contentserver.ContentServer;
+import nl.tudelft.sem.group20.contentserver.entities.BoardThread;
 import nl.tudelft.sem.group20.contentserver.entities.Post;
 import nl.tudelft.sem.group20.contentserver.repositories.PostRepository;
 import nl.tudelft.sem.group20.contentserver.repositories.ThreadRepository;
@@ -218,5 +220,45 @@ public class PostServiceTest {
 
         assertThrows(AuthorizationFailedException.class, () -> postService.updatePost(token,
             builder.createTestEditPostRequest()));
+    }
+
+    @Test
+    void getPostByIdTest() {
+
+        Post post = builder.createTestPost();
+
+        when(postRepository.getById(builder.getPostId())).thenReturn(Optional.of(post));
+
+        assertEquals(post, postService.getPostById(builder.getPostId()));
+    }
+
+    @Test
+    void getPostByIdFailTest() {
+
+        when(postRepository.getById(builder.getPostId())).thenReturn(Optional.empty());
+
+        assertThrows(PostNotFoundException.class,
+            () -> postService.getPostById(builder.getPostId()));
+    }
+
+    @Test
+    void getPostsFromThreadTest() {
+
+        Set<Post> posts = Set.of(builder.createTestPost());
+        BoardThread boardThread = builder.createTestBoardThread();
+        boardThread.setPosts(posts);
+
+        when(threadRepository.getById(builder.getThreadId())).thenReturn(Optional.of(boardThread));
+
+        assertEquals(posts, postService.getPostsFromThread(builder.getThreadId()));
+    }
+
+    @Test
+    void getPostsFromThreadFailTest() {
+
+        when(threadRepository.getById(builder.getThreadId())).thenReturn(Optional.empty());
+
+        assertThrows(BoardThreadNotFoundException.class,
+            () -> postService.getPostsFromThread(builder.getThreadId()));
     }
 }
