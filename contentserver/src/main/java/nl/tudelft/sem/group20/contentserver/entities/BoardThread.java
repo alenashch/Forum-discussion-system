@@ -79,6 +79,7 @@ public class BoardThread {
      * @param statement       general statment of thread
      * @param threadCreatorId person who created thread
      * @param locked          locked or not
+     * @param boardId         id of the board this thread is assigned to
      */
     public BoardThread(String threadTitle, String statement, String threadCreatorId,
                        LocalDateTime created, boolean locked, long boardId) {
