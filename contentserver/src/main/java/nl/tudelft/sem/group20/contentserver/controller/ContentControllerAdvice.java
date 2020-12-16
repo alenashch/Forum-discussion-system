@@ -23,15 +23,6 @@ public class ContentControllerAdvice {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
-    /*
-    @ExceptionHandler({PostAlreadyExistsException.class})
-    ResponseEntity<String> handlePostAlreadyExistsException(RuntimeException exception) {
-
-        return new ResponseEntity<String>(exception.getMessage(), HttpStatus.BAD_GATEWAY;
-    }
-
-     */
-
     @ExceptionHandler({PostNotFoundException.class})
     ResponseEntity<String> handlePostNotFoundException(RuntimeException exception) {
 

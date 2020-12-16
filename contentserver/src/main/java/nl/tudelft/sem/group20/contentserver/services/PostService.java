@@ -111,9 +111,13 @@ public class PostService {
             throw new PostNotFoundException();
         }
 
+        if (!toUpdate.getCreatorName().equals(authenticateUser(token))) {
+
+            throw new AuthorizationFailedException("This post does not belong to the given user");
+        }
         toUpdate.setBody(request.getBody());
         toUpdate.setEdited(LocalDateTime.now());
-        toUpdate.setCreatorName(authenticateUser(token));
+
 
         if (request.getBoardThreadId() != toUpdate.getBoardThread().getId()) {
 
