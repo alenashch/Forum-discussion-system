@@ -88,7 +88,8 @@ public class ThreadController {
 
         if (threadService.updateThread(token, request)) {
             return new ResponseEntity<>(
-                    "The thread with ID: " + request.getBoardThreadId() + " has been " + "updated", HttpStatus.OK);
+                    "The thread with ID: " + request.getBoardThreadId()
+                        + " has been " + "updated", HttpStatus.OK);
         }
         return new ResponseEntity<>(
             "Thread with ID: " + request.getBoardThreadId() + " could not be updated",

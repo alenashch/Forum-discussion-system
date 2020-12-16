@@ -48,7 +48,7 @@ public class ThreadService {
     private boolean isBoardLocked(long boardId) {
         Board board = restTemplate.getForObject("http://board-server/board/get/" + boardId, Board.class);
 
-        if (board == null) {
+        if (board == null || board.getLocked()) {
             throw new BoardIsLockedException();
         }
 
@@ -66,9 +66,18 @@ public class ThreadService {
         return threadRepository.findAll();
     }
 
+    /**
+     * Gets single thread with the given id.
+     *
+     * @param id id of the new thread
+     * @return the found thread
+     */
     public BoardThread getSingleThread(long id) {
-        BoardThread bt = threadRepository.findById(5).orElse(null);
-        if (bt == null) throw new BoardThreadNotFoundException();
+        BoardThread bt = threadRepository.findById(id).orElse(null);
+        if (bt == null) {
+
+            throw new BoardThreadNotFoundException();
+        }
         return bt;
     }
 
