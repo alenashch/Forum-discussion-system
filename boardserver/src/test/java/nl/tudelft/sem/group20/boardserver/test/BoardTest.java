@@ -86,7 +86,7 @@ public class BoardTest {
     }
 
     @Test
-    public void testGetAndSetUserId() {
+    public void testGetAndSetUsername() {
         board.setUsername("user2");
         assertEquals("user2", board.getUsername());
     }
@@ -134,13 +134,15 @@ public class BoardTest {
 
     @Test
     public void testBoardToString() {
-        String boardToString = "Board{boardId='" + board.getId()
-                + "', boardName='" + board.getName()
-                + "', boardDescription='" + board.getDescription()
-                + "', locked='" + board.isLocked()
-                + "', edited='" + board.getEdited()
-                + "', created='" + board.getCreated()
-                + "'}";
+        String boardToString = "Board{"
+                + "boardId='" + board.getId() + '\''
+                + ", boardName='" + board.getName() + '\''
+                + ", boardDescription='" + board.getDescription() + '\''
+                + ", locked='" + board.isLocked() + '\''
+                + ", edited='" + board.getEdited() + '\''
+                + ", created='" + board.getCreated() + '\''
+                + ", username='" + board.getUsername() + '\''
+                + '}';
         assertEquals(board.toString(), boardToString);
     }
 }

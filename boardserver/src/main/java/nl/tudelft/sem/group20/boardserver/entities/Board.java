@@ -173,6 +173,7 @@ public class Board {
                 + ", locked='" + locked + '\''
                 + ", edited='" + edited + '\''
                 + ", created='" + created + '\''
+                + ", username='" + username + '\''
                 + '}';
     }
 }
