@@ -43,13 +43,13 @@ public class PostController {
     /**
      * Get post request.
      *
-     * @return JSON containing list of all posts.
+     * @return JSON responseEntity containing list of all posts.
      */
     @GetMapping("/get")
     @ResponseBody
-    public List<Post> getPosts() {
+    public ResponseEntity<?> getPosts() {
 
-        return postService.getPosts();
+        return new ResponseEntity<>(postService.getPosts(), HttpStatus.OK);
     }
 
     /**

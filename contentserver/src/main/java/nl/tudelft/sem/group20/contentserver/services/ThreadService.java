@@ -2,7 +2,6 @@ package nl.tudelft.sem.group20.contentserver.services;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
 import nl.tudelft.sem.group20.classes.Board;
 import nl.tudelft.sem.group20.contentserver.entities.BoardThread;
 import nl.tudelft.sem.group20.contentserver.repositories.ThreadRepository;

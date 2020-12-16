@@ -79,23 +79,7 @@ public class BoardThread {
      * @param statement       general statment of thread
      * @param threadCreatorId person who created thread
      * @param locked          locked or not
-     */
-    public BoardThread(String threadTitle, String statement, String threadCreatorId,
-                       LocalDateTime created, boolean locked) {
-        this.threadTitle = threadTitle;
-        this.statement = statement;
-        this.threadCreator = threadCreatorId;
-        this.created = created;
-        this.locked = locked;
-    }
-
-    /**
-     * Non-empty constructor of BoardThread.
-     *
-     * @param threadTitle     title of thread
-     * @param statement       general statment of thread
-     * @param threadCreatorId person who created thread
-     * @param locked          locked or not
+     * @param boardId         id of the board this thread is assigned to
      */
     public BoardThread(String threadTitle, String statement, String threadCreatorId,
                        LocalDateTime created, boolean locked, long boardId) {

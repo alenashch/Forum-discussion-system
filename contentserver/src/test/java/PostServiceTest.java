@@ -11,7 +11,7 @@ import static org.mockito.Mockito.when;
 
 import exceptions.AuthorizationFailedException;
 import exceptions.BoardThreadNotFoundException;
-import java.time.LocalDateTime;
+import exceptions.PostNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -38,27 +38,7 @@ public class PostServiceTest {
 
     transient AuthResponse authResponse;
     transient String token;
-
-    transient String demoName;
-    transient long demoId1;
-    transient int demoNumber1;
-    transient String demoBody1;
-    transient LocalDateTime demoCreated1;
-    transient Post demoPost1;
-
-    transient long demoId2;
-    transient int demoNumber2;
-    transient String demoBody2;
-    transient LocalDateTime demoCreated2;
-    transient Post demoPost2;
-
-    transient long demoId3;
-    transient int demoNumber3;
-    transient String demoBody3;
-    transient LocalDateTime demoCreated3;
-    transient Post demoPost3;
-
-    transient List<Post> posts;
+    transient Post demoPost;
 
     transient PostService postService;
 
@@ -76,51 +56,33 @@ public class PostServiceTest {
     @BeforeEach
     void initialize() {
 
+
         restTemplate = mock(RestTemplate.class);
         authResponse = new AuthResponse(true, "bob");
-        token = "1";
 
-        demoName = "Bob";
-        demoId1 = 1;
-        demoId2 = 2;
-        demoId3 = 3;
-
-        demoNumber1 = 12;
-        demoNumber2 = 14;
-        demoNumber3 = 10;
-
-        demoBody1 = "First body.";
-        demoBody2 = "Second body.";
-        demoBody3 = "Third body.";
-
-        demoCreated1 = LocalDateTime.now();
-        demoCreated2 = LocalDateTime.now().plusHours(2);
-        demoCreated3 = LocalDateTime.now().minusDays(1);
-
-        demoPost1 = new Post(demoNumber1, demoName, demoBody1, null, demoCreated1);
-        demoPost2 = new Post(demoNumber2, demoName, demoBody2, null, demoCreated2);
-        demoPost3 = new Post(demoNumber3, demoName, demoBody3, null, demoCreated3);
-
-        posts = new ArrayList<>();
-        posts.add(demoPost1);
-        posts.add(demoPost2);
+        builder = new TestThreadPostBuilder();
+        demoPost = builder.createTestPost();
 
         postRepository = mock(PostRepository.class);
 
-        builder = new TestThreadPostBuilder();
-
-        Mockito.when(postRepository.findAll())
-            .thenReturn(posts);
         Mockito.when(postRepository.saveAndFlush(any(Post.class)))
             .then(returnsFirstArg());
         Mockito.when(postRepository.getById(builder.getPostId()))
-            .thenReturn(Optional.of(demoPost2));
+            .thenReturn(Optional.of(demoPost));
 
         postService = new PostService(postRepository, threadRepository, restTemplate);
     }
 
     @Test
     void testGetPosts() {
+
+        List<Post> posts = new ArrayList<>();
+        posts.add(builder.createTestPost());
+
+
+        Mockito.when(postRepository.findAll())
+            .thenReturn(posts);
+
         assertThat(postService.getPosts()).hasSize(posts.size()).hasSameElementsAs(posts);
     }
 
@@ -132,7 +94,7 @@ public class PostServiceTest {
         when(restTemplate.postForObject(Mockito.anyString(),
             Mockito.any(AuthRequest.class),
             Mockito.eq(AuthResponse.class))).thenReturn(authResponse);
-        builder.setPostId(demoPost2.getId());
+        builder.setPostId(demoPost.getId());
         assertEquals(0, postService.createPost(token, builder.createTestCreatePostRequest()));
 
         verify(postRepository, times(1)).saveAndFlush(any());
@@ -148,7 +110,7 @@ public class PostServiceTest {
         when(threadRepository.getById(builder.getThreadId()))
             .thenReturn(Optional.of(builder.createTestBoardThread()));
 
-        builder.setPostId(demoPost2.getId());
+        builder.setPostId(demoPost.getId());
         assertThrows(AuthorizationFailedException.class, () ->
             postService.createPost(token,
                 builder.createTestCreatePostRequest())
@@ -166,7 +128,6 @@ public class PostServiceTest {
             Mockito.eq(AuthResponse.class))).thenReturn(authResponse);
         when(threadRepository.getById(anyLong())).thenReturn(Optional.empty());
 
-        builder.setPostId(demoPost2.getId());
         assertThrows(BoardThreadNotFoundException.class, () ->
             postService.createPost(token,
                 builder.createTestCreatePostRequest())
@@ -185,7 +146,6 @@ public class PostServiceTest {
             Mockito.eq(AuthResponse.class))).thenReturn(authResponse);
 
         builder.setBody("Updated body.");
-        builder.setPostId(demoPost2.getId());
         builder.setCreatorName("bob");
         when(postRepository.getById(anyLong()))
             .thenReturn(Optional.of(builder.createTestPost()));
@@ -233,5 +193,30 @@ public class PostServiceTest {
             Mockito.eq(AuthResponse.class))).thenReturn(authResponse2);
 
         assertThrows(AuthorizationFailedException.class, () -> postService.authenticateUser(token));
+    }
+
+    @Test
+    void updatePostUserNotFound() {
+
+        when(postRepository.getById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(PostNotFoundException.class, () -> postService.updatePost(token,
+            builder.createTestEditPostRequest()));
+    }
+
+    @Test
+    void updatePostWrongCreator() {
+
+        builder.setCreatorName("Mr. Robot");
+        when(restTemplate.postForObject(Mockito.anyString(),
+            Mockito.any(AuthRequest.class),
+            Mockito.eq(AuthResponse.class))).thenReturn(authResponse);
+        when(postRepository.getById(anyLong()))
+            .thenReturn(Optional.of(builder.createTestPost()));
+        when(threadRepository.getById(anyLong()))
+            .thenReturn(Optional.of(builder.createTestBoardThread()));
+
+        assertThrows(AuthorizationFailedException.class, () -> postService.updatePost(token,
+            builder.createTestEditPostRequest()));
     }
 }
