@@ -152,7 +152,7 @@ public class UserServiceTest {
 
     @Test
     void testCreateUserSuccessful() {
-        assertEquals(new StatusResponse(success, "A new user was succesfully made"),
+        assertEquals(new StatusResponse(success, "A new user was successfully made"),
                 userService.createUser(registerRequest1));
     }
 
