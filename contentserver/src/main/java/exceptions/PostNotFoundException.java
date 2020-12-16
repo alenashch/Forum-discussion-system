@@ -1,6 +1,6 @@
 package exceptions;
 
-public class PostNotFoundException extends Exception {
+public class PostNotFoundException extends RuntimeException {
 
     private static final long serialVersionUID = 13;
 

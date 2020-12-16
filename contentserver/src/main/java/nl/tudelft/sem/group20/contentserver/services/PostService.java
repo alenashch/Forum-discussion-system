@@ -2,6 +2,7 @@ package nl.tudelft.sem.group20.contentserver.services;
 
 import exceptions.AuthorizationFailedException;
 import exceptions.BoardThreadNotFoundException;
+import exceptions.PostNotFoundException;
 import java.time.LocalDateTime;
 import java.util.List;
 import nl.tudelft.sem.group20.contentserver.entities.BoardThread;
@@ -36,15 +37,13 @@ public class PostService {
     }
 
     /**
-     * Creates a Post in the database.
+     * Authenticates user.
      *
-     * @param request Request with information needed to create a new post.
-     * @return -1 if the Post already exists in the database, or the id of the newly created post
-     * if creation was successful.
-     * @throws RuntimeException One of the custom exception if something goes wrong
-     *         if creation was successful.
+     * @param token String with an authentication token in it.
+     * @return String with a username.
+     * @throws RuntimeException if the authentication fails.
      */
-    public long createPost(String token, CreatePostRequest request) throws RuntimeException {
+    public String authenticateUser(String token) throws RuntimeException {
 
         AuthResponse authResponse = restTemplate.postForObject("http://authentication-server/user" +
                 "/authenticate",
@@ -54,6 +53,20 @@ public class PostService {
 
             throw new AuthorizationFailedException();
         }
+
+        return authResponse.getUsername();
+    }
+
+    /**
+     * Creates a Post in the database.
+     *
+     * @param request Request with information needed to create a new post.
+     * @return -1 if the Post already exists in the database, or the id of the newly created post
+     * if creation was successful.
+     * @throws RuntimeException One of the custom exception if something goes wrong.
+     */
+    public long createPost(String token, CreatePostRequest request) throws RuntimeException {
+
         BoardThread boardThread = threadRepository.getById(request.getBoardThreadId()).orElse(null);
         if (boardThread == null) {
 
@@ -61,7 +74,7 @@ public class PostService {
         }
 
         int nextPostNumber = boardThread.getPosts().size();
-        Post toCreate = new Post(nextPostNumber, authResponse.getUsername(),
+        Post toCreate = new Post(nextPostNumber, authenticateUser(token),
             request.getBody(), boardThread, LocalDateTime.now());
 
         /*
@@ -81,22 +94,19 @@ public class PostService {
      * Updates a Post in the database.
      *
      * @param request Request with information needed to create a new post
-     * @return false if the Post does not exist in the database, and true otherwise.
      */
-    public boolean updatePost(CreatePostRequest request) {
+    public void updatePost(String token, CreatePostRequest request) throws RuntimeException {
 
         Post toUpdate = postRepository.getById(request.getBoardThreadId()).orElse(null);
 
         if (toUpdate == null) {
 
-            return false;
+            throw new PostNotFoundException();
         }
 
         toUpdate.setBody(request.getBody());
         toUpdate.setEdited(LocalDateTime.now());
-        if (postRepository.getById(request.getBoardThreadId()).isEmpty()) {
-            return false;
-        }
+        toUpdate.setCreatorName(authenticateUser(token));
 
         if (request.getBoardThreadId() != toUpdate.getBoardThread().getId()) {
 
@@ -108,7 +118,7 @@ public class PostService {
 
             if (newThread == null) {
 
-                return false;
+                throw new BoardThreadNotFoundException("Given new thread does not exist");
             }
 
             toUpdate.setBoardThread(newThread);
@@ -117,6 +127,5 @@ public class PostService {
         }
 
         postRepository.saveAndFlush(toUpdate);
-        return true;
     }
 }

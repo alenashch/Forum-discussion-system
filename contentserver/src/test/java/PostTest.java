@@ -35,11 +35,11 @@ public class PostTest {
         demoNumber2 = 1;
         demoBody2 = "This is a demo post.";
         demoCreated2 = LocalDateTime.now();
-        demoPost2 = new Post(demoId2, demoName, demoNumber2, demoBody2, null, demoCreated2);
-        demoPost2Copy = new Post(demoPost2.getId(), demoPost2.getCreatorName(),
-            demoPost2.getPostNumber(),
-            demoPost2.getBody(), null,
-            demoPost2.getCreated());
+        demoPost2 = new Post(demoId2, demoNumber2, demoName, demoBody2, null, demoCreated2);
+        demoPost2Copy =
+            new Post(demoPost2.getId(), demoPost2.getPostNumber(), demoPost2.getCreatorName(),
+                demoPost2.getBody(), null,
+                demoPost2.getCreated());
     }
 
     @Test

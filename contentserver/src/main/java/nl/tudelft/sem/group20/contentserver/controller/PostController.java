@@ -35,11 +35,7 @@ public class PostController {
                                              @RequestBody CreatePostRequest request) {
 
         long newId = postService.createPost(token, request);
-        if (newId == -1) {
 
-            return new ResponseEntity<>("This post could not be created, it may already exist",
-                HttpStatus.BAD_REQUEST);
-        }
         return new ResponseEntity<>("A new post with ID: " + newId + " has been created",
             HttpStatus.CREATED);
     }
@@ -68,16 +64,10 @@ public class PostController {
                                            @RequestBody EditPostRequest request) {
 
 
-        if (postService.updatePost(request)) {
+        postService.updatePost(token, request);
 
-            return new ResponseEntity<>("The post with ID: " + request.getPostId() + " has been "
-                + "updated",
-                HttpStatus.OK);
-        }
-        return new ResponseEntity<>(
-            "Post with ID: " + request.getPostId() + " could not be updated",
-            HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>("The post with ID: " + request.getPostId() + " has been "
+            + "updated",
+            HttpStatus.OK);
     }
-
-
 }

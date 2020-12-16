@@ -29,7 +29,7 @@ public class TestThreadPostBuilder {
      */
     public Post createTestPost() {
         LocalDateTime time = LocalDateTime.now();
-        return new Post(postId, creatorName, postNumber, body, createTestBoardThread(),
+        return new Post(postId, postNumber, creatorName, body, createTestBoardThread(),
             time);
     }
 

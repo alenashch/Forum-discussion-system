@@ -80,29 +80,6 @@ class PostControllerTest {
     }
 
     @Test
-    void createPostFailTest() {
-
-        CreatePostRequest createPostRequest = builder.createTestCreatePostRequest();
-        when(postService.createPost(anyString(), any(CreatePostRequest.class))).thenReturn(-1L);
-
-        try {
-            mockMvc.perform(post("/post/create")
-                .contentType(APPLICATION_JSON)
-                .header(tokenName, token)
-                .content(objectMapper.writeValueAsString(createPostRequest)))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(
-                    content().string("This post could not be created, it may already exist"));
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
-        }
-
-    }
-
-    @Test
     void getPostsTest() {
 
         List<Post> list = Collections.singletonList(builder.createTestPost());
@@ -130,7 +107,6 @@ class PostControllerTest {
 
         EditPostRequest editPostRequest = builder.createTestEditPostRequest();
 
-        when(postService.updatePost(any(EditPostRequest.class))).thenReturn(true);
 
         //  given(postService.updatePost(any(Post.class))).willReturn(true);
         try {
@@ -151,35 +127,6 @@ class PostControllerTest {
 
 
     }
-
-    @Test
-    void editPostFailTest() {
-
-        EditPostRequest editPostRequest = builder.createTestEditPostRequest();
-
-        when(postService.updatePost(any(EditPostRequest.class))).thenReturn(false);
-
-        //  given(postService.updatePost(any(Post.class))).willReturn(true);
-        try {
-            mockMvc.perform(post("/post/edit")
-                .contentType(APPLICATION_JSON)
-                .header(tokenName, token)
-                .content(new ObjectMapper().writeValueAsString(editPostRequest))
-                .accept(APPLICATION_JSON))
-                .andDo(print()).andExpect(status().isBadRequest())
-                .andExpect(content().string("Post with ID: " + editPostRequest.getPostId()
-                    + " could not be updated"));
-            //.andExpect((ResultMatcher) jsonPath("$.success").value(true));
-
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
-        }
-
-
-    }
-
     /*
     private String createJsonRequest(Post post) throws JsonProcessingException {
 

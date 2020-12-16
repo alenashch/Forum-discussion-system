@@ -6,12 +6,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import exceptions.AuthorizationFailedException;
+import exceptions.BoardThreadNotFoundException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,7 +74,7 @@ public class PostServiceTest {
     @MockBean
     transient ThreadRepository threadRepository;
 
-    @Mock
+    @MockBean
     transient RestTemplate restTemplate;
 
     @BeforeEach
@@ -141,12 +143,14 @@ public class PostServiceTest {
     }
 
     @Test
-    void testCreatePostUnsuccessful() {
+    void testCreatePostUnsuccessfulAuthorization() {
 
         AuthResponse authResponse2 = new AuthResponse();
         when(restTemplate.postForObject(Mockito.anyString(),
             Mockito.any(AuthRequest.class),
             Mockito.eq(AuthResponse.class))).thenReturn(authResponse2);
+        when(threadRepository.getById(builder.getThreadId()))
+            .thenReturn(Optional.of(builder.createTestBoardThread()));
 
         builder.setPostId(demoPost2.getId());
         assertThrows(AuthorizationFailedException.class, () ->
@@ -159,7 +163,31 @@ public class PostServiceTest {
     }
 
     @Test
+    void testCreatePostUnsuccessfulBoardNotFound() {
+
+        when(restTemplate.postForObject(Mockito.anyString(),
+            Mockito.any(AuthRequest.class),
+            Mockito.eq(AuthResponse.class))).thenReturn(authResponse);
+        when(threadRepository.getById(anyLong())).thenReturn(Optional.empty());
+
+        builder.setPostId(demoPost2.getId());
+        assertThrows(BoardThreadNotFoundException.class, () ->
+            postService.createPost(token,
+                builder.createTestCreatePostRequest())
+        );
+
+        //check that no post was added
+        verify(postRepository, times(0)).saveAndFlush(any(Post.class));
+    }
+
+
+    @Test
     void updatePostSuccessful() {
+
+        when(restTemplate.postForObject(Mockito.anyString(),
+            Mockito.any(AuthRequest.class),
+            Mockito.eq(AuthResponse.class))).thenReturn(authResponse);
+
         demoPost2.setBody("Updated body.");
 
         builder.setBody(demoPost2.getBody());
@@ -170,18 +198,26 @@ public class PostServiceTest {
         when(threadRepository.getById(anyLong()))
             .thenReturn(Optional.of(builder.createTestBoardThread()));
 
-        assertTrue(postService.updatePost(builder.createTestEditPostRequest()));
+        postService.updatePost(token, builder.createTestEditPostRequest());
         verify(postRepository, times(1)).saveAndFlush(any());
     }
 
     @Test
-    void updatePostUnsuccessful() {
-        Mockito.when(postRepository.getById(3))
-            .thenReturn(Optional.empty());
+    void updatePostUnsuccessfulAuthorization() {
 
         builder.setPostId(3);
-        assertFalse(postService.updatePost(builder.createTestEditPostRequest()));
-        verify(postRepository, times(0)).saveAndFlush(any(Post.class));
+        Mockito.when(postRepository.getById(anyLong()))
+            .thenReturn(Optional.of(builder.createTestPost()));
+        when(threadRepository.getById(builder.getThreadId()))
+            .thenReturn(Optional.of(builder.createTestBoardThread()));
+
+        AuthResponse authResponse2 = new AuthResponse();
+        when(restTemplate.postForObject(Mockito.anyString(),
+            Mockito.any(AuthRequest.class),
+            Mockito.eq(AuthResponse.class))).thenReturn(authResponse2);
+
+        assertThrows(AuthorizationFailedException.class, () -> postService.updatePost(token,
+            builder.createTestEditPostRequest()));
     }
 
 }

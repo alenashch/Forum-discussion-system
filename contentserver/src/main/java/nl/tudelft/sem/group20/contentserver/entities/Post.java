@@ -45,13 +45,14 @@ public class Post {
 
     /**
      * Non-empty constructor for Post class.
-     *
-     * @param id         - id of the Post.
+     *  @param id         - id of the Post.
      * @param postNumber - the number of the Post (to identify it within a thread).
+     * @param creatorName - the name of the thread creator.
      * @param body       - the body of a Post.
      * @param created    - LocalDateTime showing when a Post was created.
      */
-    public Post(long id, String creatorName, int postNumber, String body, BoardThread boardThread,
+    public Post(long id, int postNumber, String creatorName, String body,
+                BoardThread boardThread,
                 LocalDateTime created) {
         this.id = id;
         this.postNumber = postNumber;
