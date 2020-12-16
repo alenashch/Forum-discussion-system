@@ -1,5 +1,7 @@
 package nl.tudelft.sem.group20.contentserver.controller;
 
+import java.util.Set;
+import nl.tudelft.sem.group20.contentserver.entities.Post;
 import nl.tudelft.sem.group20.contentserver.requests.CreatePostRequest;
 import nl.tudelft.sem.group20.contentserver.requests.EditPostRequest;
 import nl.tudelft.sem.group20.contentserver.services.PostService;
@@ -81,5 +83,18 @@ public class PostController {
     public ResponseEntity<?> getPost(@PathVariable long id) {
 
         return new ResponseEntity<>(postService.getPostById(id), HttpStatus.OK);
+    }
+
+    /**
+     * Gets posts from a thread.
+     *
+     * @param id long representing id of the thread,
+     * @return Set containing posts from the thread.
+     */
+    @GetMapping("/get/fromthread/{id}")
+    @ResponseBody
+    public ResponseEntity<?> getPostsFromThread(@PathVariable long id) {
+
+        return new ResponseEntity<>(postService.getPostsFromThread(id), HttpStatus.OK);
     }
 }
