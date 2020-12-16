@@ -8,6 +8,7 @@ public class RegisterRequest {
     private String password;
     private String email;
     private String username;
+    private boolean type;
 
     public RegisterRequest() {}
 
@@ -75,6 +76,24 @@ public class RegisterRequest {
      */
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    /**
+     * Gets the value of the type.
+     *
+     * @return returns the type.
+     */
+    public boolean getType() {
+        return type;
+    }
+
+    /**
+     * Sets the type to the given value.
+     *
+     * @param type - type of the user.
+     */
+    public void setType(boolean type) {
+        this.type = type;
     }
 
     /**
