@@ -1,8 +1,5 @@
 package nl.tudelft.sem.group20.contentserver.controller;
 
-import java.util.List;
-import nl.tudelft.sem.group20.classes.Board;
-import nl.tudelft.sem.group20.contentserver.entities.BoardThread;
 import nl.tudelft.sem.group20.contentserver.requests.CreateBoardThreadRequest;
 import nl.tudelft.sem.group20.contentserver.requests.EditBoardThreadRequest;
 import nl.tudelft.sem.group20.contentserver.services.ThreadService;
@@ -61,8 +58,8 @@ public class ThreadController {
      */
     @GetMapping("/get")
     @ResponseBody
-    public List<BoardThread> getThreads() {
-        return threadService.getThreads();
+    public ResponseEntity<?> getThreads() {
+        return new ResponseEntity<>(threadService.getThreads(), HttpStatus.OK);
     }
 
     /**
@@ -78,10 +75,8 @@ public class ThreadController {
                                              @RequestBody EditBoardThreadRequest request) {
 
         if (threadService.updateThread(token, request)) {
-
             return new ResponseEntity<>(
-                "The thread with ID: " + request.getBoardThreadId() + " has been "
-                    + "updated", HttpStatus.OK);
+                    "The thread with ID: " + request.getBoardThreadId() + " has been " + "updated", HttpStatus.OK);
         }
         return new ResponseEntity<>(
             "Thread with ID: " + request.getBoardThreadId() + " could not be updated",

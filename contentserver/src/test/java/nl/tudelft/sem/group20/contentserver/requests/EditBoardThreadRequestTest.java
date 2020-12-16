@@ -12,7 +12,8 @@ class EditBoardThreadRequestTest {
     @BeforeEach
     void setUp() {
 
-        request = new EditBoardThreadRequest("title", "statement", 123L);
+        request = new EditBoardThreadRequest("title", "statement", 123L,
+                false, 123L);
     }
 
     @Test
