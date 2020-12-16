@@ -66,6 +66,12 @@ public class ThreadService {
         return threadRepository.findAll();
     }
 
+    public BoardThread getSingleThread(long id) {
+        BoardThread bt = threadRepository.findById(5).orElse(null);
+        if (bt == null) throw new BoardThreadNotFoundException();
+        return bt;
+    }
+
     /**
      * Creates a Thread in the database.
      *
@@ -119,4 +125,6 @@ public class ThreadService {
 
         return true;
     }
+
+
 }
