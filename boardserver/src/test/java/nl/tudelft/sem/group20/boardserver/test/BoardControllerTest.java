@@ -396,7 +396,8 @@ class BoardControllerTest {
 
         List<BoardThread> threads = new ArrayList<>();
 
-        when(boardService.getById(2)).thenReturn(new Board(2,"Board 2", "description 2", false, "user"));
+        when(boardService.getById(2)).thenReturn(
+                new Board(2, "Board 2", "description 2", false, "user"));
         when(boardService.getThreadsByBoardId(2)).thenReturn(threads);
 
         try {
