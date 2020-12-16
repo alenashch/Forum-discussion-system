@@ -1,5 +1,10 @@
 package nl.tudelft.sem.group20.contentserver.services;
 
+
+import exceptions.AuthorizationFailedException;
+import exceptions.BoardIsLockedException;
+import exceptions.BoardThreadNotFoundException;
+import exceptions.PermissionException;
 import java.time.LocalDateTime;
 import java.util.List;
 import nl.tudelft.sem.group20.classes.Board;
@@ -28,25 +33,27 @@ public class ThreadService {
     }
 
     private AuthResponse authenticateUser(String token) {
-        try {
-            return restTemplate.postForObject("http://authentication-server/user/authenticate",
-                    new AuthRequest(token), AuthResponse.class);
-        } catch (Exception e) {
-            return null;
+        AuthResponse authResponse = restTemplate.postForObject(
+                "http://authentication-server/user/authenticate",
+                new AuthRequest(token), AuthResponse.class);
+
+        if (authResponse == null || authResponse.getStatus() == StatusResponse.Status.fail) {
+            throw new AuthorizationFailedException();
         }
+
+        return authResponse;
 
     }
 
     private boolean isBoardLocked(long boardId) {
-        try {
-            Board board = restTemplate.getForObject("http://board-server/board/get/" + boardId, Board.class);
-            if (board == null) {
-                return true;
-            }
-            return board.getLocked();
-        } catch (Exception e) {
-            return false;
+        Board board = restTemplate.getForObject("http://board-server/board/get/" + boardId, Board.class);
+
+        if (board == null) {
+            throw new BoardIsLockedException();
         }
+
+        return board.getLocked();
+
     }
 
 
@@ -71,12 +78,11 @@ public class ThreadService {
     public long createThread(String token, CreateBoardThreadRequest request) {
 
         AuthResponse res = authenticateUser(token);
-        if (res == null || res.getStatus() == StatusResponse.Status.fail) {
-            return -1;
-        } else if (isBoardLocked(request.getBoardId())) {
-            return -1;
-        }
+        isBoardLocked(request.getBoardId()); // if board locked new thread cant be created
 
+        /*if (res.getStatus() == StatusResponse.Status.fail) {
+            return -1;
+        }*/
 
         BoardThread toCreate = new BoardThread(request.getTitle(), request.getStatement(),
             res.getUsername(), LocalDateTime.now(), false, request.getBoardId());
@@ -94,21 +100,20 @@ public class ThreadService {
      */
     public boolean updateThread(String token, EditBoardThreadRequest request) {
 
-        AuthResponse res = authenticateUser(token);
-        if (res == null || res.getStatus() == StatusResponse.Status.fail) {
-            return false;
-        } else if (isBoardLocked(request.getBoardId()))  {
-            return false;
-        }
 
         BoardThread thread = threadRepository.getById(request.getBoardId()).orElse(null);
-
         if (thread == null) {
-            return false;
+            throw new BoardThreadNotFoundException();
+        }
+
+        AuthResponse res = authenticateUser(token);
+        if (!res.getUsername().equals(thread.getThreadCreator()) && !res.isType()) {
+            throw new PermissionException();
         }
 
         thread.setThreadTitle(request.getTitle());
         thread.setStatement(request.getStatement());
+        thread.setLocked(request.isLocked());
 
         threadRepository.saveAndFlush(thread);
 
