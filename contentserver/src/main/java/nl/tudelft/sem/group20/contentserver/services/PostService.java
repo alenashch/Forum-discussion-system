@@ -1,8 +1,11 @@
 package nl.tudelft.sem.group20.contentserver.services;
 
 import exceptions.AuthorizationFailedException;
+import exceptions.BoardIsLockedException;
+import exceptions.BoardNotFoundException;
 import exceptions.BoardThreadNotFoundException;
 import exceptions.PostNotFoundException;
+import exceptions.ThreadIsLockedException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -14,6 +17,7 @@ import nl.tudelft.sem.group20.contentserver.requests.CreatePostRequest;
 import nl.tudelft.sem.group20.shared.AuthRequest;
 import nl.tudelft.sem.group20.shared.AuthResponse;
 import nl.tudelft.sem.group20.shared.StatusResponse;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -79,16 +83,28 @@ public class PostService {
             threadRepository.getById(request.getBoardThreadId())
                 .orElseThrow(BoardThreadNotFoundException::new);
 
+        ResponseEntity<Boolean> responseEntity = (ResponseEntity<Boolean>)
+            restTemplate.getForObject("/board/checklocked/" + boardThread.getBoardId(),
+                ResponseEntity.class);
+
+        if (responseEntity == null || responseEntity.getStatusCode().is4xxClientError()) {
+
+            throw new BoardNotFoundException();
+        }
+
+        if (responseEntity.getBody()) {
+
+            throw new BoardIsLockedException();
+        }
+
+        if (boardThread.isLocked()) {
+
+            throw new ThreadIsLockedException();
+        }
+
         int nextPostNumber = boardThread.getPosts().size();
         Post toCreate = new Post(nextPostNumber, authenticateUser(token),
             request.getBody(), boardThread, LocalDateTime.now());
-
-        /*
-        if (postRepository.getById(toCreate.getId()).isPresent()) {
-
-            throw new PostAlreadyExistsException();
-        }
-         */
 
         postRepository.saveAndFlush(toCreate);
         boardThread.addPost(toCreate);

@@ -3,7 +3,7 @@ package nl.tudelft.sem.group20.boardserver.test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -14,10 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -27,10 +24,11 @@ import nl.tudelft.sem.group20.boardserver.BoardServer;
 import nl.tudelft.sem.group20.boardserver.controllers.BoardController;
 import nl.tudelft.sem.group20.boardserver.controllers.BoardControllerAdvice;
 import nl.tudelft.sem.group20.boardserver.entities.Board;
+import nl.tudelft.sem.group20.boardserver.requests.CreateBoardRequest;
+import nl.tudelft.sem.group20.boardserver.requests.EditBoardRequest;
 import nl.tudelft.sem.group20.boardserver.services.BoardService;
 import nl.tudelft.sem.group20.classes.BoardThread;
 import nl.tudelft.sem.group20.exceptions.UserNotFoundException;
-import nl.tudelft.sem.group20.shared.AuthRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -40,7 +38,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 
 @AutoConfigureMockMvc
 @WebMvcTest(BoardController.class)
@@ -48,6 +45,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 class BoardControllerTest {
 
     transient Board board;
+    transient CreateBoardRequest createRequest;
+    transient EditBoardRequest editRequest;
     transient List<Board> list;
 
     @Autowired
@@ -76,6 +75,9 @@ class BoardControllerTest {
         editUrl = "/board/edit";
 
         board = new Board(1, "Board 1", "description", false, "user");
+        createRequest = new CreateBoardRequest(board.getName(), board.getDescription());
+        editRequest = new EditBoardRequest(board.getName(), board.getDescription(),
+                board.isLocked(), board.getId());
         list = Collections.singletonList(board);
     }
 
@@ -83,7 +85,7 @@ class BoardControllerTest {
     @Test
     void testCreateBoardSuccessful() {
         try {
-            when(boardService.createBoard(eq(board), any(AuthRequest.class)))
+            when(boardService.createBoard(any(CreateBoardRequest.class), anyString()))
                     .thenReturn(board.getId());
         } catch (AccessDeniedException e) {
             e.printStackTrace();
@@ -93,7 +95,7 @@ class BoardControllerTest {
             mockMvc.perform(post(createUrl)
                     .contentType(APPLICATION_JSON)
                     .header(tokenHeaderName, token)
-                    .content(objectMapper.writeValueAsString(board)))
+                    .content(objectMapper.writeValueAsString(createRequest)))
                     .andDo(print())
                     .andExpect(status().isCreated())
                     .andExpect(content().string(
@@ -109,7 +111,7 @@ class BoardControllerTest {
         //token is not valid
 
         try {
-            when(boardService.createBoard(eq(board), any(AuthRequest.class)))
+            when(boardService.createBoard(any(CreateBoardRequest.class), any(String.class)))
                     .thenThrow(new UserNotFoundException("This user does not exist."));
         } catch (AccessDeniedException e) {
             e.printStackTrace();
@@ -119,7 +121,7 @@ class BoardControllerTest {
             mockMvc.perform(post(createUrl)
                     .contentType(APPLICATION_JSON)
                     .header(tokenHeaderName, token)
-                    .content(objectMapper.writeValueAsString(board)))
+                    .content(objectMapper.writeValueAsString(editRequest)))
                     .andDo(print())
                     .andExpect(status().isNotFound())
                     .andExpect(result ->
@@ -139,7 +141,7 @@ class BoardControllerTest {
         //user is not a teacher
 
         try {
-            when(boardService.createBoard(eq(board), any(AuthRequest.class)))
+            when(boardService.createBoard(any(CreateBoardRequest.class), any(String.class)))
                     .thenThrow(new AccessDeniedException("Unauthorized action."));
         } catch (AccessDeniedException e) {
             e.printStackTrace();
@@ -149,7 +151,7 @@ class BoardControllerTest {
             mockMvc.perform(post(createUrl)
                     .contentType(APPLICATION_JSON)
                     .header(tokenHeaderName, token)
-                    .content(objectMapper.writeValueAsString(board)))
+                    .content(objectMapper.writeValueAsString(createRequest)))
                     .andDo(print())
                     .andExpect(status().isUnauthorized())
                     .andExpect(result ->
@@ -163,32 +165,6 @@ class BoardControllerTest {
             e.printStackTrace();
         }
     }
-
-    //Board is already in the database
-    @Test
-    void testCreateBoardFailure() {
-
-        try {
-            when(boardService.createBoard(eq(board), any(AuthRequest.class))).thenReturn(-1L);
-        } catch (AccessDeniedException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            mockMvc.perform(post(createUrl)
-                    .contentType(APPLICATION_JSON)
-                    .header(tokenHeaderName, token)
-                    .content(objectMapper.writeValueAsString(board)))
-                    .andDo(print())
-                    .andExpect(status().isBadRequest())
-                    .andExpect(content().string("A board with this id already exists."));
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
-        }
-    }
-
 
     @Test
     void getBoardsTest() {
@@ -216,7 +192,8 @@ class BoardControllerTest {
     void editBoardSuccessful() {
 
         try {
-            when(boardService.updateBoard(eq(board), any(AuthRequest.class))).thenReturn(true);
+            when(boardService.updateBoard(any(EditBoardRequest.class),
+                    any(String.class))).thenReturn(true);
         } catch (AccessDeniedException e) {
             e.printStackTrace();
         }
@@ -225,7 +202,7 @@ class BoardControllerTest {
             mockMvc.perform(post(editUrl)
                     .contentType(APPLICATION_JSON)
                     .header(tokenHeaderName, token)
-                    .content(objectMapper.writeValueAsString(board)))
+                    .content(objectMapper.writeValueAsString(editRequest)))
                     .andDo(print())
                     .andExpect(status().isOk())
                     .andExpect(content().string("The board was successfully updated."));
@@ -241,7 +218,7 @@ class BoardControllerTest {
         //token is invalid
 
         try {
-            when(boardService.updateBoard(eq(board), any(AuthRequest.class)))
+            when(boardService.updateBoard(any(EditBoardRequest.class), any(String.class)))
                     .thenThrow(new UserNotFoundException("This user does not exist."));
         } catch (AccessDeniedException e) {
             e.printStackTrace();
@@ -251,7 +228,7 @@ class BoardControllerTest {
             mockMvc.perform(post(editUrl)
                     .contentType(APPLICATION_JSON)
                     .header(tokenHeaderName, token)
-                    .content(objectMapper.writeValueAsString(board)))
+                    .content(objectMapper.writeValueAsString(editRequest)))
                     .andDo(print())
                     .andExpect(status().isNotFound())
                     .andExpect(result ->
@@ -271,7 +248,7 @@ class BoardControllerTest {
         //user is not a teacher
 
         try {
-            when(boardService.updateBoard(eq(board), any(AuthRequest.class)))
+            when(boardService.updateBoard(any(EditBoardRequest.class), any(String.class)))
                     .thenThrow(new AccessDeniedException("Unauthorized action."));
         } catch (AccessDeniedException e) {
             e.printStackTrace();
@@ -281,7 +258,7 @@ class BoardControllerTest {
             mockMvc.perform(post(editUrl)
                     .contentType(APPLICATION_JSON)
                     .header(tokenHeaderName, token)
-                    .content(objectMapper.writeValueAsString(board)))
+                    .content(objectMapper.writeValueAsString(editRequest)))
                     .andDo(print())
                     .andExpect(status().isUnauthorized())
                     .andExpect(result ->
@@ -301,7 +278,8 @@ class BoardControllerTest {
         //Can't edit the board if it is not in the database
 
         try {
-            when(boardService.updateBoard(eq(board), any(AuthRequest.class))).thenReturn(false);
+            when(boardService.updateBoard(any(EditBoardRequest.class),
+                    any(String.class))).thenReturn(false);
         } catch (AccessDeniedException e) {
             e.printStackTrace();
         }
@@ -310,7 +288,7 @@ class BoardControllerTest {
             mockMvc.perform(post(editUrl)
                     .contentType(APPLICATION_JSON)
                     .header(tokenHeaderName, token)
-                    .content(objectMapper.writeValueAsString(board)))
+                    .content(objectMapper.writeValueAsString(editRequest)))
                     .andDo(print())
                     .andExpect(status().isBadRequest())
                     .andExpect(content().string("This board does not exist."));
@@ -353,6 +331,46 @@ class BoardControllerTest {
                     .contentType(APPLICATION_JSON)).andDo(print())
                     .andExpect(status().isBadRequest())
                     .andExpect(content().string("This board does not exist."));
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+    }
+
+    @Test
+    void testisBoardLockedSuccessful() {
+
+        when(boardService.getById(1)).thenReturn(board);
+
+        try {
+
+            mockMvc.perform(get("/board/checklocked/1")
+                    .contentType(APPLICATION_JSON)).andDo(print())
+                    .andExpect(content().string("false"))
+                    .andExpect(status().isOk());
+
+            Mockito.verify(boardService, times(1)).getById(1);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+    }
+
+    @Test
+    void testisBoardLockedFailure() {
+        //Can't get the board if it is not in the database
+
+        when(boardService.getById(2)).thenReturn(null);
+
+        try {
+            mockMvc.perform(get("/board/checklocked/2")
+                    .contentType(APPLICATION_JSON)).andDo(print())
+                    .andExpect(status().isBadRequest())
+                    .andExpect(content().string("false"));
 
         } catch (Exception e) {
 
@@ -412,15 +430,5 @@ class BoardControllerTest {
             e.printStackTrace();
 
         }
-    }
-
-
-    private String createJsonRequest(Board board) throws JsonProcessingException {
-
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
-        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
-
-        return ow.writeValueAsString(board);
     }
 }
