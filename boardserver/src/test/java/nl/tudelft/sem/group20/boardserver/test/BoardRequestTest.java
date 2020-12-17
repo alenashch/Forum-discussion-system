@@ -11,6 +11,7 @@ public class BoardRequestTest {
     transient String demoName;
     transient String demoDescription;
     transient boolean demoLocked;
+    transient long demoId;
 
     transient CreateBoardRequest createBoardRequest;
     transient EditBoardRequest editBoardRequest;
@@ -20,9 +21,10 @@ public class BoardRequestTest {
         demoName = "Demo board";
         demoDescription = "An example.";
         demoLocked = false;
+        demoId = 1L;
 
         createBoardRequest = new CreateBoardRequest(demoName, demoDescription);
-        editBoardRequest = new EditBoardRequest(demoName, demoDescription, demoLocked);
+        editBoardRequest = new EditBoardRequest(demoName, demoDescription, demoLocked, demoId);
     }
 
     @Test
@@ -46,5 +48,11 @@ public class BoardRequestTest {
     void testGetAndSetLocked() {
         editBoardRequest.setLocked(true);
         assertTrue(editBoardRequest.isLocked());
+    }
+
+    @Test
+    void testGetAndSetId() {
+        editBoardRequest.setId(2);
+        assertEquals(2, editBoardRequest.getId());
     }
 }
