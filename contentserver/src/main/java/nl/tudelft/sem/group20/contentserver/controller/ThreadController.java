@@ -23,10 +23,6 @@ public class ThreadController {
     @Autowired
     private transient ThreadService threadService;
 
-    @Autowired
-    private transient RestTemplate restTemplate;
-
-
     /**
      * Create thread request.
      *
