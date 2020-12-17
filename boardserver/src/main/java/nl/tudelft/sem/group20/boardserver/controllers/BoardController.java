@@ -21,6 +21,8 @@ public class BoardController {
     @Autowired
     private transient BoardService boardService;
 
+    private transient String boardNotInDb = "This board does not exist.";
+
     /**
      * Create request request.
      *
@@ -60,7 +62,7 @@ public class BoardController {
         boolean updatedSucceeded = boardService.updateBoard(request, token);
 
         if (!updatedSucceeded) {
-            return new ResponseEntity<>("This board does not exist.", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(boardNotInDb, HttpStatus.BAD_REQUEST);
         } else {
             return new ResponseEntity<>("The board was successfully updated.", HttpStatus.OK);
         }
@@ -76,7 +78,7 @@ public class BoardController {
     public ResponseEntity<?> getBoardById(@PathVariable long id) {
          Board board = boardService.getById(id);
          if(board == null){
-             return new ResponseEntity<>("This board does not exist.", HttpStatus.BAD_REQUEST);
+             return new ResponseEntity<>(boardNotInDb, HttpStatus.BAD_REQUEST);
          }
             return new ResponseEntity<>(board, HttpStatus.OK);
     }
@@ -92,7 +94,7 @@ public class BoardController {
     public ResponseEntity<?> isBoardLocked(@PathVariable long id) {
         Board board = boardService.getById(id);
         if(board == null){
-            return new ResponseEntity<>("This board does not exist.", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(boardNotInDb, HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(board.isLocked(), HttpStatus.OK);
     }
@@ -108,7 +110,7 @@ public class BoardController {
     public ResponseEntity<?> getThreadsByBoardId(@PathVariable long id) {
         List<BoardThread> threads = boardService.getThreadsByBoardId(id);
         if(threads == null){
-            return new ResponseEntity<>("This board does not exist.", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(boardNotInDb, HttpStatus.BAD_REQUEST);
         }
         if(threads.size() == 0){
             return new ResponseEntity<>("This board does not have any threads.", HttpStatus.BAD_REQUEST);

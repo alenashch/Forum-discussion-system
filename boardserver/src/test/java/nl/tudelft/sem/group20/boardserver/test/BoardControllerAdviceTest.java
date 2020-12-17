@@ -1,12 +1,13 @@
 package nl.tudelft.sem.group20.boardserver.test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import nl.tudelft.sem.group20.boardserver.controllers.BoardControllerAdvice;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class BoardControllerAdviceTest {
     transient ResponseEntity<String> userNotFound;
