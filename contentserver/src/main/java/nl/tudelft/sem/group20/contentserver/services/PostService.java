@@ -5,6 +5,7 @@ import exceptions.BoardThreadNotFoundException;
 import exceptions.PostNotFoundException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import nl.tudelft.sem.group20.contentserver.entities.BoardThread;
 import nl.tudelft.sem.group20.contentserver.entities.Post;
 import nl.tudelft.sem.group20.contentserver.repositories.PostRepository;
@@ -138,5 +139,43 @@ public class PostService {
         }
 
         postRepository.saveAndFlush(toUpdate);
+    }
+
+    /**
+     * Returns post with a given id.
+     *
+     * @param id - id of the to be retrieved.
+     * @return the retrieved post.
+     * @throws PostNotFoundException when the post could not be found.
+     */
+    public Post getPostById(long id) throws PostNotFoundException {
+
+        Post post = postRepository.getById(id).orElse(null);
+
+        if (post == null) {
+
+            throw new PostNotFoundException();
+        }
+
+        return post;
+    }
+
+    /**
+     * Returns all posts in a thread.
+     *
+     * @param id id of a thread.
+     * @return set containing all posts.
+     * @throws BoardThreadNotFoundException if the thread could not be found.
+     */
+    public Set<Post> getPostsFromThread(long id) throws BoardThreadNotFoundException {
+
+        BoardThread boardThread = threadRepository.getById(id).orElse(null);
+
+        if (boardThread == null) {
+
+            throw new BoardThreadNotFoundException();
+        }
+
+        return boardThread.getPosts();
     }
 }

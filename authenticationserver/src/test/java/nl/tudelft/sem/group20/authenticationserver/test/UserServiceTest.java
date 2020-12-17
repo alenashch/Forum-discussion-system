@@ -98,8 +98,8 @@ public class UserServiceTest {
         user2 = new User(username2, UserService.getMd5(password2), email2, type2);
         user3 = new User(username3, UserService.getMd5(password3), email3, type3);
 
-        registerRequest1 = new RegisterRequest(password3, email3, username3);
-        registerRequest2 = new RegisterRequest(password1, email1, username1);
+        registerRequest1 = new RegisterRequest(password3, email3, username3, type3);
+        registerRequest2 = new RegisterRequest(password1, email1, username1, type1);
 
         users = new ArrayList<>();
         users.add(user1);
@@ -152,7 +152,7 @@ public class UserServiceTest {
 
     @Test
     void testCreateUserSuccessful() {
-        assertEquals(new StatusResponse(success, "A new user was succesfully made"),
+        assertEquals(new StatusResponse(success, "A new user was successfully made"),
                 userService.createUser(registerRequest1));
     }
 

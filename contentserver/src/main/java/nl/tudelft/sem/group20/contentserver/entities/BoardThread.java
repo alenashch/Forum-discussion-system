@@ -91,7 +91,7 @@ public class BoardThread {
         this.boardId = boardId;
     }
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 

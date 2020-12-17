@@ -8,6 +8,7 @@ public class RegisterRequest {
     private String password;
     private String email;
     private String username;
+    private boolean type;
 
     public RegisterRequest() {}
 
@@ -17,10 +18,11 @@ public class RegisterRequest {
      * @param password - the password of the user.
      * @param email - the email of the user.
      */
-    public RegisterRequest(String password, String email, String username) {
+    public RegisterRequest(String password, String email, String username, boolean type) {
         this.password = password;
         this.email = email;
         this.username = username;
+        this.type = type;
     }
 
     /**
@@ -78,6 +80,24 @@ public class RegisterRequest {
     }
 
     /**
+     * Gets the value of the type.
+     *
+     * @return returns the type.
+     */
+    public boolean getType() {
+        return type;
+    }
+
+    /**
+     * Sets the type to the given value.
+     *
+     * @param type - type of the user.
+     */
+    public void setType(boolean type) {
+        this.type = type;
+    }
+
+    /**
      * Method that checks to see if two objects are equal or not.
      *
      * @return returns true or false, depending on whether
@@ -94,7 +114,8 @@ public class RegisterRequest {
         RegisterRequest that = (RegisterRequest) o;
         return Objects.equals(getPassword(), that.getPassword())
                 && Objects.equals(getEmail(), that.getEmail())
-                && Objects.equals(getUsername(), that.getUsername());
+                && Objects.equals(getUsername(), that.getUsername())
+                && Objects.equals(getType(), that.getType());
     }
 
     /**
@@ -104,7 +125,7 @@ public class RegisterRequest {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(getPassword(), getEmail(), getUsername());
+        return Objects.hash(getPassword(), getEmail(), getUsername(), getType());
     }
 
     /**
@@ -123,6 +144,9 @@ public class RegisterRequest {
                 + '\''
                 + ", username='"
                 + username
+                + '\''
+                +", type='"
+                + type
                 + '}';
     }
 }
