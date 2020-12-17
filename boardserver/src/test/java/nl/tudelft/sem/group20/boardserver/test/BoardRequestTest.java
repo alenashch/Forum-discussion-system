@@ -1,11 +1,13 @@
 package nl.tudelft.sem.group20.boardserver.test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import nl.tudelft.sem.group20.boardserver.requests.CreateBoardRequest;
 import nl.tudelft.sem.group20.boardserver.requests.EditBoardRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class BoardRequestTest {
     transient String demoName;

@@ -2,7 +2,8 @@ package nl.tudelft.sem.group20.boardserver.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -74,6 +75,9 @@ class BoardControllerTest {
         editUrl = "/board/edit";
 
         board = new Board(1, "Board 1", "description", false, "user");
+        createRequest = new CreateBoardRequest(board.getName(), board.getDescription());
+        editRequest = new EditBoardRequest(board.getName(), board.getDescription(),
+                board.isLocked(), board.getId());
         list = Collections.singletonList(board);
     }
 
@@ -107,7 +111,7 @@ class BoardControllerTest {
         //token is not valid
 
         try {
-            when(boardService.createBoard(eq(createRequest), any(String.class)))
+            when(boardService.createBoard(any(CreateBoardRequest.class), any(String.class)))
                     .thenThrow(new UserNotFoundException("This user does not exist."));
         } catch (AccessDeniedException e) {
             e.printStackTrace();
@@ -137,7 +141,7 @@ class BoardControllerTest {
         //user is not a teacher
 
         try {
-            when(boardService.createBoard(eq(createRequest), any(String.class)))
+            when(boardService.createBoard(any(CreateBoardRequest.class), any(String.class)))
                     .thenThrow(new AccessDeniedException("Unauthorized action."));
         } catch (AccessDeniedException e) {
             e.printStackTrace();
@@ -188,7 +192,8 @@ class BoardControllerTest {
     void editBoardSuccessful() {
 
         try {
-            when(boardService.updateBoard(eq(editRequest), any(String.class))).thenReturn(true);
+            when(boardService.updateBoard(any(EditBoardRequest.class),
+                    any(String.class))).thenReturn(true);
         } catch (AccessDeniedException e) {
             e.printStackTrace();
         }
@@ -213,7 +218,7 @@ class BoardControllerTest {
         //token is invalid
 
         try {
-            when(boardService.updateBoard(eq(editRequest), any(String.class)))
+            when(boardService.updateBoard(any(EditBoardRequest.class), any(String.class)))
                     .thenThrow(new UserNotFoundException("This user does not exist."));
         } catch (AccessDeniedException e) {
             e.printStackTrace();
@@ -243,7 +248,7 @@ class BoardControllerTest {
         //user is not a teacher
 
         try {
-            when(boardService.updateBoard(eq(editRequest), any(String.class)))
+            when(boardService.updateBoard(any(EditBoardRequest.class), any(String.class)))
                     .thenThrow(new AccessDeniedException("Unauthorized action."));
         } catch (AccessDeniedException e) {
             e.printStackTrace();
@@ -273,7 +278,8 @@ class BoardControllerTest {
         //Can't edit the board if it is not in the database
 
         try {
-            when(boardService.updateBoard(eq(editRequest), any(String.class))).thenReturn(false);
+            when(boardService.updateBoard(any(EditBoardRequest.class),
+                    any(String.class))).thenReturn(false);
         } catch (AccessDeniedException e) {
             e.printStackTrace();
         }

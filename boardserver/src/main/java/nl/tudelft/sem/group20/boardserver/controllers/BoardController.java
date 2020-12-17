@@ -32,7 +32,7 @@ public class BoardController {
     public ResponseEntity<?> createBoard (@RequestBody CreateBoardRequest request, @RequestHeader("user-token") String token) throws UserNotFoundException, AccessDeniedException {
         long assignedId = boardService.createBoard(request, token);
 
-        return new ResponseEntity<>("A new request with ID: " + assignedId + " has been created",
+        return new ResponseEntity<>("A new board with ID: " + assignedId + " has been created",
                 HttpStatus.CREATED
         );
     }

@@ -91,29 +91,22 @@ public class BoardService {
 
         assert response != null;
 
-        Board toUpdate = new Board(request.getId(), request.getName(), request.getDescription(),
-                request.isLocked(), response.getUsername());
-
         if (response.getStatus() == StatusResponse.Status.fail) {
             throw new UserNotFoundException(
                     "This token does not belong to a legitimate user. Board cannot be created");
         }
 
-        if (boardRepository.getById(toUpdate.getId()).isEmpty()) {
+        if (boardRepository.getById(request.getId()).isEmpty()) {
             return false;
         }
 
-        Board currentBoard = getById(toUpdate.getId());
+        Board currentBoard = getById(request.getId());
         if (!currentBoard.getUsername().equals(response.getUsername()))
             throw new AccessDeniedException("This user does not have the permission to edit this board.");
 
+        boardRepository.saveAndFlush(new Board(request.getId(), request.getName(), request.getDescription(),
+                request.isLocked(), response.getUsername()));
 
-        // Even if the user created a board, they can not change the name of creator of the board
-        if(!(currentBoard.getUsername().equals(toUpdate.getUsername()))){
-            toUpdate.setUsername(currentBoard.getUsername());
-        }
-
-        boardRepository.saveAndFlush(toUpdate);
         return true;
     }
 
