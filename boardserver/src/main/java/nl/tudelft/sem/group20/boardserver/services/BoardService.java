@@ -7,6 +7,8 @@ import java.util.Optional;
 
 import nl.tudelft.sem.group20.boardserver.repos.BoardRepository;
 import nl.tudelft.sem.group20.boardserver.entities.Board;
+import nl.tudelft.sem.group20.boardserver.requests.CreateBoardRequest;
+import nl.tudelft.sem.group20.boardserver.requests.EditBoardRequest;
 import nl.tudelft.sem.group20.classes.BoardThread;
 import nl.tudelft.sem.group20.exceptions.UserNotFoundException;
 import nl.tudelft.sem.group20.shared.AuthRequest;
@@ -45,12 +47,16 @@ public class BoardService {
     /**
      * Creates a Board in the database.
      *
-     * @param newBoard - a new board to add.
-     * @return -1 if the Board already exists in the database, or the id of the newly created board
+     * @param request - a new board to add.
+     * @return the id of the newly created board
      *      if creation was successful.
+     *
+     * @throws UserNotFoundException, if the token is not valid.
+     * @throws AccessDeniedException, if the user does not have permissions to
+     *      create a board.
      */
-    public long createBoard(Board newBoard, AuthRequest tokenRequest) throws UserNotFoundException, AccessDeniedException {
-        AuthResponse response = restTemplate.postForObject(authenticateUserUrl, tokenRequest, AuthResponse.class);
+    public long createBoard(CreateBoardRequest request, String token) throws UserNotFoundException, AccessDeniedException {
+        AuthResponse response = restTemplate.postForObject(authenticateUserUrl, new AuthRequest(token), AuthResponse.class);
 
         assert response != null;
 
@@ -61,23 +67,27 @@ public class BoardService {
             throw new AccessDeniedException("This type of user cannot create a board.");
         }
 
-        if (boardRepository.getById(newBoard.getId()).isPresent()) {
-            return -1;
-        }
+        Board toCreate = new Board(request.getName(), request.getDescription(),
+                false, response.getUsername());
 
-        Board.checkCreationTime(newBoard);
-        boardRepository.saveAndFlush(newBoard);
-        return newBoard.getId();
+        Board.checkCreationTime(toCreate);
+
+        return boardRepository.saveAndFlush(toCreate).getId();
     }
 
     /**
      * Updates a Board in the database.
      *
-     * @param updatedBoard - a board to be updated.
+     * @param request - request to update a board.
      * @return false if the Board does not exist in the database, true otherwise.
+     *
+     * @throws UserNotFoundException, if the token is not valid.
+     * @throws AccessDeniedException, if the user does not have permissions to
+     *      create a board.
+     *
      */
-    public boolean updateBoard(Board updatedBoard, AuthRequest tokenRequest) throws UserNotFoundException, AccessDeniedException {
-        AuthResponse response = restTemplate.postForObject(authenticateUserUrl, tokenRequest, AuthResponse.class);
+    public boolean updateBoard(EditBoardRequest request, String token) throws UserNotFoundException, AccessDeniedException {
+        AuthResponse response = restTemplate.postForObject(authenticateUserUrl, new AuthRequest(token), AuthResponse.class);
 
         assert response != null;
 
@@ -86,21 +96,17 @@ public class BoardService {
                     "This token does not belong to a legitimate user. Board cannot be created");
         }
 
-        if (boardRepository.getById(updatedBoard.getId()).isEmpty()) {
+        if (boardRepository.getById(request.getId()).isEmpty()) {
             return false;
         }
 
-        Board currentBoard = getById(updatedBoard.getId());
+        Board currentBoard = getById(request.getId());
         if (!currentBoard.getUsername().equals(response.getUsername()))
             throw new AccessDeniedException("This user does not have the permission to edit this board.");
 
+        boardRepository.saveAndFlush(new Board(request.getId(), request.getName(), request.getDescription(),
+                request.isLocked(), response.getUsername()));
 
-        // Even if the user created a board, they can not change the name of creator of the board
-        if(!(currentBoard.getUsername().equals(updatedBoard.getUsername()))){
-            updatedBoard.setUsername(currentBoard.getUsername());
-        }
-
-        boardRepository.saveAndFlush(updatedBoard);
         return true;
     }
 
