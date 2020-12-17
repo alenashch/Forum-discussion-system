@@ -301,13 +301,52 @@ class BoardControllerTest {
     }
 
     @Test
-    void testisBoardLockedSuccessful() {
+    void testGetBoardByIdSuccessful() {
 
         when(boardService.getById(1)).thenReturn(board);
 
         try {
 
             mockMvc.perform(get("/board/get/1")
+                    .contentType(APPLICATION_JSON)).andDo(print())
+                    .andExpect(status().isOk());
+
+            Mockito.verify(boardService, times(1)).getById(1);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+    }
+
+    @Test
+    void testGetBoardByIdFailure() {
+        //Can't get the board if it is not in the database
+
+        when(boardService.getById(2)).thenReturn(null);
+
+        try {
+            mockMvc.perform(get("/board/get/2")
+                    .contentType(APPLICATION_JSON)).andDo(print())
+                    .andExpect(status().isBadRequest())
+                    .andExpect(content().string("This board does not exist."));
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+    }
+
+    @Test
+    void testisBoardLockedSuccessful() {
+
+        when(boardService.getById(1)).thenReturn(board);
+
+        try {
+
+            mockMvc.perform(get("/board/checklocked/1")
                     .contentType(APPLICATION_JSON)).andDo(print())
                     .andExpect(content().string("false"))
                     .andExpect(status().isOk());
@@ -328,7 +367,7 @@ class BoardControllerTest {
         when(boardService.getById(2)).thenReturn(null);
 
         try {
-            mockMvc.perform(get("/board/get/2")
+            mockMvc.perform(get("/board/checklocked/2")
                     .contentType(APPLICATION_JSON)).andDo(print())
                     .andExpect(status().isBadRequest())
                     .andExpect(content().string("This board does not exist."));
