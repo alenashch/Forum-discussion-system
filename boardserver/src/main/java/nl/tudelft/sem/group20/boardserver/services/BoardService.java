@@ -104,7 +104,6 @@ public class BoardService {
         }
 
         Board currentBoard = getById(toUpdate.getId());
-        System.out.println(currentBoard);
         if (!currentBoard.getUsername().equals(response.getUsername()))
             throw new AccessDeniedException("This user does not have the permission to edit this board.");
 

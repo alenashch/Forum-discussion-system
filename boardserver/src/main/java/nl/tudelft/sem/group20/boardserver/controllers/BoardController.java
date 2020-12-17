@@ -1,15 +1,15 @@
 package nl.tudelft.sem.group20.boardserver.controllers;
 
 import nl.tudelft.sem.group20.boardserver.entities.Board;
+import nl.tudelft.sem.group20.boardserver.requests.CreateBoardRequest;
+import nl.tudelft.sem.group20.boardserver.requests.EditBoardRequest;
 import nl.tudelft.sem.group20.boardserver.services.BoardService;
 import nl.tudelft.sem.group20.classes.BoardThread;
 import nl.tudelft.sem.group20.exceptions.UserNotFoundException;
-import nl.tudelft.sem.group20.shared.AuthRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 import java.nio.file.AccessDeniedException;
 import java.util.List;
@@ -22,22 +22,17 @@ public class BoardController {
     private transient BoardService boardService;
 
     /**
-     * Create board request.
+     * Create request request.
      *
-     * @param board - new board to be created.
+     * @param request - new request to be created.
      * @return JSON file containing the ID of a new post.
      */
     @PostMapping("/create")
     @ResponseBody
-    public ResponseEntity<?> createBoard (@RequestBody Board board, @RequestHeader("user-token") String token) throws UserNotFoundException, AccessDeniedException {
-        long assignedId = boardService.createBoard(board, new AuthRequest(token));
+    public ResponseEntity<?> createBoard (@RequestBody CreateBoardRequest request, @RequestHeader("user-token") String token) throws UserNotFoundException, AccessDeniedException {
+        long assignedId = boardService.createBoard(request, token);
 
-        //board with this id already exists, no board was created
-        if (assignedId == -1) {
-            return new ResponseEntity<>("A board with this id already exists.",
-                    HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<>("A new board with ID: " + assignedId + " has been created",
+        return new ResponseEntity<>("A new request with ID: " + assignedId + " has been created",
                 HttpStatus.CREATED
         );
     }
@@ -54,15 +49,15 @@ public class BoardController {
     }
 
     /**
-     * Edit board request.
+     * Edit request request.
      *
-     * @param board - Board to be edited. With the old ID and new parameters to be set.
+     * @param request - Board to be edited. With the old ID and new parameters to be set.
      * @return JSON containing a boolean signifying success.
      */
     @PostMapping("/edit")
     @ResponseBody
-    public ResponseEntity<?> editBoard(@RequestBody Board board, @RequestHeader("user-token") String token) throws AccessDeniedException, UserNotFoundException {
-        boolean updatedSucceeded = boardService.updateBoard(board, new AuthRequest(token));
+    public ResponseEntity<?> editBoard(@RequestBody EditBoardRequest request, @RequestHeader("user-token") String token) throws AccessDeniedException, UserNotFoundException {
+        boolean updatedSucceeded = boardService.updateBoard(request, token);
 
         if (!updatedSucceeded) {
             return new ResponseEntity<>("This board does not exist.", HttpStatus.BAD_REQUEST);
