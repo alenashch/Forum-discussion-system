@@ -17,6 +17,7 @@ import nl.tudelft.sem.group20.shared.AuthRequest;
 import nl.tudelft.sem.group20.shared.AuthResponse;
 import nl.tudelft.sem.group20.shared.StatusResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -47,13 +48,22 @@ public class ThreadService {
     }
 
     private boolean isBoardLocked(long boardId) {
-        Board board = restTemplate.getForObject("http://board-server/board/get/" + boardId, Board.class);
+        ResponseEntity<Boolean> responseEntity = restTemplate.getForObject("http://board-server" +
+                "/board" +
+                "/checkLocked" + boardId,
+           ResponseEntity.class);
 
-        if (board == null || board.getLocked()) {
+        if (responseEntity.getStatusCode().is4xxClientError()) {
+
+            throw new BoardNotFoundException();
+        }
+
+        if (responseEntity.getBody()) {
+
             throw new BoardIsLockedException();
         }
 
-        return board.getLocked();
+        return responseEntity.getBody();
 
     }
 
