@@ -1,6 +1,8 @@
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -12,6 +14,7 @@ import static org.mockito.Mockito.when;
 import exceptions.AuthorizationFailedException;
 import exceptions.BoardThreadNotFoundException;
 import exceptions.PostNotFoundException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -260,5 +263,28 @@ public class PostServiceTest {
 
         assertThrows(BoardThreadNotFoundException.class,
             () -> postService.getPostsFromThread(builder.getThreadId()));
+    }
+
+    @Test
+    void isEditedTest() {
+
+        Post post = builder.createTestPost();
+
+        when(postRepository.getById(builder.getPostId())).thenReturn(Optional.of(post));
+
+        assertFalse(postService.isEdited(builder.getPostId()));
+
+        post.setEdited(LocalDateTime.now());
+
+        assertTrue(postService.isEdited(builder.getPostId()));
+    }
+
+    @Test
+    void isEditedTestFail() {
+
+        when(postRepository.getById(builder.getPostId())).thenReturn(Optional.empty());
+
+        assertThrows(PostNotFoundException.class,
+            () -> postService.isEdited(builder.getPostId()));
     }
 }

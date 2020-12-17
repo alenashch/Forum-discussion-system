@@ -215,6 +215,11 @@ public class BoardServiceTest {
                 tokenRequest, AuthResponse.class))
                 .thenReturn(studentResponse);
 
+        Mockito.when(boardRepository.getById(board1.getId()))
+                .thenReturn(Optional.of(board1));
+
+        Mockito.when(boardService.getById(board1.getId())).thenReturn(board1);
+
         assertThrows(AccessDeniedException.class,
                 () -> boardService.updateBoard(board1, tokenRequest));
 
