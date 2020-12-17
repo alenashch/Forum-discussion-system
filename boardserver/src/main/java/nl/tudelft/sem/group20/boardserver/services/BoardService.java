@@ -84,13 +84,20 @@ public class BoardService {
         if (response.getStatus() == StatusResponse.Status.fail) {
             throw new UserNotFoundException(
                     "This token does not belong to a legitimate user. Board cannot be created");
-        } else {
-            if (!updatedBoard.getUsername().equals(response.getUsername()))
-                throw new AccessDeniedException("This user does not have the permission to edit this board.");
         }
 
         if (boardRepository.getById(updatedBoard.getId()).isEmpty()) {
             return false;
+        }
+
+        Board currentBoard = getById(updatedBoard.getId());
+        if (!currentBoard.getUsername().equals(response.getUsername()))
+            throw new AccessDeniedException("This user does not have the permission to edit this board.");
+
+
+        // Even if the user created a board, they can not change the name of creator of the board
+        if(!(currentBoard.getUsername().equals(updatedBoard.getUsername()))){
+            updatedBoard.setUsername(currentBoard.getUsername());
         }
 
         boardRepository.saveAndFlush(updatedBoard);
