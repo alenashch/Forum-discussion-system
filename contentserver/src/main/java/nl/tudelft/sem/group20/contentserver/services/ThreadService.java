@@ -99,6 +99,7 @@ public class ThreadService {
      */
     public long createThread(String token, CreateBoardThreadRequest request) {
 
+        System.out.println("in here service");
         AuthResponse res = authenticateUser(token);
         isBoardLocked(request.getBoardId()); // if board locked new thread cant be created
 

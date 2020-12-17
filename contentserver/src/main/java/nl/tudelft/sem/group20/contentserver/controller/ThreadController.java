@@ -23,10 +23,6 @@ public class ThreadController {
     @Autowired
     private transient ThreadService threadService;
 
-    @Autowired
-    private transient RestTemplate restTemplate;
-
-
     /**
      * Create thread request.
      *
@@ -44,7 +40,7 @@ public class ThreadController {
 
         long newId = threadService.createThread(token, request);
 
-        return new ResponseEntity<>("A new thread with ID:" + newId + " has been created",
+        return new ResponseEntity<>("A new thread with ID: " + newId + " has been created",
             HttpStatus.CREATED);
     }
 
