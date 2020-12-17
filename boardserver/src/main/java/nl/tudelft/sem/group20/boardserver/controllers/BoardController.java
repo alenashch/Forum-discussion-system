@@ -94,7 +94,7 @@ public class BoardController {
     public ResponseEntity<?> isBoardLocked(@PathVariable long id) {
         Board board = boardService.getById(id);
         if(board == null){
-            return new ResponseEntity<>(boardNotInDb, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(board.isLocked(), HttpStatus.OK);
     }
