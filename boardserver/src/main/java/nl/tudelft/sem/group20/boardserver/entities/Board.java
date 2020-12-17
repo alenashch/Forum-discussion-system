@@ -29,11 +29,11 @@ public class Board {
     @Column
     private boolean locked;
 
-    //@UpdateTimestamp
+    @UpdateTimestamp
     @Column
     private LocalDateTime edited;
 
-    //@CreationTimestamp
+    @CreationTimestamp
     @Column
     private LocalDateTime created;
 
