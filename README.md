@@ -20,6 +20,8 @@ gradle jacocoTestReport
 ```
 The coverage report is generated in: build/reports/jacoco/test/html, which does not get pushed to the repo. Open index.html in your browser to see the report. 
 
+Postman tests are also included. The export of the collection is available under <microservice>/src/test/postman
+
 ### Static analysis
 ```
 gradle checkStyleMain
