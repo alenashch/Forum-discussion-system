@@ -99,7 +99,7 @@ public class ThreadService {
         BoardThread toCreate = new BoardThread(request.getTitle(), request.getStatement(),
             res.getUsername(), LocalDateTime.now(), false, request.getBoardId());
 
-        toCreate.setEditedThreadTime(false);
+        toCreate.setEditedThread(false);
 
         threadRepository.saveAndFlush(toCreate);
         return toCreate.getId();
@@ -130,7 +130,7 @@ public class ThreadService {
         thread.setStatement(request.getStatement());
         thread.setLocked(request.isLocked());
         thread.setEditedThreadTime(LocalDateTime.now());
-        thread.setEditedThreadTime(true); //save in database that its edited
+        thread.setEditedThread(true); //save in database that its edited
 
         threadRepository.saveAndFlush(thread);
 
