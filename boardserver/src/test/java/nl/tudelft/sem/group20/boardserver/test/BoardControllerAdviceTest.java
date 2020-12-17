@@ -9,10 +9,10 @@ import org.springframework.http.ResponseEntity;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class BoardControllerAdviceTest {
-    ResponseEntity<String> userNotFound;
-    ResponseEntity<String> accessDenied;
+    transient ResponseEntity<String> userNotFound;
+    transient ResponseEntity<String> accessDenied;
 
-    BoardControllerAdvice controllerAdvice;
+    transient BoardControllerAdvice controllerAdvice;
 
     @BeforeEach
     void initialize() {
