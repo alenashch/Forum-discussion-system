@@ -68,18 +68,33 @@ public class BoardController {
 
     /**
      *
-     * @param id - id of a board for which we want to know
-     *           whether it is locked or not.
+     * @param id - id of a board.
      * @return JSON containing a board.
      */
     @GetMapping("/get/{id}")
     @ResponseBody
-    public ResponseEntity<?> isBoardLocked(@PathVariable long id) {
+    public ResponseEntity<?> getBoardById(@PathVariable long id) {
          Board board = boardService.getById(id);
          if(board == null){
              return new ResponseEntity<>("This board does not exist.", HttpStatus.BAD_REQUEST);
          }
-            return new ResponseEntity<>(board.isLocked(), HttpStatus.OK);
+            return new ResponseEntity<>(board, HttpStatus.OK);
+    }
+
+    /**
+     *
+     * @param id - id of a board for which we want to know
+     *           whether it is locked or not.
+     * @return JSON containing true if locked, false otherwise.
+     */
+    @GetMapping("/checklocked/{id}")
+    @ResponseBody
+    public ResponseEntity<?> isBoardLocked(@PathVariable long id) {
+        Board board = boardService.getById(id);
+        if(board == null){
+            return new ResponseEntity<>("This board does not exist.", HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(board.isLocked(), HttpStatus.OK);
     }
 
 
