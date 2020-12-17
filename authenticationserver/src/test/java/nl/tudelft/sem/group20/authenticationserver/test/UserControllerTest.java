@@ -32,10 +32,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
-//@AutoConfigureMockMvc
-//@RunWith(SpringJUnit4ClassRunner.class)
-//@ContextConfiguration(classes = AuthenticationServer.class)
-//@SpringBootTest(classes = UserController.class)
+
 @AutoConfigureMockMvc
 @WebMvcTest(UserController.class)
 @ContextConfiguration(classes = AuthenticationServer.class)
@@ -140,74 +137,6 @@ class UserControllerTest {
 
     }
 
-
-    /*@Test
-    void getUsersTest() {
-
-        User user = constructDefaultUser();
-        List<User> list = List.of(user);
-
-        when(userService.getUsers()).thenReturn(list);
-
-        try {
-
-            mockMvc.perform(get("/user/get")
-                .contentType(APPLICATION_JSON))
-                .andDo(print())
-                    .andExpect((ResultMatcher) jsonPath("$[0].username").value("Bob"))
-                    .andExpect((ResultMatcher) jsonPath("$[0].password").value("123"));
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
-        }
-
-    }*/
-
-    /*@Test
-    void editUsersTest() {
-        User user = new User("Bob", "123", "bob@gmail.com", false);
-        AuthRequest authRequest = new AuthRequest("token1");
-        when(userService.updateUser(user,authRequest))
-                .thenReturn(new StatusResponse(success,"reason"));
-
-        JSONObject data = new JSONObject();
-
-        JSONObject userJS = new JSONObject();
-
-        JSONObject tokenJS = new JSONObject();
-
-        try {
-            userJS.put("username", "Bob");
-            userJS.put("password", "123");
-            userJS.put("email", "bob@gmail.com");
-            userJS.put("type", false);
-
-            tokenJS.put("token","token1");
-
-            data.put("user", user.toString());
-            data.put("token", tokenJS.toString());
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            mockMvc.perform(post("/user/edit")
-                    .contentType(APPLICATION_JSON)
-                    .content(data.toString()))
-                    .andDo(print())
-                    .andExpect(
-                            jsonPath("$.status")
-                                    .value("success"));
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
-        }
-
-
-    }*/
 
     @Test
     void logoutUserTest() {
