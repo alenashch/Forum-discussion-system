@@ -21,6 +21,7 @@ import nl.tudelft.sem.group20.exceptions.UserNotFoundException;
 import nl.tudelft.sem.group20.shared.AuthRequest;
 import nl.tudelft.sem.group20.shared.AuthResponse;
 import nl.tudelft.sem.group20.shared.StatusResponse;
+import static org.mockito.ArgumentMatchers.any;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -214,6 +215,11 @@ public class BoardServiceTest {
         Mockito.when(restTemplate.postForObject(BoardService.getAuthenticateUserUrl(),
                 tokenRequest, AuthResponse.class))
                 .thenReturn(studentResponse);
+
+        Mockito.when(boardRepository.getById(board1.getId()))
+                .thenReturn(Optional.of(board1));
+
+        Mockito.when(boardService.getById(board1.getId())).thenReturn(board1);
 
         assertThrows(AccessDeniedException.class,
                 () -> boardService.updateBoard(board1, tokenRequest));
