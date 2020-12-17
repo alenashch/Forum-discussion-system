@@ -1,5 +1,6 @@
 package nl.tudelft.sem.group20.contentserver.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -37,7 +38,8 @@ public class Post {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "boardThread_id", referencedColumnName = "id")
-    @JsonManagedReference
+    @JsonIgnore
+    //@JsonManagedReference
     private BoardThread boardThread;
 
     public Post() {
