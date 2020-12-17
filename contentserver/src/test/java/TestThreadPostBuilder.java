@@ -15,6 +15,7 @@ public class TestThreadPostBuilder {
     public String creatorName = "Bob";
     public long postId = 1L;
     public long threadId = 2L;
+    public long boardId = 3L;
     public String body = "abc";
     public String title = "title";
     public String statement = "statement";
@@ -33,9 +34,17 @@ public class TestThreadPostBuilder {
             time);
     }
 
+    /**
+     * Creates new testing BoardThread.
+     *
+     * @return the new BoardThread.
+     */
     public BoardThread createTestBoardThread() {
 
-        return new BoardThread(postId, creatorName, title, statement, time, locked);
+        BoardThread boardThread = new BoardThread(title, statement, creatorName, time, locked,
+            boardId);
+        boardThread.setId(threadId);
+        return boardThread;
     }
 
     public CreatePostRequest createTestCreatePostRequest() {
@@ -128,5 +137,13 @@ public class TestThreadPostBuilder {
 
     public void setLocked(boolean locked) {
         this.locked = locked;
+    }
+
+    public long getBoardId() {
+        return boardId;
+    }
+
+    public void setBoardId(long boardId) {
+        this.boardId = boardId;
     }
 }

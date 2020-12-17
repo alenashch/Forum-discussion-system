@@ -370,7 +370,7 @@ class BoardControllerTest {
             mockMvc.perform(get("/board/checklocked/2")
                     .contentType(APPLICATION_JSON)).andDo(print())
                     .andExpect(status().isBadRequest())
-                    .andExpect(content().string("This board does not exist."));
+                    .andExpect(content().string("false"));
 
         } catch (Exception e) {
 
