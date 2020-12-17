@@ -1,6 +1,5 @@
 package nl.tudelft.sem.group20.authenticationserver.controllers;
 
-import nl.tudelft.sem.group20.authenticationserver.embeddable.EditRequest;
 import nl.tudelft.sem.group20.authenticationserver.embeddable.LoginRequest;
 import nl.tudelft.sem.group20.authenticationserver.embeddable.RegisterRequest;
 import nl.tudelft.sem.group20.authenticationserver.entities.AuthToken;
@@ -72,39 +71,4 @@ public class UserController {
         return userService.authenticate(authRequest.getToken());
     }
 
-    /*
-     * Get posts request.
-     *
-     * @return JSON containing list of all users.
-     *
-    @GetMapping("/get")
-    @ResponseBody
-    public List<User> getUsers() {
-
-        return userService.getUsers();
-    }*/
-
-    /**
-     * Edit user request.
-     *
-     * @param editRequest - Request to be done
-     * @return JSON containing a boolean signifying success.
-     */
-    @PostMapping("/edit")
-    @ResponseBody
-    public StatusResponse editUser(@RequestBody EditRequest editRequest) {
-
-        return userService.updateUser(editRequest.getUser(),
-                 editRequest.getAuthRequest().getToken());
-    }
-
-    /**
-     * Test Request.
-     *
-     * @return response
-     */
-    @RequestMapping("/hello")
-    public @ResponseBody String getAllThreads() {
-        return "hello";
-    }
 }
