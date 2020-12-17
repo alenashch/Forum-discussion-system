@@ -30,6 +30,7 @@ public class ThreadController {
     /**
      * Create thread request.
      *
+     * @param token   - String containing the authentication token.
      * @param request - CreateEditBoardThreadRequest with information necessary to create new
      *                thread.
      * @return string
@@ -77,6 +78,7 @@ public class ThreadController {
     /**
      * Edit thread request.
      *
+     * @param token - String containing the authentication token.
      * @param request - CreateEditBoardThreadRequest with information necessary to edit and existing
      *                thread.
      * @return JSON containing a boolean signifying success.
@@ -88,11 +90,41 @@ public class ThreadController {
 
         if (threadService.updateThread(token, request)) {
             return new ResponseEntity<>(
-                    "The thread with ID: " + request.getBoardThreadId()
-                        + " has been " + "updated", HttpStatus.OK);
+                "The thread with ID: " + request.getBoardThreadId()
+                    + " has been " + "updated", HttpStatus.OK);
         }
         return new ResponseEntity<>(
             "Thread with ID: " + request.getBoardThreadId() + " could not be updated",
             HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * Locks a thread. Only available for teachers.
+     *
+     * @param token - authentication token
+     * @param id    - id of the thread to be locked.
+     * @return ResponseEntity containing information about the result.
+     */
+    @PostMapping("/lock")
+    @ResponseBody
+    public ResponseEntity<String> lockThread(@RequestHeader String token,
+                                             @RequestBody long id) {
+
+        return new ResponseEntity<>(threadService.lockThread(token, id), HttpStatus.OK);
+    }
+
+    /**
+     * Unlocks a thread. Only available for teachers.
+     *
+     * @param token - authentication token
+     * @param id    - id of the thread to be locked.
+     * @return ResponseEntity containing information about the result.
+     */
+    @PostMapping("/unlock")
+    @ResponseBody
+    public ResponseEntity<String> unlockThread(@RequestHeader String token,
+                                               @RequestBody long id) {
+
+        return new ResponseEntity<>(threadService.unlockThread(token, id), HttpStatus.OK);
     }
 }

@@ -131,5 +131,59 @@ public class ThreadService {
         return true;
     }
 
+    /**
+     * Locks a thread.
+     *
+     * @param token String containing authentication token.
+     * @param id    long containing the id.
+     * @return String with the information if the thread was locked.
+     */
+    public String lockThread(String token, long id) {
 
+        AuthResponse authResponse = authenticateUser(token);
+
+        if (!authResponse.isType()) {
+
+            throw new AuthorizationFailedException("Only teachers can lock threads");
+        }
+
+        BoardThread thread =
+            threadRepository.getById(id).orElseThrow(BoardThreadNotFoundException::new);
+
+        if (thread.isLocked()) {
+
+            return "Thread with ID " + id + " is already locked";
+        }
+
+        thread.setLocked(true);
+        return "Thread with ID " + id + " has been locked";
+    }
+
+    /**
+     * Unlocks a thread.
+     *
+     * @param token String containing authentication token.
+     * @param id    long containing the id.
+     * @return String with the information if the thread was unlocked.
+     */
+    public String unlockThread(String token, long id) {
+
+        AuthResponse authResponse = authenticateUser(token);
+
+        if (!authResponse.isType()) {
+
+            throw new AuthorizationFailedException("Only teachers can unlock threads");
+        }
+
+        BoardThread thread =
+            threadRepository.getById(id).orElseThrow(BoardThreadNotFoundException::new);
+
+        if (!thread.isLocked()) {
+
+            return "Thread of ID " + id + " is already unlocked";
+        }
+
+        thread.setLocked(false);
+        return "Thread of ID " + id + " has been unlocked";
+    }
 }
