@@ -44,7 +44,7 @@ public class ThreadController {
 
         long newId = threadService.createThread(token, request);
 
-        return new ResponseEntity<>("A new thread with ID:" + newId + " has been created",
+        return new ResponseEntity<>("A new thread with ID: " + newId + " has been created",
             HttpStatus.CREATED);
     }
 
