@@ -36,7 +36,7 @@ public class Post {
     private LocalDateTime edited;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "thread_id", referencedColumnName = "id")
+    @JoinColumn(name = "boardThread_id", referencedColumnName = "id")
     @JsonManagedReference
     private BoardThread boardThread;
 
