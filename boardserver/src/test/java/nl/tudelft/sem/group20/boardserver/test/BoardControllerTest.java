@@ -323,7 +323,7 @@ class BoardControllerTest {
     }
 
     @Test
-    void testGetBoardByIdSuccessful() {
+    void testisBoardLockedSuccessful() {
 
         when(boardService.getById(1)).thenReturn(board);
 
@@ -331,6 +331,7 @@ class BoardControllerTest {
 
             mockMvc.perform(get("/board/get/1")
                     .contentType(APPLICATION_JSON)).andDo(print())
+                    .andExpect(content().string("false"))
                     .andExpect(status().isOk());
 
             Mockito.verify(boardService, times(1)).getById(1);
@@ -343,7 +344,7 @@ class BoardControllerTest {
     }
 
     @Test
-    void testGetBoardByIdFailure() {
+    void testisBoardLockedFailure() {
         //Can't get the board if it is not in the database
 
         when(boardService.getById(2)).thenReturn(null);
@@ -412,15 +413,5 @@ class BoardControllerTest {
             e.printStackTrace();
 
         }
-    }
-
-
-    private String createJsonRequest(Board board) throws JsonProcessingException {
-
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
-        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
-
-        return ow.writeValueAsString(board);
     }
 }
