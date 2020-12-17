@@ -14,6 +14,7 @@ import static org.mockito.Mockito.when;
 import exceptions.AuthorizationFailedException;
 import exceptions.BoardThreadNotFoundException;
 import exceptions.PostNotFoundException;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -274,7 +275,7 @@ public class PostServiceTest {
 
         assertFalse(postService.isEdited(builder.getPostId()));
 
-        post.setEdited(LocalDateTime.now());
+        post.setEdited(LocalDateTime.now().plus(Duration.ofHours(1)));
 
         assertTrue(postService.isEdited(builder.getPostId()));
     }

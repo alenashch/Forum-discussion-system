@@ -1,15 +1,17 @@
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import nl.tudelft.sem.group20.contentserver.entities.BoardThread;
 import nl.tudelft.sem.group20.contentserver.entities.Post;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 
 //@RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = BoardThread.class)
@@ -52,10 +54,13 @@ public class BoardThreadTest {
         created = LocalDateTime.now();
         locked = false;
         boardId = 5;
-        boardThread2 = new BoardThread(id, threadTitle, statement, threadCreatorId, created, locked);
-        boardThread3 = new BoardThread(threadTitle, statement, threadCreatorId, created, locked, boardId);
+        boardThread2 = new BoardThread(id, threadTitle, statement, threadCreatorId,
+                created, locked);
+        boardThread3 = new BoardThread(threadTitle, statement, threadCreatorId,
+                created, locked, boardId);
         boardThreadCopy2 =
-            new BoardThread(boardThread2.getId(), boardThread2.getThreadTitle(), boardThread2.getStatement(),
+            new BoardThread(boardThread2.getId(), boardThread2.getThreadTitle(),
+                    boardThread2.getStatement(),
                     boardThread2.getThreadCreator(), boardThread2.getCreated(),
                     boardThread2.isLocked());
 
