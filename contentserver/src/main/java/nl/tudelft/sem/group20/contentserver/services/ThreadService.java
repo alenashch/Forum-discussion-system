@@ -3,6 +3,7 @@ package nl.tudelft.sem.group20.contentserver.services;
 
 import exceptions.AuthorizationFailedException;
 import exceptions.BoardIsLockedException;
+import exceptions.BoardNotFoundException;
 import exceptions.BoardThreadNotFoundException;
 import exceptions.PermissionException;
 import java.time.LocalDateTime;
@@ -73,12 +74,8 @@ public class ThreadService {
      * @return the found thread
      */
     public BoardThread getSingleThread(long id) {
-        BoardThread bt = threadRepository.findById(id).orElse(null);
-        if (bt == null) {
 
-            throw new BoardThreadNotFoundException();
-        }
-        return bt;
+        return threadRepository.findById(id).orElseThrow(BoardNotFoundException::new);
     }
 
     /**
@@ -116,10 +113,9 @@ public class ThreadService {
     public boolean updateThread(String token, EditBoardThreadRequest request) {
 
 
-        BoardThread thread = threadRepository.getById(request.getBoardId()).orElse(null);
-        if (thread == null) {
-            throw new BoardThreadNotFoundException();
-        }
+        BoardThread thread =
+            threadRepository.getById(request.getBoardId())
+                .orElseThrow(BoardThreadNotFoundException::new);
 
         AuthResponse res = authenticateUser(token);
         if (!res.getUsername().equals(thread.getThreadCreator()) && !res.isType()) {

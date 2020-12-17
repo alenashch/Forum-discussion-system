@@ -12,7 +12,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import nl.tudelft.sem.group20.contentserver.ContentServer;
@@ -24,7 +23,6 @@ import nl.tudelft.sem.group20.contentserver.services.PostService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.platform.commons.annotation.Testable;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -169,6 +167,28 @@ class PostControllerTest {
                 .andExpect(status().isOk()).andReturn();
 
             Assertions.assertEquals(objectMapper.writeValueAsString(posts),
+                result.getResponse().getContentAsString());
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void isEditedTest() {
+
+        builder.setPostId(1L);
+        when(postService.isEdited(builder.getPostId())).thenReturn(true);
+
+        try {
+
+            MvcResult result =
+                mockMvc.perform(get("/post/checkedited").contentType(APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(1L)).accept(APPLICATION_JSON))
+                    .andDo(print()).andExpect(status().isOk())
+                    .andExpect(status().isOk()).andReturn();
+
+            Assertions.assertEquals(objectMapper.writeValueAsString(true),
                 result.getResponse().getContentAsString());
         } catch (Exception e) {
 
