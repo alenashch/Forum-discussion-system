@@ -12,7 +12,7 @@ public class TestBoardThreadBuilder {
     transient long id = 2;
     transient String title = "A Thread";
     transient String statement = "I do things";
-    transient String threadCreator = "Jayson";
+    transient String threadCreator = "jayson";
     transient boolean locked = false;
     transient long boardId   = 33;
     public LocalDateTime createTime = LocalDateTime.now();

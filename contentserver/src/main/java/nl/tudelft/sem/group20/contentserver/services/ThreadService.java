@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import nl.tudelft.sem.group20.contentserver.entities.BoardThread;
+import nl.tudelft.sem.group20.contentserver.repositories.PostRepository;
 import nl.tudelft.sem.group20.contentserver.repositories.ThreadRepository;
 import nl.tudelft.sem.group20.contentserver.requests.CreateBoardThreadRequest;
 import nl.tudelft.sem.group20.contentserver.requests.EditBoardThreadRequest;
@@ -30,11 +31,23 @@ public class ThreadService {
     @Autowired
     private transient RestTemplate restTemplate;
 
-    public ThreadService(ThreadRepository threadRepository) {
+    /*public ThreadService(ThreadRepository threadRepository) {
         this.threadRepository = threadRepository;
+    }*/
+
+
+    /**
+     * Constructor of PostService.
+     *
+     * @param threadRepository - ThreadRepository to use.
+     * @param restTemplate     - restTemplate to use.
+     */
+    public ThreadService(ThreadRepository threadRepository, RestTemplate restTemplate) {
+        this.threadRepository = threadRepository;
+        this.restTemplate = restTemplate;
     }
 
-    private AuthResponse authenticateUser(String token) {
+    public AuthResponse authenticateUser(String token) {
         AuthResponse authResponse = restTemplate.postForObject(
                 "http://authentication-server/user/authenticate",
                 new AuthRequest(token), AuthResponse.class);
@@ -48,7 +61,7 @@ public class ThreadService {
     }
 
 
-    private boolean isBoardLocked(long boardId) {
+    public boolean isBoardLocked(long boardId) {
         IsLockedResponse response = restTemplate.getForObject("http://board-server/board/checklocked/" + boardId,
                 IsLockedResponse.class);
 
@@ -98,13 +111,8 @@ public class ThreadService {
      */
     public long createThread(String token, CreateBoardThreadRequest request) {
 
-        System.out.println("in here service");
         AuthResponse res = authenticateUser(token);
         isBoardLocked(request.getBoardId()); // if board locked new thread cant be created
-
-        /*if (res.getStatus() == StatusResponse.Status.fail) {
-            return -1;
-        }*/
 
         BoardThread toCreate = new BoardThread(request.getTitle(), request.getStatement(),
             res.getUsername(), LocalDateTime.now(), false, request.getBoardId());
@@ -196,12 +204,12 @@ public class ThreadService {
 
         if (!thread.isLocked()) {
 
-            return "Thread of ID " + id + " is already unlocked";
+            return "Thread on ID " + id + " is already unlocked";
         }
 
         thread.setLocked(false);
         threadRepository.saveAndFlush(thread);
-        return "Thread of ID " + id + " has been unlocked";
+        return "Thread on ID " + id + " has been unlocked";
     }
 
     /**
