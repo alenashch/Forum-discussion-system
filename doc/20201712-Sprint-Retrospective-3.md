@@ -15,6 +15,14 @@
 | Unit Testing AuthenticationService | 82 | 30 minutes | 40 minutes | Added missing tests
 | Added controller testing for thread controller | 76 | 2 hours | 2 hours | Yes | |
 | Added service testing for thread controller | 76 | 2 hours | 3 hours | Yes | |
+| Add method to retrieve threads per board | 65 | 2 hours  | 2 hours 30 minutes | Yes |
+| Fix RegisterRequest in authentication server | 70 | 1 hour  | 1 hour  | Yes |
+| Fix updateBoard method in BoardService | 71 | 1 hour  | 1 hour 30 minutes  | Yes |
+| Integration Testing Boards | 62 | 4 hours  | 4 hours  | Yes |
+| Refactor AuthenticationServer | 78 | 10 minutes  | 10 minutes  | Yes |
+| Delete unused entities from shared library | 80 | 20 minutes  | 20 minutes  | Yes |
+| Fix issue with isBoardLocked | 81 | 2 hours 30 minutes | 2 hours  | Yes |
+| Integration Testing Threads/Posts | 75 | 6 hours | 8 hours  | Yes |
 
 **Project:** Student/Teacher forum
 
