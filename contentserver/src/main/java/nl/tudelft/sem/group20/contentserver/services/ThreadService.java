@@ -214,7 +214,7 @@ public class ThreadService {
                 IsLockedResponse.class);
 
         if (response.getStatus() == StatusResponse.Status.fail) {
-            
+
             return null;
         }
 

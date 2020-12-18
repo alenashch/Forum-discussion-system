@@ -9,14 +9,10 @@ import nl.tudelft.sem.group20.boardserver.repos.BoardRepository;
 import nl.tudelft.sem.group20.boardserver.entities.Board;
 import nl.tudelft.sem.group20.boardserver.requests.CreateBoardRequest;
 import nl.tudelft.sem.group20.boardserver.requests.EditBoardRequest;
-import nl.tudelft.sem.group20.classes.BoardThread;
 import nl.tudelft.sem.group20.exceptions.UserNotFoundException;
 import nl.tudelft.sem.group20.shared.AuthRequest;
 import nl.tudelft.sem.group20.shared.AuthResponse;
 import nl.tudelft.sem.group20.shared.StatusResponse;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -108,30 +104,6 @@ public class BoardService {
                 request.isLocked(), response.getUsername()));
 
         return true;
-    }
-
-
-    /**
-     * Gets all threads of a given Board in the database.
-     *
-     * @param id - an id of a board.
-     * @return list of threads belonging to a board. If there is no board with the given id - null.
-     */
-    public List<BoardThread> getThreadsByBoardId(long id){
-        if(getById(id) == null)
-            return null;
-
-        ParameterizedTypeReference<List<BoardThread>> threads = new ParameterizedTypeReference<List<BoardThread>>() {};
-        ResponseEntity<List<BoardThread>> response = restTemplate.exchange(contentGetThreads, HttpMethod.GET, null, threads);
-        List<BoardThread> allThreads = response.getBody();
-
-        List<BoardThread> threadsPerBoard = new ArrayList<>();
-
-        for(BoardThread thread : allThreads){
-            if(thread.getBoardId() == id)
-                threadsPerBoard.add(thread);
-        }
-        return threadsPerBoard;
     }
 
 
