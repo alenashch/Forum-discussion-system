@@ -1,240 +1,178 @@
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 import nl.tudelft.sem.group20.contentserver.entities.BoardThread;
 import nl.tudelft.sem.group20.contentserver.entities.Post;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-//@RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = BoardThread.class)
 public class BoardThreadTest {
-    transient BoardThread boardThread1;
+
+    transient BoardThread thread1;
+    transient BoardThread thread2;
+    transient BoardThread thread2Copy;
 
     transient long id;
-    transient String threadTitle;
+    transient String title;
+    transient LocalDateTime createdTime;
     transient String statement;
-    transient String threadCreatorId;
-    transient LocalDateTime created;
+    transient String threadCreator;
     transient boolean locked;
     transient long boardId;
-    transient BoardThread boardThread2;
-    transient BoardThread boardThread3;
-    transient BoardThread boardThreadCopy2;
-
-    transient Post demoPost;
-    transient Post demoPost2;
-
-    transient String demoName2;
-    transient String demoName;
-    transient long demoId;
-    transient long demoId2;
-    transient int demoNumber;
-    transient String demoBody;
-    transient LocalDateTime demoCreated;
-
-    transient Set<Post> posts;
-    transient Set<Post> posts2;
+    transient boolean isEdited;
 
     @BeforeEach
     void initialize() {
-        boardThread1 = new BoardThread();
+        thread1 = new BoardThread();
 
+        boardId = 3L;
         id = 2;
-        threadTitle = "Kittens";
-        statement = "Cats are cute";
-        threadCreatorId = "us3";
-        created = LocalDateTime.now();
-        locked = false;
-        boardId = 5;
-        boardThread2 = new BoardThread(id, threadTitle, statement, threadCreatorId,
-                created, locked, 33, false);
-        boardThread3 = new BoardThread(threadTitle, statement, threadCreatorId,
-                created, locked, boardId);
-        boardThreadCopy2 =
-            new BoardThread(boardThread2.getId(), boardThread2.getThreadTitle(),
-                    boardThread2.getStatement(),
-                    boardThread2.getThreadCreator(), boardThread2.getCreatedTime(),
-                    boardThread2.isLocked(), boardThread2.getBoardId(),
-                    boardThread2.isThreadEdited());
+        title = "This is a demo board.";
+        statement = "This is the question";
+        threadCreator = "Bob";
+        createdTime = LocalDateTime.now();
+        locked = true;
+        boardId = 3;
+        isEdited = false;
 
-        demoName = "Alice";
-        demoName2 = "Ayla";
-        demoId = 9;
-        demoId2 = 8;
-        demoNumber = 5;
-        demoBody = "This is a demo post.";
-        demoCreated = LocalDateTime.now();
-        demoPost = new Post(demoId, demoNumber, demoName, demoBody, null, demoCreated);
-        demoPost2 = new Post(demoId2, demoNumber, demoName2, demoBody, null, demoCreated);
-        posts = new HashSet<>();
-        posts.add(demoPost);
-        posts2 = new HashSet<>();
+
+        thread2 = new BoardThread(id, title, statement,
+            threadCreator, createdTime, locked, boardId, isEdited);
+
+        thread2Copy = new BoardThread(id, thread2.getThreadTitle(),
+            thread2.getStatement(), thread2.getThreadCreator(),
+            thread2.getCreatedTime(), thread2.isLocked(),
+                thread2.getBoardId(), thread2.isThreadEdited());
     }
 
     @Test
     void testEmptyConstructor() {
-        assertNotNull(boardThread1);
+        assertNotNull(thread1);
     }
 
     @Test
     void testNonEmptyConstructor() {
-        assertNotNull(boardThread2);
-        assertTrue(boardThread2.getId() == id
-                && boardThread2.getThreadTitle().equals(threadTitle)
-                && boardThread2.getStatement().equals(statement)
-                && boardThread2.getThreadCreator().equals(threadCreatorId)
-                && boardThread2.getCreatedTime().equals(created)
-                && boardThread2.isLocked() == locked);
+        assertNotNull(thread2);
+        assertTrue(thread2.getId() == id
+            && thread2.getThreadTitle().equals(title)
+            && thread2.getStatement().equals(statement)
+            && thread2.getCreatedTime().equals(createdTime)
+            && thread2.getThreadCreator().equals(threadCreator)
+            && thread2.isLocked() == locked);
     }
 
     @Test
     void testNonEmptyConstructor2() {
-        assertNotNull(boardThread3);
-        assertTrue(boardThread3.getThreadTitle().equals(threadTitle)
-                && boardThread3.getStatement().equals(statement)
-                && boardThread3.getThreadCreator().equals(threadCreatorId)
-                && boardThread3.getCreatedTime().equals(created)
-                && boardThread3.isLocked() == locked
-                && boardThread3.getBoardId() == boardId);
+
+        BoardThread demoThread3 = new BoardThread(title, statement,
+            threadCreator, createdTime, locked, boardId);
+        assertNotNull(thread2);
+
+        assertTrue(thread2.getThreadTitle().equals(title)
+            && thread2.getStatement().equals(statement)
+            && thread2.getCreatedTime().equals(createdTime)
+            && thread2.getThreadCreator().equals(threadCreator)
+            && thread2.isLocked() == locked
+            && demoThread3.getBoardId() == boardId);
     }
 
     @Test
     void testGetAndSetId() {
-        boardThread2.setId(3);
-        assertEquals(3, boardThread2.getId());
+        thread2.setId(3L);
+        assertEquals(3L, thread2.getId());
     }
 
     @Test
-    void testGetAndSetThreadTitle() {
-        boardThread2.setThreadTitle("Dogs are nice too");
-        assertEquals("Dogs are nice too", boardThread2.getThreadTitle());
+    void testGetAndSetTitle() {
+        thread2.setThreadTitle("wow");
+        assertEquals("wow", thread2.getThreadTitle());
     }
 
     @Test
     void testGetAndSetStatement() {
-        boardThread2.setStatement("Puppies in particular");
-        assertEquals("Puppies in particular", boardThread2.getStatement());
+        thread2.setStatement("yeah");
+        assertEquals("yeah", thread2.getStatement());
     }
 
     @Test
-    void testGetAndSetThreadCreatedId() {
-        boardThread2.setThreadCreator("Andy");
-        assertEquals("Andy", boardThread2.getThreadCreator());
+    void testGetAndSetTimeCreated() {
+        LocalDateTime newCreated = createdTime.plusHours(3);
+        thread2.setCreatedTime(newCreated);
+        assertEquals(newCreated, thread2.getCreatedTime());
     }
 
     @Test
-    void testGetAndSetPosts() {
-        boardThread2.setPosts(posts);
-        assertEquals(posts, boardThread2.getPosts());
-    }
-
-
-
-    @Test
-    void testGetAndSetCreated() {
-        LocalDateTime newCreated = LocalDateTime.now();
-        boardThread2.setCreatedTime(newCreated);
-        assertEquals(newCreated, boardThread2.getCreatedTime());
+    void testGetAndSetTimeEdted() {
+        LocalDateTime newCreated = createdTime.plusHours(5);
+        thread2.setEditedTime(newCreated);
+        assertEquals(newCreated, thread2.getEditedTime());
     }
 
     @Test
-    void testGetAndSetLocked() {
-        boardThread2.setLocked(true);
-        assertEquals(true, boardThread2.isLocked());
+    void testGetAndSetThreadCreator() {
+        thread2.setThreadCreator("Rob");
+        assertEquals("Rob", thread2.getThreadCreator());
     }
 
     @Test
-    void testGetAndSetBoardId() {
-        boardThread2.setBoardId(42);
-        assertEquals(42, boardThread2.getBoardId());
-    }
-
-    @Test
-    void testSetAndGetEditedTimeSuccessful() {
-        LocalDateTime validEdited = boardThread2.getCreatedTime().plusHours(3);
-        boardThread2.setEditedTime(validEdited);
-        assertEquals(validEdited, boardThread2.getEditedTime());
-    }
-
-    @Test
-    void testGetAndSetEdited() {
-        boardThread2.setIsThreadEdited(true);
-        assertEquals(true, boardThread2.isThreadEdited());
-    }
-
-    @Test
-    void testIsEditedTrue() {
-        boardThread2.setEditedTime(boardThread2.getCreatedTime().plusHours(3));
-        assertEquals(boardThread2.getCreatedTime().plusHours(3), boardThread2.getEditedTime());
-    }
-
-    @Test
-    void testIsEditedFalse() {
-        assertFalse(boardThread2.isThreadEdited());
-    }
-
-    @Test
-    void testEqualsSameObject() {
-        assertEquals(boardThread2, boardThread2);
+    void testGetAndSetIsEdited() {
+        thread2.setIsThreadEdited(true);
+        assertTrue(thread2.isThreadEdited());
     }
 
     @Test
     void testEqualsTrue() {
-        assertEquals(boardThreadCopy2, boardThread2);
-    }
-
-    @Test
-    void testEqualsFalse() {
-        assertNotEquals(boardThread2, boardThread1);
-    }
-
-    @Test
-    void testEqualsDifferentClass() {
-        assertNotEquals(boardThread2, "A string.");
+        assertEquals(thread2Copy, thread2);
     }
 
     @Test
     void testAddPost() {
-        boardThread2.addPost(demoPost);
-        assertEquals(posts, boardThread2.getPosts());
+        Post post = new Post();
+        thread2.addPost(post);
+        assertTrue(thread2.getPosts().contains(post));
     }
 
     @Test
-    void testRemovePost() {
-        boardThread2.removePost(demoPost);
-        assertEquals(posts2, boardThread2.getPosts());
+    void removePost() {
+        Post post = new Post();
+        thread2.addPost(post);
+        thread2.removePost(post);
+        assertFalse(thread2.getPosts().contains(post));
     }
 
     @Test
     void testDifferentHashCodes() {
-        assertNotEquals(boardThread2.hashCode(), boardThread3.hashCode());
+        assertNotEquals(thread2.hashCode(), thread1.hashCode());
     }
 
     @Test
     void testSameHashCodes() {
-        assertEquals(boardThread2.hashCode(), boardThread2.hashCode());
+        assertEquals(thread2.hashCode(), thread2.hashCode());
     }
 
-    /*@Test
+    @Test
     void testToString() {
-        String string = "Thread{"
-                + "id=" + boardThread2.getId()
-                + ", threadTitle='" + boardThread2.getThreadTitle() + '\''
-                + ", statement='" + boardThread2.getStatement() + '\''
-                + ", threadCreatorId='" + boardThread2.getThreadCreator() + '\''
-                + ", created=" + boardThread2.getCreatedTime()
-                + ", locked=" + boardThread2.isLocked()
+        String string = "BoardThread{"
+                + "id=" + thread2.getId()
+                + ", threadTitle='" + thread2.getThreadTitle() + '\''
+                + ", statement='" + thread2.getStatement() + '\''
+                + ", threadCreator='" + thread2.getThreadCreator() + '\''
+                + ", createdTime=" + thread2.getCreatedTime()
+                + ", editedTime=" + thread2.getEditedTime()
+                + ", locked=" + thread2.isLocked()
+                + ", boardId=" + thread2.getBoardId()
+                + ", isEdited=" + thread2.isThreadEdited()
+                + ", posts=" + thread2.getPosts()
                 + '}';
 
-        assertEquals(string, boardThread2.toString());
-    }*/
+        assertEquals(string, thread2.toString());
+    }
+
 
 }

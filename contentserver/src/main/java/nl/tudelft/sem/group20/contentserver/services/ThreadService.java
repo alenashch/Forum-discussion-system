@@ -127,7 +127,7 @@ public class ThreadService {
 
 
         BoardThread thread =
-            threadRepository.getById(request.getBoardId())
+            threadRepository.getById(request.getBoardThreadId())
                 .orElseThrow(BoardThreadNotFoundException::new);
 
         AuthResponse res = authenticateUser(token);

@@ -71,6 +71,7 @@ public class ThreadServiceTest {
                 1, false);
 
         threads = new ArrayList<>();
+
         threads.add(demoThread1);
         threads.add(demoThread2);
         threads.add(demoThread3);
