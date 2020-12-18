@@ -1,7 +1,5 @@
 package nl.tudelft.sem.group20.boardserver.entities;
 
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -151,8 +149,15 @@ public class Board {
         return Objects.equals(id, board.getId());
     }
 
-    public static void checkCreationTime(Board board){
-        if(board.getCreated()==null){
+    /**
+     * Checks the creation time of a board.
+     * If it is a new board - set created and
+     * set edited to current time
+     *
+     * @param board - board that needs to be checked.
+     */
+    public static void checkCreationTime(Board board) {
+        if (board.getCreated() == null) {
             board.setCreated(LocalDateTime.now());
             board.setEdited(LocalDateTime.now());
         }

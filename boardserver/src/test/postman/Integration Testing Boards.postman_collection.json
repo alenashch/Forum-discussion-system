@@ -1,0 +1,1200 @@
+{
+	"info": {
+		"_postman_id": "be30ae72-394b-4fe1-be26-60709f1bff48",
+		"name": "Integration Testing Boards",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Test Teacher Board",
+			"item": [
+				{
+					"name": "login teacher",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Correct username\", function () {\r",
+									"    pm.expect(jsonData.username).to.eql(\"teacher1\");\r",
+									"});\r",
+									"\r",
+									"pm.globals.set(\"token-teacher1\", jsonData.token);\r",
+									"pm.globals.set(\"teacher1\", jsonData.username);\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"teacher1@abc.nl\",\r\n    \"password\": \"teacher1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8083/user/login",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"user",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create board",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"A board was created\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.globals.set(\"boardId\", pm.response.text().split(\" \")[5])"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"//Every time this creates new name for the board\r",
+									"var random = Math.random().toString(36).substring(2);\r",
+									"var boardName = \"Board-\" + random;\r",
+									"pm.globals.set(\"boardName\", boardName);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{token-teacher1}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "user-token",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"{{boardName}}\",\r\n    \"description\":\"description of a board\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8082/board/create",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"board",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get board",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Correct board was retrieved\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.name).to.eql(pm.globals.get(\"boardName\"));\r",
+									"});\r",
+									"\r",
+									"pm.test(\"A board was created by teqcher1\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.username).to.eql(pm.globals.get(\"teacher1\"));\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{token-teacher1}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "user-token",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8082/board/get/{{boardId}}",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"board",
+								"get",
+								"{{boardId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Teacher logs in.\r\nTeacher creates a board.\r\nTeacher gets the created board.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Test Student Board",
+			"item": [
+				{
+					"name": "login student",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Correct username\", function () {\r",
+									"    pm.expect(jsonData.username).to.eql(\"student1\");\r",
+									"});\r",
+									"\r",
+									"pm.globals.set(\"token-student1\", jsonData.token);\r",
+									"pm.globals.set(\"student1\", jsonData.username);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"student1@abc.nl\",\r\n    \"password\": \"student1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8083/user/login",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"user",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create board",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"A board wasn't created. Students cant create boards\", function () {\r",
+									"    if(pm.response.status!=401){\r",
+									"         setTimeout(() => {}, 2000);\r",
+									"    }\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{token-student1}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "user-token",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"Student Board\",\r\n    \"description\":\"board of a student\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8082/board/create",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"board",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "edit board student1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"A board cant be edited\", function () {\r",
+									"    if(pm.response.status!=401){\r",
+									"         setTimeout(() => {}, 2000);\r",
+									"    }\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{token-student1}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "user-token",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\":\"{{boardId}}\",\r\n    \"name\":\"{{boardName}}\",\r\n    \"description\":\"description of a board by student1\",\r\n    \"locked\": \"false\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8082/board/edit/",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"board",
+								"edit",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all boards",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Boards retrieved succsessfully\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{token-student1}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "user-token",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8082/board/get/",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"board",
+								"get",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Student logs in.\r\nStudent tries to create a board and fails.\r\nStudent tries to edit a board (created by Teacher 1) and fails.\r\nStudent gets all the boards.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Test Unauthorized user Board",
+			"item": [
+				{
+					"name": "create a board",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"A board wasn't created. Unauthorized users cant create boards\", function () {\r",
+									"    if(pm.response.status!=404){\r",
+									"         setTimeout(() => {}, 2000);\r",
+									"    }\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "null",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "user-token",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"User's Board\",\r\n    \"description\":\"board of a user\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8082/board/create",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"board",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "edit board user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"A board cant be edited\", function () {\r",
+									"    if(pm.response.status!=404){\r",
+									"         setTimeout(() => {}, 2000);\r",
+									"    }\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "null",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "user-token",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\":\"{{boardId}}\",\r\n    \"name\":\"{{boardName}}\",\r\n    \"description\":\"description of a board by user\",\r\n    \"locked\": \"false\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8082/board/edit/",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"board",
+								"edit",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all boards",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Boards retrieved succsessfully\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8082/board/get/",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"board",
+								"get",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get board",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Correct board was retrieved\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.name).to.eql(pm.globals.get(\"boardName\"));\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8082/board/get/{{boardId}}",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"board",
+								"get",
+								"{{boardId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get board not in db",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"The board is not in the database\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8082/board/get/10000",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"board",
+								"get",
+								"10000"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Unauthorized user tries to create a board and fails.\r\nUnauthorized user tries to edit a board and fails.\r\nUser gets all the boards.\r\nUser gets a board by id.\r\nUser tries to get a board that is not in the database.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Test Teacher2 Board",
+			"item": [
+				{
+					"name": "login teacher2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Correct username\", function () {\r",
+									"    pm.expect(jsonData.username).to.eql(\"teacher2\");\r",
+									"});\r",
+									"\r",
+									"pm.globals.set(\"token-teacher2\", jsonData.token);\r",
+									"pm.globals.set(\"teacher2\", jsonData.username);\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"teacher2@abc.nl\",\r\n    \"password\": \"teacher2\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8083/user/login",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"user",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "edit board teaher2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"A board cant be edited\", function () {\r",
+									"    if(pm.response.status!=401){\r",
+									"         setTimeout(() => {}, 2000);\r",
+									"    }\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{token-teacher2}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "user-token",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\":\"{{boardId}}\",\r\n    \"name\":\"{{boardName}}\",\r\n    \"description\":\"description of a board by teacher2\",\r\n    \"locked\": \"false\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8082/board/edit/",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"board",
+								"edit",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "edit board teacher1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"A board was succsessfully edited by its creator\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{token-teacher1}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "user-token",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\":\"{{boardId}}\",\r\n    \"name\":\"{{boardName}}\",\r\n    \"description\":\"new description of a board\",\r\n    \"locked\": \"true\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8082/board/edit/",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"board",
+								"edit",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get board teacher2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Teacher2 got an updated board\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.locked == true);\r",
+									"    pm.expect(jsonData.description).to.eql(\"new description of a board\");\r",
+									"    pm.expect(jsonData.username).to.eql(pm.globals.get(\"teacher1\"));\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{token-teacher2}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "user-token",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8082/board/get/{{boardId}}",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"board",
+								"get",
+								"{{boardId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "edit non existing board teacher1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"A board isnt in the database\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{token-teacher1}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "user-token",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\":\"10000\",\r\n    \"name\":\"Board_10000\",\r\n    \"description\":\"description of a board_1000\",\r\n    \"locked\": \"true\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8082/board/edit/",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"board",
+								"edit",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Teacher 2 logs in.\r\nTeacher 2 tries to edit a board (created by teacher 1) and fails.\r\nTeacher 1 edits a board succsessfully. \r\nTeacher 2 gets an updated board.\r\nTeacher 1 tried to edit a board which isnt in the database and fails.\r\n",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Test Log out",
+			"item": [
+				{
+					"name": "logout teacher1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Logged out succsessfully\", function () {\r",
+									"    if(pm.response.status!=200){\r",
+									"         setTimeout(() => {}, 2000);\r",
+									"    }\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \n\t\"token\":\"{{token-teacher1}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8083/user/logout",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"user",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout teacher2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Logged out succsessfully\", function () {\r",
+									"    if(pm.response.status!=200){\r",
+									"         setTimeout(() => {}, 3000);\r",
+									"    }\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \n\t\"token\":\"{{token-teacher2}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8083/user/logout",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"user",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout student1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Logged out succsessfully\", function () {\r",
+									"    if(pm.response.status!=200){\r",
+									"         setTimeout(() => {}, 2000);\r",
+									"    }\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \r\n\t\"token\":\"{{token-student1}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8083/user/logout",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"user",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Log out Teacher1, Teacher2, Student",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

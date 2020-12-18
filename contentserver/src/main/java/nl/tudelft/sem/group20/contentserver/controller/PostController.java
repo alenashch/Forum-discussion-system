@@ -1,7 +1,5 @@
 package nl.tudelft.sem.group20.contentserver.controller;
 
-import java.util.Set;
-import nl.tudelft.sem.group20.contentserver.entities.Post;
 import nl.tudelft.sem.group20.contentserver.requests.CreatePostRequest;
 import nl.tudelft.sem.group20.contentserver.requests.EditPostRequest;
 import nl.tudelft.sem.group20.contentserver.services.PostService;
@@ -96,5 +94,18 @@ public class PostController {
     public ResponseEntity<?> getPostsFromThread(@PathVariable long id) {
 
         return new ResponseEntity<>(postService.getPostsFromThread(id), HttpStatus.OK);
+    }
+
+    /**
+     * Checks if a post was edited.
+     *
+     * @param id id of the post to be checked.
+     * @return ResponseEntity containing true if it was edited or else false.
+     */
+    @GetMapping("/checkedited")
+    @ResponseBody
+    public ResponseEntity<Boolean> isEdited(@RequestBody long id) {
+
+        return new ResponseEntity<>(postService.isEdited(id), HttpStatus.OK);
     }
 }

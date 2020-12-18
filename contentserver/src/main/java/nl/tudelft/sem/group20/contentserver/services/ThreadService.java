@@ -3,19 +3,22 @@ package nl.tudelft.sem.group20.contentserver.services;
 
 import exceptions.AuthorizationFailedException;
 import exceptions.BoardIsLockedException;
+import exceptions.BoardNotFoundException;
 import exceptions.BoardThreadNotFoundException;
 import exceptions.PermissionException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import nl.tudelft.sem.group20.classes.Board;
 import nl.tudelft.sem.group20.contentserver.entities.BoardThread;
 import nl.tudelft.sem.group20.contentserver.repositories.ThreadRepository;
 import nl.tudelft.sem.group20.contentserver.requests.CreateBoardThreadRequest;
 import nl.tudelft.sem.group20.contentserver.requests.EditBoardThreadRequest;
 import nl.tudelft.sem.group20.shared.AuthRequest;
 import nl.tudelft.sem.group20.shared.AuthResponse;
+import nl.tudelft.sem.group20.shared.IsLockedResponse;
 import nl.tudelft.sem.group20.shared.StatusResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -45,14 +48,22 @@ public class ThreadService {
 
     }
 
-    private boolean isBoardLocked(long boardId) {
-        Board board = restTemplate.getForObject("http://board-server/board/get/" + boardId, Board.class);
 
-        if (board == null || board.getLocked()) {
+    private boolean isBoardLocked(long boardId) {
+        IsLockedResponse response = restTemplate.getForObject("http://board-server/board/checklocked/" + boardId,
+                IsLockedResponse.class);
+
+        if (response.getStatus() == StatusResponse.Status.fail) {
+
+            throw new BoardNotFoundException();
+        }
+
+        if (response.getStatus() == StatusResponse.Status.success && response.isLocked()==true) {
+
             throw new BoardIsLockedException();
         }
 
-        return board.getLocked();
+        return response.isLocked();
 
     }
 
@@ -73,12 +84,8 @@ public class ThreadService {
      * @return the found thread
      */
     public BoardThread getSingleThread(long id) {
-        BoardThread bt = threadRepository.findById(id).orElse(null);
-        if (bt == null) {
 
-            throw new BoardThreadNotFoundException();
-        }
-        return bt;
+        return threadRepository.findById(id).orElseThrow(BoardNotFoundException::new);
     }
 
     /**
@@ -92,6 +99,7 @@ public class ThreadService {
      */
     public long createThread(String token, CreateBoardThreadRequest request) {
 
+        System.out.println("in here service");
         AuthResponse res = authenticateUser(token);
         isBoardLocked(request.getBoardId()); // if board locked new thread cant be created
 
@@ -101,6 +109,8 @@ public class ThreadService {
 
         BoardThread toCreate = new BoardThread(request.getTitle(), request.getStatement(),
             res.getUsername(), LocalDateTime.now(), false, request.getBoardId());
+
+        toCreate.setIsThreadEdited(false);
 
         threadRepository.saveAndFlush(toCreate);
         return toCreate.getId();
@@ -116,24 +126,107 @@ public class ThreadService {
     public boolean updateThread(String token, EditBoardThreadRequest request) {
 
 
-        BoardThread thread = threadRepository.getById(request.getBoardId()).orElse(null);
-        if (thread == null) {
-            throw new BoardThreadNotFoundException();
-        }
+        BoardThread thread =
+            threadRepository.getById(request.getBoardId())
+                .orElseThrow(BoardThreadNotFoundException::new);
 
         AuthResponse res = authenticateUser(token);
-        if (!res.getUsername().equals(thread.getThreadCreator()) && !res.isType()) {
+        if (!res.getUsername().equals(thread.getThreadCreator())) {
             throw new PermissionException();
         }
 
         thread.setThreadTitle(request.getTitle());
         thread.setStatement(request.getStatement());
-        thread.setLocked(request.isLocked());
+        //thread.setLocked(request.isLocked()); only locking happnes thorugh api
+        thread.setEditedThreadTime(LocalDateTime.now());
+        thread.setIsThreadEdited(true); //save in database that its edited
 
         threadRepository.saveAndFlush(thread);
 
         return true;
     }
 
+    /**
+     * Locks a thread.
+     *
+     * @param token String containing authentication token.
+     * @param id    long containing the id.
+     * @return String with the information if the thread was locked.
+     */
+    public String lockThread(String token, long id) {
 
+        AuthResponse authResponse = authenticateUser(token);
+
+        if (!authResponse.isType()) {
+
+            throw new AuthorizationFailedException("Only teachers can lock threads");
+        }
+
+        BoardThread thread =
+            threadRepository.getById(id).orElseThrow(BoardThreadNotFoundException::new);
+
+        if (thread.isLocked()) {
+
+            return "Thread with ID " + id + " is already locked";
+        }
+
+        thread.setLocked(true);
+        return "Thread with ID " + id + " has been locked";
+    }
+
+    /**
+     * Unlocks a thread.
+     *
+     * @param token String containing authentication token.
+     * @param id    long containing the id.
+     * @return String with the information if the thread was unlocked.
+     */
+    public String unlockThread(String token, long id) {
+
+        AuthResponse authResponse = authenticateUser(token);
+
+        if (!authResponse.isType()) {
+
+            throw new AuthorizationFailedException("Only teachers can unlock threads");
+        }
+
+        BoardThread thread =
+            threadRepository.getById(id).orElseThrow(BoardThreadNotFoundException::new);
+
+        if (!thread.isLocked()) {
+
+            return "Thread of ID " + id + " is already unlocked";
+        }
+
+        thread.setLocked(false);
+        return "Thread of ID " + id + " has been unlocked";
+    }
+
+    /**
+     * Get all threads for a given board.
+     *
+     * @param boardId - id of a board
+     * @return list of threads
+     */
+    public List<BoardThread> getThreadsPerBoard(long boardId) {
+        IsLockedResponse response = restTemplate.getForObject("http://board-server/board/checklocked/" + boardId,
+                IsLockedResponse.class);
+
+        if (response.getStatus() == StatusResponse.Status.fail) {
+
+            return null;
+        }
+
+
+        List<BoardThread> allThreads = getThreads();
+        List<BoardThread> threadsPerBoard = new ArrayList<>();
+
+        for(BoardThread thread : allThreads){
+            if(thread.getBoardId() == boardId)
+                threadsPerBoard.add(thread);
+        }
+
+        return threadsPerBoard;
+
+    }
 }

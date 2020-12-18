@@ -35,9 +35,15 @@ public class BoardThread {
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime created; //when was it creates
 
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    private transient LocalDateTime edited; //when was it creates
+
     private boolean locked;        //locked thread or not
 
     private long boardId;          //board it belongs to
+
+    private transient boolean isEdited; //boolean that tells if post is edited
 
     @OneToMany(mappedBy = "boardThread", cascade = CascadeType.REMOVE)
     @JsonManagedReference
@@ -62,13 +68,14 @@ public class BoardThread {
      * @param locked          locked or not
      */
     public BoardThread(Long id, String threadTitle, String statement, String threadCreatorId,
-                       LocalDateTime created,
-                       boolean locked) {
+                       LocalDateTime created, boolean locked) {
         this.id = id;
         this.threadTitle = threadTitle;
         this.statement = statement;
         this.threadCreator = threadCreatorId;
         this.created = created;
+        //initially, set this field the same as the created field
+        this.edited = created;
         this.locked = locked;
     }
 
@@ -87,6 +94,8 @@ public class BoardThread {
         this.statement = statement;
         this.threadCreator = threadCreatorId;
         this.created = created;
+        //initially, set this field the same as the created field
+        this.edited = created;
         this.locked = locked;
         this.boardId = boardId;
     }
@@ -153,6 +162,22 @@ public class BoardThread {
 
     public void setPosts(Set<Post> posts) {
         this.posts = posts;
+    }
+
+    public LocalDateTime getEditedThreadTime() {
+        return edited;
+    }
+
+    public void setEditedThreadTime(LocalDateTime edited) {
+        this.edited = edited;
+    }
+
+    public boolean isThreadEdited() {
+        return isEdited;
+    }
+
+    public void setIsThreadEdited(boolean edited) {
+        isEdited = edited;
     }
 
     @Override

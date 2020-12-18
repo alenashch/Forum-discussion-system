@@ -1,8 +1,11 @@
 package nl.tudelft.sem.group20.contentserver.services;
 
 import exceptions.AuthorizationFailedException;
+import exceptions.BoardIsLockedException;
+import exceptions.BoardNotFoundException;
 import exceptions.BoardThreadNotFoundException;
 import exceptions.PostNotFoundException;
+import exceptions.ThreadIsLockedException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -14,6 +17,7 @@ import nl.tudelft.sem.group20.contentserver.requests.CreatePostRequest;
 import nl.tudelft.sem.group20.shared.AuthRequest;
 import nl.tudelft.sem.group20.shared.AuthResponse;
 import nl.tudelft.sem.group20.shared.StatusResponse;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -75,22 +79,32 @@ public class PostService {
      */
     public long createPost(String token, CreatePostRequest request) throws RuntimeException {
 
-        BoardThread boardThread = threadRepository.getById(request.getBoardThreadId()).orElse(null);
-        if (boardThread == null) {
+        BoardThread boardThread =
+            threadRepository.getById(request.getBoardThreadId())
+                .orElseThrow(BoardThreadNotFoundException::new);
 
-            throw new BoardThreadNotFoundException();
+        ResponseEntity<Boolean> responseEntity = (ResponseEntity<Boolean>)
+            restTemplate.getForObject("http://board-server/board/checklocked/" + boardThread.getBoardId(),
+                ResponseEntity.class);
+
+        if (responseEntity == null || responseEntity.getStatusCode().is4xxClientError()) {
+
+            throw new BoardNotFoundException();
+        }
+
+        if (responseEntity.getBody()) {
+
+            throw new BoardIsLockedException();
+        }
+
+        if (boardThread.isLocked()) {
+
+            throw new ThreadIsLockedException();
         }
 
         int nextPostNumber = boardThread.getPosts().size();
         Post toCreate = new Post(nextPostNumber, authenticateUser(token),
             request.getBody(), boardThread, LocalDateTime.now());
-
-        /*
-        if (postRepository.getById(toCreate.getId()).isPresent()) {
-
-            throw new PostAlreadyExistsException();
-        }
-         */
 
         postRepository.saveAndFlush(toCreate);
         boardThread.addPost(toCreate);
@@ -105,12 +119,8 @@ public class PostService {
      */
     public void updatePost(String token, CreatePostRequest request) throws RuntimeException {
 
-        Post toUpdate = postRepository.getById(request.getBoardThreadId()).orElse(null);
-
-        if (toUpdate == null) {
-
-            throw new PostNotFoundException();
-        }
+        Post toUpdate = postRepository.getById(request.getBoardThreadId())
+            .orElseThrow(PostNotFoundException::new);
 
         if (!toUpdate.getCreatorName().equals(authenticateUser(token))) {
 
@@ -126,12 +136,8 @@ public class PostService {
             boardThread.removePost(toUpdate);
 
             BoardThread newThread =
-                threadRepository.getById(request.getBoardThreadId()).orElse(null);
-
-            if (newThread == null) {
-
-                throw new BoardThreadNotFoundException("Given new thread does not exist");
-            }
+                threadRepository.getById(request.getBoardThreadId()).orElseThrow(
+                    () -> new BoardThreadNotFoundException("Given new thread does not exist"));
 
             toUpdate.setBoardThread(newThread);
             newThread.addPost(toUpdate);
@@ -150,7 +156,7 @@ public class PostService {
      */
     public Post getPostById(long id) throws PostNotFoundException {
 
-        Post post = postRepository.getById(id).orElse(null);
+        Post post = postRepository.getById(id).orElseThrow(PostNotFoundException::new);
 
         if (post == null) {
 
@@ -169,13 +175,22 @@ public class PostService {
      */
     public Set<Post> getPostsFromThread(long id) throws BoardThreadNotFoundException {
 
-        BoardThread boardThread = threadRepository.getById(id).orElse(null);
-
-        if (boardThread == null) {
-
-            throw new BoardThreadNotFoundException();
-        }
+        BoardThread boardThread =
+            threadRepository.getById(id).orElseThrow(BoardThreadNotFoundException::new);
 
         return boardThread.getPosts();
+    }
+
+    /**
+     * Checks if a post was edited.
+     *
+     * @param id Id of the post to check.
+     * @return true if it was edites or false otherwise.
+     */
+    public Boolean isEdited(long id) {
+
+        Post post = postRepository.getById(id).orElseThrow(PostNotFoundException::new);
+
+        return !post.getCreated().equals(post.getEdited());
     }
 }

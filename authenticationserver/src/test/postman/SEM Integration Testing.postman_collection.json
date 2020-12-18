@@ -7,20 +7,60 @@
 	"item": [
 		{
 			"name": "Test Create User",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "99140e71-d9e6-48d0-8345-dd123b67db3a",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "491fcd53-ca8f-43b7-b95b-c77b7c28b9bb",
+						"exec": [
+							"pm.test(\"Status test\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"JSON body test\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.status).to.eql(\"success\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"JSON body test 2\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).to.eql(\"A new user was succesfully made\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{ \n\t\"username\":\"abc\",\n\t\"email\":\"abc@abc.nl\",\n\t\"password\":\"test123\"\n}"
+					"raw": "{ \n\t\"username\":\"abc{{$timestamp}}\",\n\t\"email\":\"abc@abc{{$timestamp}}.nl\",\n\t\"password\":\"test123\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
 				},
 				"url": {
-					"raw": "localhost:authentication-server:8083/create",
+					"raw": "localhost:8083/user/create",
 					"host": [
-						"localhost:authentication-server"
+						"localhost"
 					],
 					"port": "8083",
 					"path": [
+						"user",
 						"create"
 					],
 					"query": [

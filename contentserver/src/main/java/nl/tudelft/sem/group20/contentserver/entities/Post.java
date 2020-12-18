@@ -1,5 +1,6 @@
 package nl.tudelft.sem.group20.contentserver.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -36,8 +37,9 @@ public class Post {
     private LocalDateTime edited;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "thread_id", referencedColumnName = "id")
-    @JsonManagedReference
+    @JoinColumn(name = "boardThread_id", referencedColumnName = "id")
+    @JsonIgnore
+    //@JsonManagedReference
     private BoardThread boardThread;
 
     public Post() {

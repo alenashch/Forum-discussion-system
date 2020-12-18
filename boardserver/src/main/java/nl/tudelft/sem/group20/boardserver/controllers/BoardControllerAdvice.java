@@ -1,12 +1,12 @@
 package nl.tudelft.sem.group20.boardserver.controllers;
 
+import java.nio.file.AccessDeniedException;
 import nl.tudelft.sem.group20.exceptions.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import java.nio.file.AccessDeniedException;
 
 @ControllerAdvice
 public class BoardControllerAdvice {
