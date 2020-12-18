@@ -15,6 +15,7 @@ import nl.tudelft.sem.group20.contentserver.requests.CreateBoardThreadRequest;
 import nl.tudelft.sem.group20.contentserver.requests.EditBoardThreadRequest;
 import nl.tudelft.sem.group20.shared.AuthRequest;
 import nl.tudelft.sem.group20.shared.AuthResponse;
+import nl.tudelft.sem.group20.shared.IsLockedResponse;
 import nl.tudelft.sem.group20.shared.StatusResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -47,23 +48,22 @@ public class ThreadService {
 
     }
 
-    private boolean isBoardLocked(long boardId) {
-        ResponseEntity<Boolean> responseEntity = restTemplate.getForObject("http://board-server" +
-                "/board" +
-                "/checkLocked" + boardId,
-           ResponseEntity.class);
 
-        if (responseEntity.getStatusCode().is4xxClientError()) {
+    private boolean isBoardLocked(long boardId) {
+        IsLockedResponse response = restTemplate.getForObject("http://board-server/board/checklocked/" + boardId,
+                IsLockedResponse.class);
+
+        if (response.getStatus() == StatusResponse.Status.fail) {
 
             throw new BoardNotFoundException();
         }
 
-        if (responseEntity.getBody()) {
+        if (response.getStatus() == StatusResponse.Status.success && response.isLocked()==true) {
 
             throw new BoardIsLockedException();
         }
 
-        return responseEntity.getBody();
+        return response.isLocked();
 
     }
 

@@ -29,6 +29,7 @@ import nl.tudelft.sem.group20.boardserver.requests.EditBoardRequest;
 import nl.tudelft.sem.group20.boardserver.services.BoardService;
 import nl.tudelft.sem.group20.classes.BoardThread;
 import nl.tudelft.sem.group20.exceptions.UserNotFoundException;
+import nl.tudelft.sem.group20.shared.IsLockedResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -38,6 +39,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultMatcher;
 
 @AutoConfigureMockMvc
 @WebMvcTest(BoardController.class)
@@ -348,8 +350,7 @@ class BoardControllerTest {
 
             mockMvc.perform(get("/board/checklocked/1")
                     .contentType(APPLICATION_JSON)).andDo(print())
-                    .andExpect(content().string("false"))
-                    .andExpect(status().isOk());
+                    .andExpect((ResultMatcher) new IsLockedResponse(false));
 
             Mockito.verify(boardService, times(1)).getById(1);
 
@@ -367,10 +368,10 @@ class BoardControllerTest {
         when(boardService.getById(2)).thenReturn(null);
 
         try {
+
             mockMvc.perform(get("/board/checklocked/2")
                     .contentType(APPLICATION_JSON)).andDo(print())
-                    .andExpect(status().isBadRequest())
-                    .andExpect(content().string("false"));
+                    .andExpect((ResultMatcher) new IsLockedResponse());
 
         } catch (Exception e) {
 

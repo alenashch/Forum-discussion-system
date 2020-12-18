@@ -5,6 +5,7 @@ import nl.tudelft.sem.group20.boardserver.requests.CreateBoardRequest;
 import nl.tudelft.sem.group20.boardserver.requests.EditBoardRequest;
 import nl.tudelft.sem.group20.boardserver.services.BoardService;
 import nl.tudelft.sem.group20.classes.BoardThread;
+import nl.tudelft.sem.group20.shared.IsLockedResponse;
 import nl.tudelft.sem.group20.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -91,12 +92,12 @@ public class BoardController {
      */
     @GetMapping("/checklocked/{id}")
     @ResponseBody
-    public ResponseEntity<?> isBoardLocked(@PathVariable long id) {
+    public IsLockedResponse isBoardLocked(@PathVariable long id) {
         Board board = boardService.getById(id);
         if(board == null){
-            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+            return new IsLockedResponse();
         }
-        return new ResponseEntity<>(board.isLocked(), HttpStatus.OK);
+        return new IsLockedResponse(board.isLocked());
     }
 
 
