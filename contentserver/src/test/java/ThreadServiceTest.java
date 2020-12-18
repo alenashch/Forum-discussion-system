@@ -425,17 +425,44 @@ public class ThreadServiceTest {
                 Mockito.any(AuthRequest.class),
                 Mockito.eq(AuthResponse.class))).thenReturn(auth);
 
-        builder.setLocked(true);
         when(threadRepository.getById(anyLong()))
                 .thenReturn(Optional.of(builder.makeBoardThread()));
 
-        assertThat(threadService.lockThread(token, builder.getBoardThreadId()))
+        assertThat(threadService.unlockThread(token, builder.getBoardThreadId()))
                 .isEqualTo("Thread with ID " + builder.getBoardThreadId()
-                        + " is already locked");
+                        + " is already unlocked");
 
         verify(threadRepository, times(0)).saveAndFlush(any());
     }
 
+    @Test
+    void gettingAllThreadsFromBoard() {
+        when(restTemplate.getForObject(Mockito.anyString(),
+                Mockito.eq(IsLockedResponse.class))).thenReturn(boardUnlocked);
+
+        List<BoardThread> threads  = new ArrayList<>();
+        threads.add(builder.makeBoardThread());
+
+        builder.setBoardId(1);
+
+        Mockito.when(threadRepository.findAll())
+                .thenReturn(threads);
+
+        assertThat(threadService.getThreadsPerBoard(1))
+                .hasSize(threads.size())
+                .hasSameElementsAs(threads);
+
+    }
+
+    @Test
+    void gettingAllThreadsFromLockedBoard() {
+        when(restTemplate.getForObject(Mockito.anyString(),
+                Mockito.eq(IsLockedResponse.class))).thenReturn(boardLocked);
+
+        assertThrows(BoardIsLockedException.class, () ->
+                threadService.getThreadsPerBoard(1));
+
+    }
 
 }
 
