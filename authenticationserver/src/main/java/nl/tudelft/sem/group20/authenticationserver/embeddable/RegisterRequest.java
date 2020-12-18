@@ -145,7 +145,7 @@ public class RegisterRequest {
                 + ", username='"
                 + username
                 + '\''
-                +", type='"
+                + ", type='"
                 + type
                 + '}';
     }

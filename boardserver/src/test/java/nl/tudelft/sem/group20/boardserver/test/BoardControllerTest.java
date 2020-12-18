@@ -27,8 +27,8 @@ import nl.tudelft.sem.group20.boardserver.entities.Board;
 import nl.tudelft.sem.group20.boardserver.requests.CreateBoardRequest;
 import nl.tudelft.sem.group20.boardserver.requests.EditBoardRequest;
 import nl.tudelft.sem.group20.boardserver.services.BoardService;
-import nl.tudelft.sem.group20.classes.BoardThread;
 import nl.tudelft.sem.group20.exceptions.UserNotFoundException;
+import nl.tudelft.sem.group20.shared.IsLockedResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -38,6 +38,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultMatcher;
 
 @AutoConfigureMockMvc
 @WebMvcTest(BoardController.class)
@@ -343,13 +344,17 @@ class BoardControllerTest {
     void testisBoardLockedSuccessful() {
 
         when(boardService.getById(1)).thenReturn(board);
+        IsLockedResponse isLockedResponse = new IsLockedResponse(false);
 
         try {
 
             mockMvc.perform(get("/board/checklocked/1")
-                    .contentType(APPLICATION_JSON)).andDo(print())
-                    .andExpect(content().string("false"))
-                    .andExpect(status().isOk());
+                    .contentType(APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(isLockedResponse)))
+                    .andDo(print())
+                    .andExpect(content().string(
+                            "{\"status\":\"success\",\"message\":\"Success!\",\"locked\":false}"));
+
 
             Mockito.verify(boardService, times(1)).getById(1);
 
@@ -365,12 +370,16 @@ class BoardControllerTest {
         //Can't get the board if it is not in the database
 
         when(boardService.getById(2)).thenReturn(null);
+        IsLockedResponse isLockedResponse = new IsLockedResponse();
 
         try {
+
             mockMvc.perform(get("/board/checklocked/2")
-                    .contentType(APPLICATION_JSON)).andDo(print())
-                    .andExpect(status().isBadRequest())
-                    .andExpect(content().string("false"));
+                    .contentType(APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(isLockedResponse)))
+                    .andDo(print())
+                    .andExpect(content().string(
+                            "{\"status\":\"fail\",\"message\":\"ID invalid\",\"locked\":false}"));
 
         } catch (Exception e) {
 
@@ -379,56 +388,4 @@ class BoardControllerTest {
 
     }
 
-
-    @Test
-    void testGetThreadsByBoardByIdSuccessful() {
-
-        List<BoardThread> threads = new ArrayList<>();
-        threads.add(new BoardThread("Thread 1", "statement 1", 2,
-                LocalDateTime.now(), false, 1));
-        threads.add(new BoardThread("Thread 2", "statement 2", 3,
-                LocalDateTime.now(), false, 1));
-
-        when(boardService.getById(1)).thenReturn(board);
-        when(boardService.getThreadsByBoardId(1)).thenReturn(threads);
-
-        try {
-
-            mockMvc.perform(get("/board/get/1/threads")
-                    .contentType(APPLICATION_JSON)).andDo(print())
-                    .andExpect(status().isOk());
-
-            Mockito.verify(boardService, times(1)).getThreadsByBoardId(1);
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
-
-        }
-    }
-
-
-    @Test
-    void testGetThreadsByBoardByIdUnsuccessful() {
-        //Doesnt return any threads if the board doesnt have any
-
-        List<BoardThread> threads = new ArrayList<>();
-
-        when(boardService.getById(2)).thenReturn(
-                new Board(2, "Board 2", "description 2", false, "user"));
-        when(boardService.getThreadsByBoardId(2)).thenReturn(threads);
-
-        try {
-            mockMvc.perform(get("/board/get/2/threads")
-                    .contentType(APPLICATION_JSON)).andDo(print())
-                    .andExpect(status().isBadRequest());
-
-            Mockito.verify(boardService, times(1)).getThreadsByBoardId(2);
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
-
-        }
-    }
 }

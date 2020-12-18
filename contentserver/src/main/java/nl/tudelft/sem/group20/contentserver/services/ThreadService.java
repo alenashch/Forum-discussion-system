@@ -7,14 +7,15 @@ import exceptions.BoardNotFoundException;
 import exceptions.BoardThreadNotFoundException;
 import exceptions.PermissionException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import nl.tudelft.sem.group20.classes.Board;
 import nl.tudelft.sem.group20.contentserver.entities.BoardThread;
 import nl.tudelft.sem.group20.contentserver.repositories.ThreadRepository;
 import nl.tudelft.sem.group20.contentserver.requests.CreateBoardThreadRequest;
 import nl.tudelft.sem.group20.contentserver.requests.EditBoardThreadRequest;
 import nl.tudelft.sem.group20.shared.AuthRequest;
 import nl.tudelft.sem.group20.shared.AuthResponse;
+import nl.tudelft.sem.group20.shared.IsLockedResponse;
 import nl.tudelft.sem.group20.shared.StatusResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -47,23 +48,22 @@ public class ThreadService {
 
     }
 
-    private boolean isBoardLocked(long boardId) {
-        ResponseEntity<Boolean> responseEntity = restTemplate.getForObject("http://board-server" +
-                "/board" +
-                "/checkLocked" + boardId,
-           ResponseEntity.class);
 
-        if (responseEntity.getStatusCode().is4xxClientError()) {
+    private boolean isBoardLocked(long boardId) {
+        IsLockedResponse response = restTemplate.getForObject("http://board-server/board/checklocked/" + boardId,
+                IsLockedResponse.class);
+
+        if (response.getStatus() == StatusResponse.Status.fail) {
 
             throw new BoardNotFoundException();
         }
 
-        if (responseEntity.getBody()) {
+        if (response.getStatus() == StatusResponse.Status.success && response.isLocked()==true) {
 
             throw new BoardIsLockedException();
         }
 
-        return responseEntity.getBody();
+        return response.isLocked();
 
     }
 
@@ -200,5 +200,33 @@ public class ThreadService {
 
         thread.setLocked(false);
         return "Thread of ID " + id + " has been unlocked";
+    }
+
+    /**
+     * Get all threads for a given board.
+     *
+     * @param boardId - id of a board
+     * @return list of threads
+     */
+    public List<BoardThread> getThreadsPerBoard(long boardId) {
+        IsLockedResponse response = restTemplate.getForObject("http://board-server/board/checklocked/" + boardId,
+                IsLockedResponse.class);
+
+        if (response.getStatus() == StatusResponse.Status.fail) {
+
+            return null;
+        }
+
+
+        List<BoardThread> allThreads = getThreads();
+        List<BoardThread> threadsPerBoard = new ArrayList<>();
+
+        for(BoardThread thread : allThreads){
+            if(thread.getBoardId() == boardId)
+                threadsPerBoard.add(thread);
+        }
+
+        return threadsPerBoard;
+
     }
 }

@@ -1,5 +1,6 @@
 package nl.tudelft.sem.group20.contentserver.controller;
 
+import nl.tudelft.sem.group20.contentserver.entities.BoardThread;
 import nl.tudelft.sem.group20.contentserver.requests.CreateBoardThreadRequest;
 import nl.tudelft.sem.group20.contentserver.requests.EditBoardThreadRequest;
 import nl.tudelft.sem.group20.contentserver.services.ThreadService;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(path = "/thread")
@@ -93,10 +96,10 @@ public class ThreadController {
      * @param id    - id of the thread to be locked.
      * @return ResponseEntity containing information about the result.
      */
-    @PostMapping("/lock")
+    @PostMapping("/lock/{id}")
     @ResponseBody
     public ResponseEntity<String> lockThread(@RequestHeader String token,
-                                             @RequestBody long id) {
+                                             @PathVariable long id) {
 
         return new ResponseEntity<>(threadService.lockThread(token, id), HttpStatus.OK);
     }
@@ -108,11 +111,27 @@ public class ThreadController {
      * @param id    - id of the thread to be locked.
      * @return ResponseEntity containing information about the result.
      */
-    @PostMapping("/unlock")
+    @PostMapping("/unlock/{id}")
     @ResponseBody
     public ResponseEntity<String> unlockThread(@RequestHeader String token,
-                                               @RequestBody long id) {
+                                               @PathVariable long id) {
 
         return new ResponseEntity<>(threadService.unlockThread(token, id), HttpStatus.OK);
+    }
+
+    /**
+     * Get all threads for a given board id.
+     *
+     * @return JSON containing list of all threads that belong to a given board.
+     */
+    @GetMapping("/get/allthreads/{id}")
+    @ResponseBody
+    public ResponseEntity<?> getThreadsPerBoard(@PathVariable long id) {
+        List<BoardThread> threadsPerBoard = threadService.getThreadsPerBoard(id);
+        if(threadsPerBoard == null){
+            return new ResponseEntity<>("There is no board with given Id", HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(threadsPerBoard, HttpStatus.OK);
     }
 }
