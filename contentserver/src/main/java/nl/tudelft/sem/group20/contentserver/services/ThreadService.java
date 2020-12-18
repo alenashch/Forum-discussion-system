@@ -52,12 +52,12 @@ public class ThreadService {
         IsLockedResponse response = restTemplate.getForObject("http://board-server/board/checklocked/" + boardId,
                 IsLockedResponse.class);
 
-        if (response.getStatus() == StatusResponse.Status.fail) {
+        if (response == null || response.getStatus() == StatusResponse.Status.fail) {
 
             throw new BoardNotFoundException();
         }
 
-        if (response.getStatus() == StatusResponse.Status.success && response.isLocked()==true) {
+        if (response.getStatus() == StatusResponse.Status.success && response.isLocked()) {
 
             throw new BoardIsLockedException();
         }
@@ -210,14 +210,7 @@ public class ThreadService {
      * @return list of threads
      */
     public List<BoardThread> getThreadsPerBoard(long boardId) {
-        IsLockedResponse response = restTemplate.getForObject("http://board-server/board/checklocked/" + boardId,
-                IsLockedResponse.class);
-
-        if (response.getStatus() == StatusResponse.Status.fail) {
-
-            return null;
-        }
-
+        isBoardLocked(boardId);
 
         List<BoardThread> allThreads = getThreads();
         List<BoardThread> threadsPerBoard = new ArrayList<>();

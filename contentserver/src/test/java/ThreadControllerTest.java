@@ -154,22 +154,21 @@ class ThreadControllerTest {
 
     }
 
-    /*
+
     @Test
     void lockThreadTest() {
 
-        EditBoardThreadRequest editRequest = builder.editBoardThreadRequest();
-
         try {
-            mockMvc.perform(post("/thread/edit")
-                    .contentType(APPLICATION_JSON)
-                    .header(tokenName, token)
-                    .content(objectMapper.writeValueAsString(editRequest))
-                    .accept(APPLICATION_JSON))
-                    .andDo(print()).andExpect(status().isOk())
-                    .andExpect(content().string("The thread with ID: " + builder.getBoardThreadId()
-                            + " has been updated"));
 
+            mockMvc.perform(post("/thread/lock/1")
+                    .contentType(APPLICATION_JSON)
+                    .header(tokenName, token))
+                    .andDo(print()).andExpect(status().isOk())
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            Mockito.verify(threadService, times(1))
+                    .lockThread(token, 1);
 
         } catch (Exception e) {
 
@@ -177,6 +176,74 @@ class ThreadControllerTest {
         }
 
     }
+
+    @Test
+    void unlockThreadTest() {
+
+        try {
+
+            mockMvc.perform(post("/thread/unlock/1")
+                    .contentType(APPLICATION_JSON)
+                    .header(tokenName, token))
+                    .andDo(print()).andExpect(status().isOk())
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            Mockito.verify(threadService, times(1))
+                    .unlockThread(token, 1);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+    }
+
+    @Test
+    void getAllThreadsFromBoardTest() {
+
+        try {
+
+            mockMvc.perform(post("/thread/unlock/1")
+                    .contentType(APPLICATION_JSON)
+                    .header(tokenName, token))
+                    .andDo(print()).andExpect(status().isOk())
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            Mockito.verify(threadService, times(1))
+                    .unlockThread(token, 1);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+    }
+
+    @Test
+    public void getThreadsOfBoardTest() {
+
+        List<BoardThread> list = Collections.singletonList(builder.makeBoardThread());
+        when(threadService.getThreadsPerBoard(1)).thenReturn(list);
+
+        builder.setBoardId(1L);
+        try {
+
+            mockMvc.perform(get("/thread/get/allthreads/1")
+                    .contentType(APPLICATION_JSON)).andDo(print())
+                    .andExpect(jsonPath("$[0].threadTitle").value(builder.getTitle()))
+                    .andExpect(jsonPath("$[0].id").value(builder.getBoardThreadId()));
+
+            Mockito.verify(threadService, times(1)).getThreadsPerBoard(1);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+    }
+
+    /*
 
 
 
