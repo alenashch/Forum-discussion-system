@@ -9,7 +9,6 @@ import exceptions.PermissionException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import nl.tudelft.sem.group20.classes.Board;
 import nl.tudelft.sem.group20.contentserver.entities.BoardThread;
 import nl.tudelft.sem.group20.contentserver.repositories.ThreadRepository;
 import nl.tudelft.sem.group20.contentserver.requests.CreateBoardThreadRequest;
