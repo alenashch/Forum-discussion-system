@@ -133,6 +133,5 @@ public class ThreadController {
         }
 
         return new ResponseEntity<>(threadsPerBoard, HttpStatus.OK);
-        //return new ResponseEntity<>("boardId "+id, HttpStatus.OK);
     }
 }

@@ -7,6 +7,7 @@ import exceptions.BoardNotFoundException;
 import exceptions.BoardThreadNotFoundException;
 import exceptions.PermissionException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import nl.tudelft.sem.group20.classes.Board;
 import nl.tudelft.sem.group20.contentserver.entities.BoardThread;
@@ -200,5 +201,33 @@ public class ThreadService {
 
         thread.setLocked(false);
         return "Thread of ID " + id + " has been unlocked";
+    }
+
+    /**
+     * Get all threads for a given board.
+     *
+     * @param boardId - id of a board
+     * @return list of threads
+     */
+    public List<BoardThread> getThreadsPerBoard(long boardId) {
+        IsLockedResponse response = restTemplate.getForObject("http://board-server/board/checklocked/" + boardId,
+                IsLockedResponse.class);
+
+        if (response.getStatus() == StatusResponse.Status.fail) {
+            
+            return null;
+        }
+
+
+        List<BoardThread> allThreads = getThreads();
+        List<BoardThread> threadsPerBoard = new ArrayList<>();
+
+        for(BoardThread thread : allThreads){
+            if(thread.getBoardId() == boardId)
+                threadsPerBoard.add(thread);
+        }
+
+        return threadsPerBoard;
+
     }
 }
