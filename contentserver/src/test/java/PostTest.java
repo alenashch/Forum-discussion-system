@@ -89,20 +89,7 @@ public class PostTest {
         assertEquals("Mike", demoPost2.getCreatorName());
 
     }
-
-    /*
-    @Test
-    void testSetEditedException() {
-        invalidEdited = demoPost2.getCreated().minusHours(1);
-        assertThrows(IllegalArgumentException.class, () -> demoPost2.setEdited(invalidEdited));
-    }
-
-    @Test
-    void testSetEditedBoundary() {
-        invalidEdited = demoPost2.getCreated();
-        assertThrows(IllegalArgumentException.class, () -> demoPost2.setEdited(invalidEdited));
-    }
-    */
+    
     @Test
     void testSetAndGetEditedSuccessful() {
         validEdited = demoPost2.getCreated().plusHours(3);
