@@ -12,7 +12,7 @@
 | Tests the new forms of requests | 57 | 1 hour | 1 hour | Yes | |
 | Create method for locking and unlcoking threads | 61 | 1 hour | 1 hour 30 minutes | Yes| |
 | Add constraint check to the content Microservice | 56 | 4 hours | 4 hours | Yes | |
-
+| Unit Testing Threads | 76 | 2 hours | 4 hours 30 minutes |
 **Project:** Student/Teacher forum
 
 **Group:** OP10-SEM20
@@ -29,6 +29,9 @@
 - Description: Some method were not tested properly and the existing tests left a lot of space for bugs.
 - Reaction: Make sure every merge request contains code that is well tested.
 
+**Problem 3**
+- Description: It was difficult to divide the work, as a lot of the things still needing to be done surfaced only when we started. Some people had to wait for others to finnish.
+- Reaction: People asked what still needed to be done and picked up the tasks. 
 
 ## Adjustments for next Sprint Plan
 - I believe planning went better than in previous weeks, but we can still improve. Perhaps more communication and more careful planning before coding will help.
