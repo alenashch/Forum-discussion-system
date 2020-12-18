@@ -127,11 +127,8 @@ public class ThreadController {
     @GetMapping("/get/allthreads/{id}")
     @ResponseBody
     public ResponseEntity<?> getThreadsPerBoard(@PathVariable long id) {
-        List<BoardThread> threadsPerBoard = threadService.getThreadsPerBoard(id);
-        if(threadsPerBoard == null){
-            return new ResponseEntity<>("There is no board with given Id", HttpStatus.BAD_REQUEST);
-        }
 
-        return new ResponseEntity<>(threadsPerBoard, HttpStatus.OK);
+        return new ResponseEntity<>(threadService.getThreadsPerBoard(id),
+                HttpStatus.OK);
     }
 }
