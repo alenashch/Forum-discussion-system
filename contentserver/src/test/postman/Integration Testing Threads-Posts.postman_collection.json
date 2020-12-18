@@ -422,6 +422,54 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "get board fail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"There is no such board in DB\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{token-teacher1}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "token",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8082/board/get/10000",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"board",
+								"get",
+								"10000"
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"description": "Teacher logs in.\r\nTeacher creates a board.\r\nTeacher gets the created board.",
@@ -1551,6 +1599,332 @@
 							""
 						]
 					}
+				}
+			]
+		},
+		{
+			"name": "Test Tescher2 tries edit Board,Thread,Post of Teacher",
+			"item": [
+				{
+					"name": "unlock/edit board fail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"The board cant be edited by another teacher\", function () {\r",
+									"    if(pm.response.status!=401){\r",
+									"         setTimeout(() => {}, 2000);\r",
+									"    }\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "key",
+									"value": "user-token",
+									"type": "string"
+								},
+								{
+									"key": "value",
+									"value": "{{token-teacher2}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\":\"{{boardId}}\",\r\n    \"name\":\"{{boardName}}\",\r\n    \"description\":\"New description of a board by teacher2\",\r\n    \"locked\": \"false\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8082/board/edit/",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"board",
+								"edit",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "edit thread fail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"A thread cant be edited by another teacher\", function () {\r",
+									"    if(pm.response.status!=400){\r",
+									"         setTimeout(() => {}, 2000);\r",
+									"    }\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{token-teacher2}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "token",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\":\"{{threadName}}\",\r\n    \"statement\":\"New description of a thread by teacher2\",\r\n    \"boardId\":\"{{boardId}}\",\r\n    \"isLocked\":\"false\",\r\n    \"boardThreadId\":\"{{threadId}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8081/thread/edit",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"thread",
+								"edit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "edit post fail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"A post cant be edited by another teacher\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{token-teacher2}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "token",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"body\":\"New body by teacher2\",\r\n    \"boardThreadId\":\"{{threadId}}\",\r\n    \"postId\":\"{{postId}}\"\r\n        \r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8081/post/edit",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"post",
+								"edit"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Test Teacher2 can lock/unlock threads of Teacher",
+			"item": [
+				{
+					"name": "lock thread",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(pm.response.text()).to.include(\"has been locked\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{token-teacher2}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "token",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8081/thread/lock/{{threadId}}",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"thread",
+								"lock",
+								"{{threadId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "unlock thread",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(pm.response.text()).to.include(\"has been unlocked\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{token-teacher2}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "token",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8081/thread/unlock/{{threadId}}",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"thread",
+								"unlock",
+								"{{threadId}}"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -2799,6 +3173,54 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "get board fail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"There is no such board in DB\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{token-student1}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "token",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8082/board/get/10000",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"board",
+								"get",
+								"10000"
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"description": "Student logs in.\r\nStudent tries to create a board and fails.\r\nStudent tried to edit a board (created by Teacher 1) and fails.\r\nStudent gets all the boards.",
@@ -2977,7 +3399,7 @@
 									"    pm.response.to.have.status(200);\r",
 									"});\r",
 									"\r",
-									"pm.test(\"Your test name\", function () {\r",
+									"pm.test(\"There is a thread on a board created by student\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
 									"    pm.expect(jsonData[4].title==\"threadNameS2\");\r",
 									"});"
@@ -3665,6 +4087,64 @@
 					"response": []
 				},
 				{
+					"name": "create post fail 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"A post wasnt created.thread is locked\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    pm.expect(pm.response.text()).to.include(\"Given thread is locked\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{token-student1}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "token",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"body\":\"This is post 13\",\r\n    \"boardThreadId\":\"{{threadIdStudent2}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8081/post/create",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"post",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "unlock thread teacher",
 					"event": [
 						{
@@ -3792,11 +4272,61 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "get post",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Correct post was retrieved\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.body == \"This is post 13\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{token-student1}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "token",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8081/post/get/{{studentPostId}}",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"post",
+								"get",
+								"{{studentPostId}}"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
 		{
-			"name": "Test Student adds posts",
+			"name": "Test Post methods",
 			"item": [
 				{
 					"name": "create post ",
@@ -4106,11 +4636,307 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "get all post teacher",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"All posts were retrieved\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{token-teacher1}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "token",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8081/post/get",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"post",
+								"get"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all posts student",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"All posts were retrieved\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{token-student1}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "token",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8081/post/get",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"post",
+								"get"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
 				}
 			]
 		},
 		{
-			"name": "Tes checkEdited Posts",
+			"name": "Test Thread methods",
+			"item": [
+				{
+					"name": "get all threads teacher",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Threads are succesfully retrieved\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{token-teacher1}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "token",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8081/thread/get",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"thread",
+								"get"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all threads student",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Threads are succesfully retrieved\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{token-student1}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "token",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8081/thread/get",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"thread",
+								"get"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get threads by board id teacher",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Threads are succesfully retrieved\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{token-teacher1}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "token",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8081/thread/get/allthreads/{{boardId}}",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"thread",
+								"get",
+								"allthreads",
+								"{{boardId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get threads by booard id fail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"There is no such board in DB\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8081/thread/get/allthreads/10000",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"thread",
+								"get",
+								"allthreads",
+								"10000"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Test checkEdited Posts",
 			"item": [
 				{
 					"name": "not edited student",
@@ -4511,7 +5337,7 @@
 					"response": []
 				},
 				{
-					"name": "dited fail ",
+					"name": "edited fail ",
 					"event": [
 						{
 							"listen": "test",
@@ -4558,11 +5384,147 @@
 					},
 					"response": []
 				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
 			]
 		},
 		{
 			"name": "Test Teacher Tries editing Student Threads/Posts",
-			"item": [],
+			"item": [
+				{
+					"name": "edit thread fail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Teacher cant edit student's thread\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    pm.expect(pm.response.text()).to.include(\"User not allowed to make these changes\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{token-teacher1}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "token",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\":\"New name\",\r\n    \"statement\":\"A teacher tries to edit a thread\",\r\n    \"boardId\":\"{{boardId}}\",\r\n    \"isLocked\":\"false\",\r\n    \"boardThreadId\":\"{{threadIdStudent}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8081/thread/edit",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"thread",
+								"edit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "edit post fail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Teacher cant edit student's post\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"    pm.expect(pm.response.text()).to.include(\"This post does not belong to the given user\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "key",
+									"value": "token",
+									"type": "string"
+								},
+								{
+									"key": "value",
+									"value": "{{token-teacher1}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"body\":\"Teacher changed this\",\r\n    \"boardThreadId\":\"{{threadId}}\",\r\n    \"postId\":\"{{studentPostId}}\"\r\n        \r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8081/post/edit",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"post",
+								"edit"
+							]
+						}
+					},
+					"response": []
+				}
+			],
 			"event": [
 				{
 					"listen": "prerequest",
@@ -4640,7 +5602,7 @@
 								"exec": [
 									"pm.test(\"Logged out succsessfully\", function () {\r",
 									"    if(pm.response.status!=200){\r",
-									"         setTimeout(() => {}, 3000);\r",
+									"         setTimeout(() => {}, 4000);\r",
 									"    }\r",
 									"    pm.response.to.have.status(200);\r",
 									"});"
