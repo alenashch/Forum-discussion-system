@@ -90,7 +90,6 @@ public class PostService {
 
 
         if (response.getStatus() == StatusResponse.Status.fail) {
-
             throw new BoardNotFoundException();
         }
 
