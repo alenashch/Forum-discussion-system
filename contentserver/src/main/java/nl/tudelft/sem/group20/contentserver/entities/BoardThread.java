@@ -33,11 +33,11 @@ public class BoardThread {
 
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    private LocalDateTime created; //when was it creates
+    private LocalDateTime createdTime; //when was it creates
 
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    private transient LocalDateTime edited; //when was it creates
+    private transient LocalDateTime editedTime; //when was it creates
 
     private boolean locked;        //locked thread or not
 
@@ -64,19 +64,21 @@ public class BoardThread {
      * @param id              id of item
      * @param threadTitle     title of thread
      * @param statement       general statment of thread
-     * @param threadCreatorId person who created thread
+     * @param threadCreator person who created thread
      * @param locked          locked or not
      */
-    public BoardThread(Long id, String threadTitle, String statement, String threadCreatorId,
-                       LocalDateTime created, boolean locked) {
-        this.id = id;
-        this.threadTitle = threadTitle;
-        this.statement = statement;
-        this.threadCreator = threadCreatorId;
-        this.created = created;
+    public BoardThread(Long id, String threadTitle, String statement, String threadCreator,
+                       LocalDateTime created, boolean locked, long boardId, boolean isEdited) {
+        this.id            = id;
+        this.threadTitle   = threadTitle;
+        this.statement     = statement;
+        this.threadCreator = threadCreator;
+        this.createdTime   = created;
         //initially, set this field the same as the created field
-        this.edited = created;
-        this.locked = locked;
+        this.editedTime    = created;
+        this.locked        = locked;
+        this.boardId       = boardId;
+        this.isEdited      = isEdited;
     }
 
     /**
@@ -93,9 +95,9 @@ public class BoardThread {
         this.threadTitle = threadTitle;
         this.statement = statement;
         this.threadCreator = threadCreatorId;
-        this.created = created;
+        this.createdTime = created;
         //initially, set this field the same as the created field
-        this.edited = created;
+        this.editedTime = created;
         this.locked = locked;
         this.boardId = boardId;
     }
@@ -124,13 +126,7 @@ public class BoardThread {
         this.statement = statement;
     }
 
-    public LocalDateTime getCreated() {
-        return created;
-    }
 
-    public void setCreated(LocalDateTime created) {
-        this.created = created;
-    }
 
     public boolean isLocked() {
         return locked;
@@ -164,12 +160,20 @@ public class BoardThread {
         this.posts = posts;
     }
 
-    public LocalDateTime getEditedThreadTime() {
-        return edited;
+    public LocalDateTime getCreatedTime() {
+        return createdTime;
     }
 
-    public void setEditedThreadTime(LocalDateTime edited) {
-        this.edited = edited;
+    public void setCreatedTime(LocalDateTime createdTime) {
+        this.createdTime = createdTime;
+    }
+
+    public LocalDateTime getEditedTime() {
+        return editedTime;
+    }
+
+    public void setEditedTime(LocalDateTime edited) {
+        this.editedTime = edited;
     }
 
     public boolean isThreadEdited() {
@@ -179,6 +183,16 @@ public class BoardThread {
 
     public void setIsThreadEdited(boolean edited) {
         isEdited = edited;
+    }
+
+    public void addPost(Post post) {
+
+        posts.add(post);
+    }
+
+    public void removePost(Post post) {
+
+        posts.remove(post);
     }
 
     @Override
@@ -193,17 +207,6 @@ public class BoardThread {
         return id == that.id;
     }
 
-    public void addPost(Post post) {
-
-        posts.add(post);
-    }
-
-    public void removePost(Post post) {
-
-        posts.remove(post);
-    }
-
-
     @Override
     public int hashCode() {
         return Objects.hash(id);
@@ -211,14 +214,17 @@ public class BoardThread {
 
     @Override
     public String toString() {
-        return "Thread{"
-            + "id=" + id
-            + ", threadTitle='" + threadTitle + '\''
-            + ", statement='" + statement + '\''
-            + ", threadCreatorId='" + threadCreator + '\''
-            + ", created=" + created
-            + ", locked=" + locked
-            + '}';
+        return "BoardThread{"
+                + "id=" + id
+                + ", threadTitle='" + threadTitle + '\''
+                +  ", statement='" + statement + '\''
+                +  ", threadCreator='" + threadCreator + '\''
+                +  ", createdTime=" + createdTime
+                + ", editedTime=" + editedTime
+                + ", locked=" + locked
+                + ", boardId=" + boardId
+                + ", isEdited=" + isEdited
+                + ", posts=" + posts
+                + '}';
     }
-
 }

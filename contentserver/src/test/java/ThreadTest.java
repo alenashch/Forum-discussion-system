@@ -1,4 +1,5 @@
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -36,10 +37,11 @@ public class ThreadTest {
         locked = true;
 
         demoThread2 = new BoardThread(demoId2, demoTitle2, demoStatement2,
-            threadCreator, demoCreated2, locked);
+            threadCreator, demoCreated2, locked, 3, false);
         demoThread2Copy = new BoardThread(demoId2, demoThread2.getThreadTitle(),
             demoThread2.getStatement(), demoThread2.getThreadCreator(),
-            demoThread2.getCreated(), demoThread2.isLocked());
+            demoThread2.getCreatedTime(), demoThread2.isLocked(),
+                demoThread2.getBoardId(), demoThread2.isThreadEdited());
     }
 
     @Test
@@ -53,7 +55,7 @@ public class ThreadTest {
         assertTrue(demoThread2.getId() == demoId2
             && demoThread2.getThreadTitle().equals(demoTitle2)
             && demoThread2.getStatement().equals(demoStatement2)
-            && demoThread2.getCreated().equals(demoCreated2)
+            && demoThread2.getCreatedTime().equals(demoCreated2)
             && demoThread2.getThreadCreator().equals(threadCreator)
             && demoThread2.isLocked() == locked);
     }
@@ -66,7 +68,7 @@ public class ThreadTest {
         assertNotNull(demoThread2);
         assertTrue(demoThread2.getThreadTitle().equals(demoTitle2)
             && demoThread2.getStatement().equals(demoStatement2)
-            && demoThread2.getCreated().equals(demoCreated2)
+            && demoThread2.getCreatedTime().equals(demoCreated2)
             && demoThread2.getThreadCreator().equals(threadCreator)
             && demoThread2.isLocked() == locked
             && demoThread3.getBoardId() == boardId);
@@ -93,8 +95,8 @@ public class ThreadTest {
     @Test
     void testGetAndSetTimeCreated() {
         LocalDateTime newCreated = demoCreated2.plusHours(3);
-        demoThread2.setCreated(newCreated);
-        assertEquals(newCreated, demoThread2.getCreated());
+        demoThread2.setCreatedTime(newCreated);
+        assertEquals(newCreated, demoThread2.getCreatedTime());
     }
 
     @Test
@@ -109,15 +111,29 @@ public class ThreadTest {
     }
 
     @Test
+    void testDifferentHashCodes() {
+        assertNotEquals(demoThread2.hashCode(), demoThread1.hashCode());
+    }
+
+    @Test
+    void testSameHashCodes() {
+        assertEquals(demoThread2.hashCode(), demoThread2.hashCode());
+    }
+
+    @Test
     void testToString() {
-        String string = "Thread{"
-            + "id=" + demoThread2.getId()
-            + ", threadTitle='" + demoThread2.getThreadTitle() + '\''
-            + ", statement='" + demoThread2.getStatement() + '\''
-            + ", threadCreatorId='" + demoThread2.getThreadCreator() + '\''
-            + ", created=" + demoThread2.getCreated()
-            + ", locked=" + demoThread2.isLocked()
-            + '}';
+        String string = "BoardThread{"
+                + "id=" + demoThread2.getId()
+                + ", threadTitle='" + demoThread2.getThreadTitle() + '\''
+                + ", statement='" + demoThread2.getStatement() + '\''
+                + ", threadCreator='" + demoThread2.getThreadCreator() + '\''
+                + ", createdTime=" + demoThread2.getCreatedTime()
+                + ", editedTime=" + demoThread2.getEditedTime()
+                + ", locked=" + demoThread2.isLocked()
+                + ", boardId=" + demoThread2.getBoardId()
+                + ", isEdited=" + demoThread2.isThreadEdited()
+                + ", posts=" + demoThread2.getPosts()
+                + '}';
 
         assertEquals(string, demoThread2.toString());
     }

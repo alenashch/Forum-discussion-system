@@ -18,7 +18,6 @@ import nl.tudelft.sem.group20.shared.AuthResponse;
 import nl.tudelft.sem.group20.shared.IsLockedResponse;
 import nl.tudelft.sem.group20.shared.StatusResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -139,7 +138,7 @@ public class ThreadService {
         thread.setThreadTitle(request.getTitle());
         thread.setStatement(request.getStatement());
         //thread.setLocked(request.isLocked()); only locking happnes thorugh api
-        thread.setEditedThreadTime(LocalDateTime.now());
+        thread.setEditedTime(LocalDateTime.now());
 
         thread.setIsThreadEdited(true); //save in database that its edited
 
