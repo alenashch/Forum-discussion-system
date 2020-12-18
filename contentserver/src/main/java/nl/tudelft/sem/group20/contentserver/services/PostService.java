@@ -14,8 +14,10 @@ import nl.tudelft.sem.group20.contentserver.entities.Post;
 import nl.tudelft.sem.group20.contentserver.repositories.PostRepository;
 import nl.tudelft.sem.group20.contentserver.repositories.ThreadRepository;
 import nl.tudelft.sem.group20.contentserver.requests.CreatePostRequest;
+import nl.tudelft.sem.group20.contentserver.requests.EditPostRequest;
 import nl.tudelft.sem.group20.shared.AuthRequest;
 import nl.tudelft.sem.group20.shared.AuthResponse;
+import nl.tudelft.sem.group20.shared.IsLockedResponse;
 import nl.tudelft.sem.group20.shared.StatusResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -83,16 +85,16 @@ public class PostService {
             threadRepository.getById(request.getBoardThreadId())
                 .orElseThrow(BoardThreadNotFoundException::new);
 
-        ResponseEntity<Boolean> responseEntity = (ResponseEntity<Boolean>)
-            restTemplate.getForObject("http://board-server/board/checklocked/" + boardThread.getBoardId(),
-                ResponseEntity.class);
+        IsLockedResponse response = restTemplate.getForObject("http://board-server/board/checklocked/" + boardThread.getBoardId(),
+                IsLockedResponse.class);
 
-        if (responseEntity == null || responseEntity.getStatusCode().is4xxClientError()) {
 
+        if (response.getStatus() == StatusResponse.Status.fail) {
             throw new BoardNotFoundException();
         }
 
-        if (responseEntity.getBody()) {
+
+        if (response.getStatus() == StatusResponse.Status.success && response.isLocked()==true) {
 
             throw new BoardIsLockedException();
         }
@@ -101,6 +103,7 @@ public class PostService {
 
             throw new ThreadIsLockedException();
         }
+
 
         int nextPostNumber = boardThread.getPosts().size();
         Post toCreate = new Post(nextPostNumber, authenticateUser(token),
@@ -117,9 +120,9 @@ public class PostService {
      *
      * @param request Request with information needed to create a new post
      */
-    public void updatePost(String token, CreatePostRequest request) throws RuntimeException {
+    public void updatePost(String token, EditPostRequest request) throws RuntimeException {
 
-        Post toUpdate = postRepository.getById(request.getBoardThreadId())
+        Post toUpdate = postRepository.getById(request.getPostId())
             .orElseThrow(PostNotFoundException::new);
 
         if (!toUpdate.getCreatorName().equals(authenticateUser(token))) {
