@@ -7,6 +7,11 @@
 | Add Authentication Support for Board Microservice | 50    | 3 hours              | 8 hours              | Yes  | 
 | Add request classes for Board microservice | 69    | 1 hours              | 3 hours              | Yes  |
 | Add tests for BoardControllerAdvice | 72    | 20 minutes              | 20 minutes              | Yes  |
+| Make posts linkable | 60 | 1 hour | 1 hour 30 minutes | Yes |
+| Add isEdit method to the post controller | 67 | 1 hour | 1 hour | Yes | We don't have to keep isEdited field in Post entity having this method |
+| Tests the new forms of requests | 57 | 1 hour | 1 hour | Yes | |
+| Create method for locking and unlcoking threads | 61 | 1 hour | 1 hour 30 minutes | Yes| |
+| Add constraint check to the content Microservice | 56 | 4 hours | 4 hours | Yes | |
 
 **Project:** Student/Teacher forum
 
@@ -19,6 +24,10 @@
 **Problem 1**
 - Description: Different teams were working on different microservices, and not all conventions were established beforehand.
 - Reaction: There is a bit of inconsistency between different microservers. Nonetheless, they work together just fine.
+
+**Problem 2**
+- Description: Some method were not tested properly and the existing tests left a lot of space for bugs.
+- Reaction: Make sure every merge request contains code that is well tested.
 
 
 ## Adjustments for next Sprint Plan
