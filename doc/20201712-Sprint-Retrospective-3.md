@@ -12,8 +12,9 @@
 | Tests the new forms of requests | 57 | 1 hour | 1 hour | Yes | |
 | Create method for locking and unlcoking threads | 61 | 1 hour | 1 hour 30 minutes | Yes| |
 | Add constraint check to the content Microservice | 56 | 4 hours | 4 hours | Yes | |
-| Unit Testing Threads | 76 | 2 hours | 4 hours 30 minutes |
 | Unit Testing AuthenticationService | 82 | 30 minutes | 40 minutes | Added missing tests
+| Added controller testing for thread controller | 76 | 2 hours | 2 hours | Yes | |
+| Added service testing for thread controller | 76 | 2 hours | 3 hours | Yes | |
 
 **Project:** Student/Teacher forum
 
@@ -37,3 +38,5 @@
 
 ## Adjustments for next Sprint Plan
 - I believe planning went better than in previous weeks, but we can still improve. Perhaps more communication and more careful planning before coding will help.
+- More active communication from all members would have been better
+- More active reviewers for merge request would have also improved our code quality
