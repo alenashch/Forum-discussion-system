@@ -84,7 +84,7 @@ public class PostService {
                 .orElseThrow(BoardThreadNotFoundException::new);
 
         ResponseEntity<Boolean> responseEntity = (ResponseEntity<Boolean>)
-            restTemplate.getForObject("/board/checklocked/" + boardThread.getBoardId(),
+            restTemplate.getForObject("http://board-server/board/checklocked/" + boardThread.getBoardId(),
                 ResponseEntity.class);
 
         if (responseEntity == null || responseEntity.getStatusCode().is4xxClientError()) {

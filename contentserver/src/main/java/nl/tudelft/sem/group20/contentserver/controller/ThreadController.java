@@ -96,10 +96,10 @@ public class ThreadController {
      * @param id    - id of the thread to be locked.
      * @return ResponseEntity containing information about the result.
      */
-    @PostMapping("/lock")
+    @PostMapping("/lock/{id}")
     @ResponseBody
     public ResponseEntity<String> lockThread(@RequestHeader String token,
-                                             @RequestBody long id) {
+                                             @PathVariable long id) {
 
         return new ResponseEntity<>(threadService.lockThread(token, id), HttpStatus.OK);
     }
@@ -111,10 +111,10 @@ public class ThreadController {
      * @param id    - id of the thread to be locked.
      * @return ResponseEntity containing information about the result.
      */
-    @PostMapping("/unlock")
+    @PostMapping("/unlock/{id}")
     @ResponseBody
     public ResponseEntity<String> unlockThread(@RequestHeader String token,
-                                               @RequestBody long id) {
+                                               @PathVariable long id) {
 
         return new ResponseEntity<>(threadService.unlockThread(token, id), HttpStatus.OK);
     }
