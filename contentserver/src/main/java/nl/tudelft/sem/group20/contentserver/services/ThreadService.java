@@ -171,6 +171,7 @@ public class ThreadService {
         }
 
         thread.setLocked(true);
+        threadRepository.saveAndFlush(thread);
         return "Thread with ID " + id + " has been locked";
     }
 
@@ -199,6 +200,7 @@ public class ThreadService {
         }
 
         thread.setLocked(false);
+        threadRepository.saveAndFlush(thread);
         return "Thread of ID " + id + " has been unlocked";
     }
 
