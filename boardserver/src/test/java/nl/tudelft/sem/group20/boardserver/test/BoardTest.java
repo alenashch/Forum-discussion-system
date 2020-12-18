@@ -121,6 +121,12 @@ public class BoardTest {
         assertFalse(board.equals(board2));
     }
 
+
+    @Test
+    void testBoardEqualsDifferentClass() {
+        assertFalse(board.equals("A string."));
+    }
+
     @Test
     void testDifferentHashCodes() {
         assertNotEquals(board.hashCode(), board2.hashCode());
