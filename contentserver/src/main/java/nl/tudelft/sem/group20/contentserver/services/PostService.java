@@ -14,6 +14,7 @@ import nl.tudelft.sem.group20.contentserver.entities.Post;
 import nl.tudelft.sem.group20.contentserver.repositories.PostRepository;
 import nl.tudelft.sem.group20.contentserver.repositories.ThreadRepository;
 import nl.tudelft.sem.group20.contentserver.requests.CreatePostRequest;
+import nl.tudelft.sem.group20.contentserver.requests.EditPostRequest;
 import nl.tudelft.sem.group20.shared.AuthRequest;
 import nl.tudelft.sem.group20.shared.AuthResponse;
 import nl.tudelft.sem.group20.shared.IsLockedResponse;
@@ -120,9 +121,9 @@ public class PostService {
      *
      * @param request Request with information needed to create a new post
      */
-    public void updatePost(String token, CreatePostRequest request) throws RuntimeException {
+    public void updatePost(String token, EditPostRequest request) throws RuntimeException {
 
-        Post toUpdate = postRepository.getById(request.getBoardThreadId())
+        Post toUpdate = postRepository.getById(request.getPostId())
             .orElseThrow(PostNotFoundException::new);
 
         if (!toUpdate.getCreatorName().equals(authenticateUser(token))) {
