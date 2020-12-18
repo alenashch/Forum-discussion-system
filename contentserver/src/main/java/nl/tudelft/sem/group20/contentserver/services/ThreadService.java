@@ -205,12 +205,12 @@ public class ThreadService {
 
         if (!thread.isLocked()) {
 
-            return "Thread with ID " + id + " is already unlocked";
+            return "Thread on ID " + id + " is already unlocked";
         }
 
         thread.setLocked(false);
         threadRepository.saveAndFlush(thread);
-        return "Thread with ID " + id + " has been unlocked";
+        return "Thread on ID " + id + " has been unlocked";
     }
 
     /**

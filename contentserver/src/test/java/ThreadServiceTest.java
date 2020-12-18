@@ -1,8 +1,6 @@
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -11,27 +9,23 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 import exceptions.AuthorizationFailedException;
 import exceptions.BoardIsLockedException;
 import exceptions.BoardNotFoundException;
 import exceptions.BoardThreadNotFoundException;
 import exceptions.PermissionException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import nl.tudelft.sem.group20.contentserver.ContentServer;
 import nl.tudelft.sem.group20.contentserver.entities.BoardThread;
-import nl.tudelft.sem.group20.contentserver.entities.Post;
 import nl.tudelft.sem.group20.contentserver.repositories.ThreadRepository;
 import nl.tudelft.sem.group20.contentserver.services.ThreadService;
 import nl.tudelft.sem.group20.shared.AuthRequest;
 import nl.tudelft.sem.group20.shared.AuthResponse;
 import nl.tudelft.sem.group20.shared.IsLockedResponse;
-import nl.tudelft.sem.group20.shared.StatusResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.platform.engine.TestExecutionResult;
 import org.mockito.Mockito;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -257,7 +251,6 @@ public class ThreadServiceTest {
 
     @Test
     void succesfulThreadLock() {
-
         AuthResponse auth = new AuthResponse(true, "Elmo");
 
         when(restTemplate.postForObject(Mockito.anyString(),
@@ -268,10 +261,9 @@ public class ThreadServiceTest {
         when(threadRepository.getById(anyLong()))
                 .thenReturn(Optional.of(builder.makeBoardThread()));
 
-       assertThat(threadService.lockThread(token, builder.getBoardThreadId()))
+        assertThat(threadService.lockThread(token, builder.getBoardThreadId()))
                .isEqualTo("Thread with ID " + builder.getBoardThreadId()
                        + " has been locked");
-
         verify(threadRepository, times(1)).saveAndFlush(any());
     }
 
@@ -311,7 +303,7 @@ public class ThreadServiceTest {
     }
 
     @Test
-    void lockFailNotATeacher() {
+    void lockFailNotaTeacher() {
 
         AuthResponse auth = new AuthResponse(false, "Raul");
 
@@ -360,7 +352,7 @@ public class ThreadServiceTest {
                 .thenReturn(Optional.of(builder.makeBoardThread()));
 
         assertThat(threadService.unlockThread(token, builder.getBoardThreadId()))
-                .isEqualTo("Thread with ID " + builder.getBoardThreadId()
+                .isEqualTo("Thread on ID " + builder.getBoardThreadId()
                         + " has been unlocked");
 
         verify(threadRepository, times(1)).saveAndFlush(any());
@@ -402,9 +394,9 @@ public class ThreadServiceTest {
     }
 
     @Test
-    void unlockFailNotATeacher() {
+    void unlockFailNotaTeacher() {
 
-        AuthResponse auth = new AuthResponse(false, "Raul");
+        AuthResponse auth = new AuthResponse(false, "Gavin");
 
         when(restTemplate.postForObject(Mockito.anyString(),
                 Mockito.any(AuthRequest.class),
@@ -417,9 +409,9 @@ public class ThreadServiceTest {
     }
 
     @Test
-    void AlreadyUnlockedThread() {
+    void alreadyUnlockedThread() {
 
-        AuthResponse auth = new AuthResponse(true, "Raul");
+        AuthResponse auth = new AuthResponse(true, "Gavin");
 
         when(restTemplate.postForObject(Mockito.anyString(),
                 Mockito.any(AuthRequest.class),
@@ -429,7 +421,7 @@ public class ThreadServiceTest {
                 .thenReturn(Optional.of(builder.makeBoardThread()));
 
         assertThat(threadService.unlockThread(token, builder.getBoardThreadId()))
-                .isEqualTo("Thread with ID " + builder.getBoardThreadId()
+                .isEqualTo("Thread on ID " + builder.getBoardThreadId()
                         + " is already unlocked");
 
         verify(threadRepository, times(0)).saveAndFlush(any());
