@@ -183,8 +183,7 @@ class PostControllerTest {
         try {
 
             MvcResult result =
-                mockMvc.perform(get("/post/checkedited").contentType(APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(1L)).accept(APPLICATION_JSON))
+                mockMvc.perform(get("/post/checkedited/1").contentType(APPLICATION_JSON))
                     .andDo(print()).andExpect(status().isOk())
                     .andExpect(status().isOk()).andReturn();
 
