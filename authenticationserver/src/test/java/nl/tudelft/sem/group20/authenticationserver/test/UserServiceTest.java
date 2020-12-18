@@ -144,11 +144,7 @@ public class UserServiceTest {
 
         userService = new UserService(userRepository, tokenRepository);
     }
-    /*
-    @Test
-    void testGetUsers() {
-        assertThat(userService.getUsers()).hasSize(users.size()).hasSameElementsAs(users);
-    }*/
+
 
     @Test
     void testCreateUserSuccessful() {
@@ -156,27 +152,6 @@ public class UserServiceTest {
                 userService.createUser(registerRequest1));
     }
 
-    @Test
-    void testCreateUserUnsuccessful() {
-        assertEquals(new StatusResponse(fail, "Email address already exists"),
-                userService.createUser(registerRequest2));
-
-        verify(userRepository, times(0)).saveAndFlush(any(User.class));
-    }
-
-    @Test
-    void testUpdateUserSuccessful() {
-        user2.setEmail("hello");
-        assertEquals(success, userService.updateUser(user2, token1).getStatus());
-        //verify(userRepository, times(1)).saveAndFlush(user2);
-    }
-
-    @Test
-    void testUpdateUserUnsuccessful() {
-        assertEquals(fail, userService.updateUser(user3, token1).getStatus());
-
-        verify(userRepository, times(0)).saveAndFlush(any(User.class));
-    }
 
     @Test
     void loginUserNonExisting() {

@@ -1,5 +1,6 @@
 package nl.tudelft.sem.group20.contentserver.controller;
 
+import nl.tudelft.sem.group20.contentserver.entities.BoardThread;
 import nl.tudelft.sem.group20.contentserver.requests.CreateBoardThreadRequest;
 import nl.tudelft.sem.group20.contentserver.requests.EditBoardThreadRequest;
 import nl.tudelft.sem.group20.contentserver.services.ThreadService;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(path = "/thread")
 public class ThreadController {
@@ -23,13 +26,10 @@ public class ThreadController {
     @Autowired
     private transient ThreadService threadService;
 
-    @Autowired
-    private transient RestTemplate restTemplate;
-
-
     /**
      * Create thread request.
      *
+     * @param token   - String containing the authentication token.
      * @param request - CreateEditBoardThreadRequest with information necessary to create new
      *                thread.
      * @return string
@@ -42,13 +42,8 @@ public class ThreadController {
         // @RequestParam means it is a parameter from the GET or POST request
 
         long newId = threadService.createThread(token, request);
-        if (newId == -1) {
 
-            return new ResponseEntity<>("This thread could not be created, it may already exist",
-                HttpStatus.BAD_REQUEST);
-        }
-
-        return new ResponseEntity<>("A new thread with ID:" + newId + " has been created",
+        return new ResponseEntity<>("A new thread with ID: " + newId + " has been created",
             HttpStatus.CREATED);
     }
 
@@ -77,6 +72,7 @@ public class ThreadController {
     /**
      * Edit thread request.
      *
+     * @param token - String containing the authentication token.
      * @param request - CreateEditBoardThreadRequest with information necessary to edit and existing
      *                thread.
      * @return JSON containing a boolean signifying success.
@@ -91,6 +87,51 @@ public class ThreadController {
         return new ResponseEntity<>("The thread with ID: " + request.getBoardThreadId()
                             + " has been " + "updated", HttpStatus.OK);
 
+    }
 
+    /**
+     * Locks a thread. Only available for teachers.
+     *
+     * @param token - authentication token
+     * @param id    - id of the thread to be locked.
+     * @return ResponseEntity containing information about the result.
+     */
+    @PostMapping("/lock")
+    @ResponseBody
+    public ResponseEntity<String> lockThread(@RequestHeader String token,
+                                             @RequestBody long id) {
+
+        return new ResponseEntity<>(threadService.lockThread(token, id), HttpStatus.OK);
+    }
+
+    /**
+     * Unlocks a thread. Only available for teachers.
+     *
+     * @param token - authentication token
+     * @param id    - id of the thread to be locked.
+     * @return ResponseEntity containing information about the result.
+     */
+    @PostMapping("/unlock")
+    @ResponseBody
+    public ResponseEntity<String> unlockThread(@RequestHeader String token,
+                                               @RequestBody long id) {
+
+        return new ResponseEntity<>(threadService.unlockThread(token, id), HttpStatus.OK);
+    }
+
+    /**
+     * Get all threads for a given board id.
+     *
+     * @return JSON containing list of all threads that belong to a given board.
+     */
+    @GetMapping("/get/allthreads/{id}")
+    @ResponseBody
+    public ResponseEntity<?> getThreadsPerBoard(@PathVariable long id) {
+        List<BoardThread> threadsPerBoard = threadService.getThreadsPerBoard(id);
+        if(threadsPerBoard == null){
+            return new ResponseEntity<>("There is no board with given Id", HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(threadsPerBoard, HttpStatus.OK);
     }
 }

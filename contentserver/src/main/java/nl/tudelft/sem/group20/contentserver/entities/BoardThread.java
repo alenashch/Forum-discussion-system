@@ -176,7 +176,8 @@ public class BoardThread {
         return isEdited;
     }
 
-    public void setEditedThread(boolean edited) {
+
+    public void setIsThreadEdited(boolean edited) {
         isEdited = edited;
     }
 

@@ -165,7 +165,7 @@ public class BoardThreadTest {
 
     @Test
     void testGetAndSetEdited() {
-        boardThread2.setEditedThread(true);
+        boardThread2.setIsThreadEdited(true);
         assertEquals(true, boardThread2.isThreadEdited());
     }
 

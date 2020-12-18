@@ -12,8 +12,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import exceptions.AuthorizationFailedException;
+import exceptions.BoardIsLockedException;
 import exceptions.BoardThreadNotFoundException;
 import exceptions.PostNotFoundException;
+import exceptions.ThreadIsLockedException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -34,6 +36,8 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.web.client.RestTemplate;
 
@@ -45,6 +49,7 @@ public class PostServiceTest {
     transient AuthResponse authResponse;
     transient String token;
     transient Post demoPost;
+    transient ResponseEntity<Boolean> responseEntity;
 
     transient PostService postService;
 
@@ -71,6 +76,10 @@ public class PostServiceTest {
 
         postRepository = mock(PostRepository.class);
 
+        responseEntity = new ResponseEntity<>(false, HttpStatus.OK);
+        when(restTemplate.getForObject(Mockito.anyString(), Mockito.eq(ResponseEntity.class)))
+            .thenReturn(responseEntity);
+
         Mockito.when(postRepository.saveAndFlush(any(Post.class)))
             .then(returnsFirstArg());
         Mockito.when(postRepository.getById(builder.getPostId()))
@@ -94,6 +103,7 @@ public class PostServiceTest {
 
     @Test
     void testCreatePostSuccessful() {
+
 
         when(threadRepository.getById(builder.getThreadId()))
             .thenReturn(Optional.of(builder.createTestBoardThread()));
@@ -127,7 +137,50 @@ public class PostServiceTest {
     }
 
     @Test
+    void testCreatePostUnsuccessfulBoardLocked() {
+
+        responseEntity = new ResponseEntity<>(true, HttpStatus.OK);
+        when(restTemplate.getForObject(Mockito.anyString(), Mockito.eq(ResponseEntity.class)))
+            .thenReturn(responseEntity);
+
+        when(threadRepository.getById(builder.getThreadId()))
+            .thenReturn(Optional.of(builder.createTestBoardThread()));
+        when(restTemplate.postForObject(Mockito.anyString(),
+            Mockito.any(AuthRequest.class),
+            Mockito.eq(AuthResponse.class))).thenReturn(authResponse);
+        assertThrows(BoardIsLockedException.class,
+            () -> postService.createPost(token, builder.createTestCreatePostRequest()));
+
+        verify(postRepository, times(0)).saveAndFlush(any());
+    }
+
+    @Test
+    void testCreatePostUnsuccessfulThreadLocked() {
+
+        responseEntity = new ResponseEntity<>(false, HttpStatus.OK);
+        when(restTemplate.getForObject(Mockito.anyString(), Mockito.eq(ResponseEntity.class)))
+            .thenReturn(responseEntity);
+
+        builder.setLocked(true);
+        when(threadRepository.getById(builder.getThreadId()))
+            .thenReturn(Optional.of(builder.createTestBoardThread()));
+        when(restTemplate.postForObject(Mockito.anyString(),
+            Mockito.any(AuthRequest.class),
+            Mockito.eq(AuthResponse.class))).thenReturn(authResponse);
+
+        assertThrows(ThreadIsLockedException.class,
+            () -> postService.createPost(token, builder.createTestCreatePostRequest()));
+
+        verify(postRepository, times(0)).saveAndFlush(any());
+    }
+
+
+    @Test
     void testCreatePostUnsuccessfulBoardNotFound() {
+
+        responseEntity = new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+        when(restTemplate.getForObject(Mockito.anyString(), Mockito.eq(ResponseEntity.class)))
+            .thenReturn(responseEntity);
 
         when(restTemplate.postForObject(Mockito.anyString(),
             Mockito.any(AuthRequest.class),

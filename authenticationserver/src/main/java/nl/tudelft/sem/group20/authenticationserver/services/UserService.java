@@ -34,10 +34,6 @@ public class UserService {
     }
 
 
-    /*public List<User> getUsers() {
-        return userRepository.findAll();
-    }*/
-
     /**
      * Creates a User and adds it to the database.
      *
@@ -122,23 +118,6 @@ public class UserService {
         return new  AuthResponse();
     }
 
-    /**
-     * Updates a User in the database.
-     *
-     * @param toUpdate - the user to be updated.
-     * @return StatusResponse with response
-     */
-    public StatusResponse updateUser(User toUpdate, String token) {
-        AuthResponse authResponse = authenticate(token);
-        if (authResponse.getStatus().equals(success) && authResponse.isType()) {
-            if (userRepository.getByUsername(toUpdate.getUsername()).isEmpty()) {
-                return new StatusResponse(fail, "Does not exist");
-            }
-            userRepository.saveAndFlush(toUpdate);
-            return new StatusResponse(success, "Success!");
-        }
-        return new StatusResponse(fail, "Not allowed");
-    }
 
     private String getRandomToken(int length) {
         StringBuffer stringBuffer = new StringBuffer();
