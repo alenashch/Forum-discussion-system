@@ -1,3 +1,5 @@
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -8,17 +10,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import nl.tudelft.sem.group20.contentserver.ContentServer;
 import nl.tudelft.sem.group20.contentserver.controller.PostController;
 import nl.tudelft.sem.group20.contentserver.entities.Post;
+import nl.tudelft.sem.group20.contentserver.requests.CreatePostRequest;
+import nl.tudelft.sem.group20.contentserver.requests.EditPostRequest;
 import nl.tudelft.sem.group20.contentserver.services.PostService;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,12 +30,15 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 @AutoConfigureMockMvc
 @WebMvcTest(PostController.class)
 @ContextConfiguration(classes = ContentServer.class)
 class PostControllerTest {
 
+    private transient String token = "1";
+    private transient String tokenName = "token";
 
     @Autowired
     @MockBean
@@ -42,54 +48,44 @@ class PostControllerTest {
     @Autowired
     private transient ObjectMapper objectMapper;
 
-    @Test
-    void createPostSuccessTest() {
-
-        Post post = createTestPost();
-        when(postService.createPost(post)).thenReturn(123L);
-
-        try {
-            mockMvc.perform(post("/post/create")
-                .contentType(APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(post)))
-                .andDo(print())
-                .andExpect(status().isCreated())
-                .andExpect(content().string("A new post with ID: 123 has been created"));
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
-        }
+    private transient TestThreadPostBuilder builder;
 
 
+    @BeforeEach
+    void setUp() {
+
+        builder = new TestThreadPostBuilder();
     }
 
     @Test
-    void createPostFailTest() {
+    void createPostSuccessTest() {
 
-        Post post = createTestPost();
-        when(postService.createPost(post)).thenReturn(-1L);
+        CreatePostRequest createPostRequest = builder.createTestCreatePostRequest();
+        when(postService.createPost(anyString(), any(CreatePostRequest.class)))
+            .thenReturn(builder.getPostId());
 
         try {
             mockMvc.perform(post("/post/create")
                 .contentType(APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(post)))
+                .header(tokenName, token)
+                .content(objectMapper.writeValueAsString(createPostRequest)))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(
-                    content().string("This post could not be created, it may already exist"));
+                .andExpect(status().isCreated())
+                .andExpect(content()
+                    .string("A new post with ID: " + builder.getPostId() + " has been created"));
 
         } catch (Exception e) {
 
             e.printStackTrace();
         }
+
 
     }
 
     @Test
     void getPostsTest() {
 
-        List<Post> list = Collections.singletonList(createTestPost());
+        List<Post> list = Collections.singletonList(builder.createTestPost());
 
         when(postService.getPosts()).thenReturn(list);
 
@@ -97,8 +93,8 @@ class PostControllerTest {
 
             mockMvc.perform(get("/post/get")
                 .contentType(APPLICATION_JSON)).andDo(print())
-                .andExpect(jsonPath("$[0].body").value("abc"))
-                .andExpect(jsonPath("$[0].id").value("123"));
+                .andExpect(jsonPath("$[0].body").value(builder.getBody()))
+                .andExpect(jsonPath("$[0].id").value(builder.getPostId()));
 
             Mockito.verify(postService, times(1)).getPosts();
 
@@ -112,17 +108,18 @@ class PostControllerTest {
     @Test
     void editPostSuccessTest() {
 
-        Post post = createTestPost();
+        EditPostRequest editPostRequest = builder.createTestEditPostRequest();
 
-        when(postService.updatePost(post)).thenReturn(true);
 
         //  given(postService.updatePost(any(Post.class))).willReturn(true);
         try {
             mockMvc.perform(post("/post/edit")
                 .contentType(APPLICATION_JSON)
-                .content(createJsonRequest(post)).accept(APPLICATION_JSON))
+                .header(tokenName, token)
+                .content(objectMapper.writeValueAsString(editPostRequest)).accept(APPLICATION_JSON))
                 .andDo(print()).andExpect(status().isOk())
-                .andExpect(content().string("The post with ID: 123 has been updated"));
+                .andExpect(content().string("The post with ID: " + builder.getPostId() + " has "
+                    + "been updated"));
             //.andExpect((ResultMatcher) jsonPath("$.success").value(true));
 
 
@@ -135,42 +132,67 @@ class PostControllerTest {
     }
 
     @Test
-    void editPostFailTest() {
+    public void getPostTest() {
 
-        Post post = createTestPost();
+        builder.setPostId(1L);
+        Post post = builder.createTestPost();
+        when(postService.getPostById(builder.getPostId())).thenReturn(post);
 
-        when(postService.updatePost(post)).thenReturn(false);
-
-        //  given(postService.updatePost(any(Post.class))).willReturn(true);
         try {
-            mockMvc.perform(post("/post/edit")
-                .contentType(APPLICATION_JSON)
-                .content(createJsonRequest(post)).accept(APPLICATION_JSON))
-                .andDo(print()).andExpect(status().isBadRequest())
-                .andExpect(content().string("Post with ID: 123 could not be updated"));
-            //.andExpect((ResultMatcher) jsonPath("$.success").value(true));
 
+            MvcResult result = mockMvc.perform(get("/post/get/1"))
+                .andDo(print()).andExpect(status().isOk())
+                .andExpect(status().isOk()).andReturn();
 
+            Assertions.assertEquals(objectMapper.writeValueAsString(post),
+                result.getResponse().getContentAsString());
         } catch (Exception e) {
 
             e.printStackTrace();
         }
-
-
     }
 
-    private Post createTestPost() {
+    @Test
+    public void getPostsFromThreadTest() {
 
-        LocalDateTime time = LocalDateTime.now();
-        return new Post(123L, 1, "abc", time);
+        builder.setThreadId(1L);
+        Set<Post> posts = Set.of(builder.createTestPost());
+
+        when(postService.getPostsFromThread(builder.getThreadId())).thenReturn(posts);
+
+        try {
+
+            MvcResult result = mockMvc.perform(get("/post/get/fromthread/1"))
+                .andDo(print()).andExpect(status().isOk())
+                .andExpect(status().isOk()).andReturn();
+
+            Assertions.assertEquals(objectMapper.writeValueAsString(posts),
+                result.getResponse().getContentAsString());
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
     }
 
-    private String createJsonRequest(Post post) throws JsonProcessingException {
+    @Test
+    public void isEditedTest() {
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
-        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+        builder.setPostId(1L);
+        when(postService.isEdited(builder.getPostId())).thenReturn(true);
 
-        return ow.writeValueAsString(post);
+        try {
+
+            MvcResult result =
+                mockMvc.perform(get("/post/checkedited/1").contentType(APPLICATION_JSON))
+                    .andDo(print()).andExpect(status().isOk())
+                    .andExpect(status().isOk()).andReturn();
+
+            Assertions.assertEquals(objectMapper.writeValueAsString(true),
+                result.getResponse().getContentAsString());
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
     }
+
 }

@@ -2,17 +2,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
-import nl.tudelft.sem.group20.contentserver.ContentServer;
 import nl.tudelft.sem.group20.contentserver.entities.Post;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 
 //@RunWith(SpringJUnit4ClassRunner.class)
@@ -20,6 +16,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class PostTest {
     transient Post demoPost1;
 
+    transient String demoName;
     transient long demoId2;
     transient int demoNumber2;
     transient String demoBody2;
@@ -33,12 +30,15 @@ public class PostTest {
     void initialize() {
         demoPost1 = new Post();
 
+        demoName = "Bob";
         demoId2 = 2;
         demoNumber2 = 1;
         demoBody2 = "This is a demo post.";
         demoCreated2 = LocalDateTime.now();
-        demoPost2 = new Post(demoId2, demoNumber2, demoBody2, demoCreated2);
-        demoPost2Copy = new Post(demoPost2.getId(), demoPost2.getPostNumber(), demoPost2.getBody(),
+        demoPost2 = new Post(demoId2, demoNumber2, demoName, demoBody2, null, demoCreated2);
+        demoPost2Copy =
+            new Post(demoPost2.getId(), demoPost2.getPostNumber(), demoPost2.getCreatorName(),
+                demoPost2.getBody(), null,
                 demoPost2.getCreated());
     }
 
@@ -51,10 +51,11 @@ public class PostTest {
     void testNonEmptyConstructor() {
         assertNotNull(demoPost2);
         assertTrue(demoPost2.getId() == demoId2
-                && demoPost2.getPostNumber() == demoNumber2
-                && demoPost2.getBody().equals(demoBody2)
-                && demoPost2.getCreated().equals(demoCreated2)
-                && demoPost2.getEdited().equals(demoCreated2));
+            && demoPost2.getCreatorName().equals(demoPost2Copy.getCreatorName())
+            && demoPost2.getPostNumber() == demoNumber2
+            && demoPost2.getBody().equals(demoBody2)
+            && demoPost2.getCreated().equals(demoCreated2)
+            && demoPost2.getEdited().equals(demoCreated2));
     }
 
     @Test
@@ -82,19 +83,13 @@ public class PostTest {
         assertEquals(newCreated, demoPost2.getCreated());
     }
 
-    /*
     @Test
-    void testSetEditedException() {
-        invalidEdited = demoPost2.getCreated().minusHours(1);
-        assertThrows(IllegalArgumentException.class, () -> demoPost2.setEdited(invalidEdited));
+    void testGetAndSetCreator() {
+        demoPost2.setCreatorName("Mike");
+        assertEquals("Mike", demoPost2.getCreatorName());
+
     }
 
-    @Test
-    void testSetEditedBoundary() {
-        invalidEdited = demoPost2.getCreated();
-        assertThrows(IllegalArgumentException.class, () -> demoPost2.setEdited(invalidEdited));
-    }
-    */
     @Test
     void testSetAndGetEditedSuccessful() {
         validEdited = demoPost2.getCreated().plusHours(3);
@@ -153,5 +148,11 @@ public class PostTest {
                 + ", edited=" + demoPost2.getEdited()
                 + '}';
         assertEquals(string, demoPost2.toString());
+    }
+
+    @Test
+    void testSetBoard() {
+
+
     }
 }

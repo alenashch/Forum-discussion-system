@@ -1,4 +1,4 @@
-package nl.tudelft.sem.group20.authenticationserver.embeddable;
+package nl.tudelft.sem.group20.shared;
 
 import java.util.Objects;
 import javax.persistence.Embeddable;

@@ -1,7 +1,12 @@
 package nl.tudelft.sem.group20.boardserver.controllers;
 
+import java.nio.file.AccessDeniedException;
 import nl.tudelft.sem.group20.boardserver.entities.Board;
+import nl.tudelft.sem.group20.boardserver.requests.CreateBoardRequest;
+import nl.tudelft.sem.group20.boardserver.requests.EditBoardRequest;
 import nl.tudelft.sem.group20.boardserver.services.BoardService;
+import nl.tudelft.sem.group20.exceptions.UserNotFoundException;
+import nl.tudelft.sem.group20.shared.IsLockedResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,9 +14,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+
 
 @RestController
 @RequestMapping("/board")
@@ -20,22 +28,21 @@ public class BoardController {
     @Autowired
     private transient BoardService boardService;
 
+    private transient String boardNotInDb = "This board does not exist.";
+
     /**
-     * Create board request.
+     * Create request request.
      *
-     * @param board - new board to be created.
+     * @param request - new request to be created.
      * @return JSON file containing the ID of a new post.
      */
     @PostMapping("/create")
     @ResponseBody
-    public ResponseEntity<?> createBoard(@RequestBody Board board) {
-        long assignedId = boardService.createBoard(board);
+    public ResponseEntity<?> createBoard(@RequestBody CreateBoardRequest request,
+                                         @RequestHeader("user-token") String token)
+            throws UserNotFoundException, AccessDeniedException {
+        long assignedId = boardService.createBoard(request, token);
 
-        //board with this id already exists, no board was created
-        if (assignedId == -1) {
-            return new ResponseEntity<>("A board with this id already exists.",
-                    HttpStatus.BAD_REQUEST);
-        }
         return new ResponseEntity<>("A new board with ID: " + assignedId + " has been created",
                 HttpStatus.CREATED
         );
@@ -53,36 +60,55 @@ public class BoardController {
     }
 
     /**
-     * Edit board request.
+     * Edit request request.
      *
-     * @param board - Board to be edited. With the old ID and new parameters to be set.
+     * @param request - Board to be edited. With the old ID and new parameters to be set.
      * @return JSON containing a boolean signifying success.
      */
     @PostMapping("/edit")
     @ResponseBody
-    public ResponseEntity<?> editBoard(@RequestBody Board board) {
-        boolean updatedSucceeded = boardService.updateBoard(board);
-
+    public ResponseEntity<?> editBoard(@RequestBody EditBoardRequest request,
+                                       @RequestHeader("user-token") String token)
+            throws AccessDeniedException, UserNotFoundException {
+        boolean updatedSucceeded = boardService.updateBoard(request, token);
         if (!updatedSucceeded) {
-            return new ResponseEntity<>("This board does not exist.", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(boardNotInDb, HttpStatus.BAD_REQUEST);
         } else {
             return new ResponseEntity<>("The board was successfully updated.", HttpStatus.OK);
         }
     }
 
     /**
+     * Get Board by its id.
      *
-     * @param id - id of a board to be retrieved.
+     * @param id - id of a board.
      * @return JSON containing a board.
      */
     @GetMapping("/get/{id}")
     @ResponseBody
     public ResponseEntity<?> getBoardById(@PathVariable long id) {
-         Board board = boardService.getById(id);
-         if(board == null){
-             return new ResponseEntity<>("This board does not exist.", HttpStatus.BAD_REQUEST);
-         }
-            return new ResponseEntity<>(board, HttpStatus.OK);
+        Board board = boardService.getById(id);
+        if (board == null) {
+            return new ResponseEntity<>(boardNotInDb, HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(board, HttpStatus.OK);
+    }
+
+    /**
+     * Check if the board with given is is locked.
+     *
+     * @param id - id of a board for which we want to know
+     *           whether it is locked or not.
+     * @return JSON containing true if locked, false otherwise.
+     */
+    @GetMapping("/checklocked/{id}")
+    @ResponseBody
+    public IsLockedResponse isBoardLocked(@PathVariable long id) {
+        Board board = boardService.getById(id);
+        if (board == null) {
+            return new IsLockedResponse();
+        }
+        return new IsLockedResponse(board.isLocked());
     }
 
 }

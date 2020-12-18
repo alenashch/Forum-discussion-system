@@ -1,13 +1,12 @@
 package nl.tudelft.sem.group20.authenticationserver.controllers;
 
-
-import nl.tudelft.sem.group20.authenticationserver.embeddable.AuthRequest;
-import nl.tudelft.sem.group20.authenticationserver.embeddable.EditRequest;
 import nl.tudelft.sem.group20.authenticationserver.embeddable.LoginRequest;
 import nl.tudelft.sem.group20.authenticationserver.embeddable.RegisterRequest;
-import nl.tudelft.sem.group20.authenticationserver.embeddable.StatusResponse;
 import nl.tudelft.sem.group20.authenticationserver.entities.AuthToken;
 import nl.tudelft.sem.group20.authenticationserver.services.UserService;
+import nl.tudelft.sem.group20.shared.AuthRequest;
+import nl.tudelft.sem.group20.shared.AuthResponse;
+import nl.tudelft.sem.group20.shared.StatusResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -68,43 +67,8 @@ public class UserController {
      */
     @PostMapping("/authenticate")
     @ResponseBody
-    public StatusResponse authenticate(@RequestBody AuthRequest authRequest) {
+    public AuthResponse authenticate(@RequestBody AuthRequest authRequest) {
         return userService.authenticate(authRequest.getToken());
     }
 
-    /*
-     * Get posts request.
-     *
-     * @return JSON containing list of all users.
-     *
-    @GetMapping("/get")
-    @ResponseBody
-    public List<User> getUsers() {
-
-        return userService.getUsers();
-    }*/
-
-    /**
-     * Edit user request.
-     *
-     * @param editRequest - Request to be done
-     * @return JSON containing a boolean signifying success.
-     */
-    @PostMapping("/edit")
-    @ResponseBody
-    public StatusResponse editUser(@RequestBody EditRequest editRequest) {
-
-        return userService.updateUser(editRequest.getUser(),
-                 editRequest.getAuthRequest().getToken());
-    }
-
-    /**
-     * Test Request.
-     *
-     * @return response
-     */
-    @RequestMapping("/hello")
-    public @ResponseBody String getAllThreads() {
-        return "hello";
-    }
 }

@@ -1,19 +1,19 @@
 package nl.tudelft.sem.group20.authenticationserver.services;
 
-import static nl.tudelft.sem.group20.authenticationserver.embeddable.StatusResponse.Status.fail;
-import static nl.tudelft.sem.group20.authenticationserver.embeddable.StatusResponse.Status.success;
+import static nl.tudelft.sem.group20.shared.StatusResponse.Status.fail;
+import static nl.tudelft.sem.group20.shared.StatusResponse.Status.success;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
-import nl.tudelft.sem.group20.authenticationserver.embeddable.AuthResponse;
 import nl.tudelft.sem.group20.authenticationserver.embeddable.RegisterRequest;
-import nl.tudelft.sem.group20.authenticationserver.embeddable.StatusResponse;
 import nl.tudelft.sem.group20.authenticationserver.entities.AuthToken;
 import nl.tudelft.sem.group20.authenticationserver.entities.User;
 import nl.tudelft.sem.group20.authenticationserver.repos.AuthTokenRepository;
 import nl.tudelft.sem.group20.authenticationserver.repos.UserRepository;
+import nl.tudelft.sem.group20.shared.AuthResponse;
+import nl.tudelft.sem.group20.shared.StatusResponse;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -34,15 +34,11 @@ public class UserService {
     }
 
 
-    /*public List<User> getUsers() {
-        return userRepository.findAll();
-    }*/
-
     /**
      * Creates a User and adds it to the database.
      *
      * @param newRegisterRequest - the User to be added.
-     * @return statusresponse telling if it was successfull or not.
+     * @return statusresponse telling if it was successful or not.
      */
     public StatusResponse createUser(RegisterRequest newRegisterRequest) {
         //is the email address already in the database?
@@ -55,9 +51,9 @@ public class UserService {
         //Create a new user with the given name, password and email.
         // Hash the password and set the type to student (false).
         User newUser = new User(newRegisterRequest.getUsername(), getMd5(newRegisterRequest
-                .getPassword()), newRegisterRequest.getEmail(), false);
+                .getPassword()), newRegisterRequest.getEmail(), newRegisterRequest.getType());
         userRepository.saveAndFlush(newUser);
-        return new StatusResponse(success, "A new user was succesfully made");
+        return new StatusResponse(success, "A new user was successfully made");
     }
 
     /**
@@ -79,8 +75,8 @@ public class UserService {
                     String token = getRandomToken(20);
                     Optional<AuthToken> optionalAuthToken = authTokenRepository.findByToken(token);
                     if (optionalAuthToken.isEmpty()) {
-                        AuthToken loginToken =
-                                new AuthToken(token, user.isType());
+                        AuthToken loginToken = new AuthToken(token,
+                                user.isType(), user.getUsername());
                         authTokenRepository.save(loginToken);
 
                         return loginToken;
@@ -117,28 +113,11 @@ public class UserService {
         if (tokenOptional.isPresent()) {
             AuthToken token = tokenOptional.get();
 
-            return new AuthResponse(token.isType());
+            return new AuthResponse(token.isType(), token.getUsername());
         }
         return new  AuthResponse();
     }
 
-    /**
-     * Updates a User in the database.
-     *
-     * @param toUpdate - the user to be updated.
-     * @return StatusResponse with response
-     */
-    public StatusResponse updateUser(User toUpdate, String token) {
-        AuthResponse authResponse = authenticate(token);
-        if (authResponse.getStatus().equals(success) && authResponse.isType()) {
-            if (userRepository.getByUsername(toUpdate.getUsername()).isEmpty()) {
-                return new StatusResponse(fail, "Does not exist");
-            }
-            userRepository.saveAndFlush(toUpdate);
-            return new StatusResponse(success, "Success!");
-        }
-        return new StatusResponse(fail, "Not allowed");
-    }
 
     private String getRandomToken(int length) {
         StringBuffer stringBuffer = new StringBuffer();

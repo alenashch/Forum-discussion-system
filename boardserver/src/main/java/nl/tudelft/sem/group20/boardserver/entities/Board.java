@@ -1,30 +1,42 @@
 package nl.tudelft.sem.group20.boardserver.entities;
 
-import org.apache.tomcat.jni.Local;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "board")
 public class Board {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
+    @Column
     private String name;
 
+    @Column
     private String description;
 
+    @Column
     private boolean locked;
 
+    //@UpdateTimestamp
+    @Column
     private LocalDateTime edited;
 
-    transient private LocalDateTime created;
+    //@CreationTimestamp
+    @Column
+    private LocalDateTime created;
+
+    @Column
+    private String username;
 
     public Board() {
 
@@ -39,28 +51,30 @@ public class Board {
      * @param locked Indicates whether the board is locked or not.
      */
 
-    public Board(long id, String name, String description, boolean locked) {
+    public Board(long id, String name, String description, boolean locked, String username) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.locked = locked;
         this.created = LocalDateTime.now();
         this.edited = created;
+        this.username = username;
     }
 
     /**
-     * For testing purposes: constructor with no id.
+     * Constructor with no id.
      *
      * @param name - board name.
      * @param description - details about the board.
      * @param locked - true if a board is locked, false otherwise.
      */
-    public Board(String name, String description, boolean locked) {
+    public Board(String name, String description, boolean locked, String username) {
         this.name = name;
         this.description = description;
         this.locked = locked;
         this.created = LocalDateTime.now();
         this.edited = created;
+        this.username = username;
     }
 
     public long getId() {
@@ -87,7 +101,7 @@ public class Board {
         this.description = description;
     }
 
-    public boolean getLocked() {
+    public boolean isLocked() {
         return locked;
     }
 
@@ -115,6 +129,14 @@ public class Board {
         this.edited = edited;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -127,8 +149,15 @@ public class Board {
         return Objects.equals(id, board.getId());
     }
 
-    public static void checkCreationTime(Board board){
-        if(board.getCreated()==null){
+    /**
+     * Checks the creation time of a board.
+     * If it is a new board - set created and
+     * set edited to current time
+     *
+     * @param board - board that needs to be checked.
+     */
+    public static void checkCreationTime(Board board) {
+        if (board.getCreated() == null) {
             board.setCreated(LocalDateTime.now());
             board.setEdited(LocalDateTime.now());
         }
@@ -149,6 +178,7 @@ public class Board {
                 + ", locked='" + locked + '\''
                 + ", edited='" + edited + '\''
                 + ", created='" + created + '\''
+                + ", username='" + username + '\''
                 + '}';
     }
 }

@@ -1,14 +1,19 @@
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.time.LocalDateTime;
+import exceptions.AuthorizationFailedException;
+import exceptions.BoardIsLockedException;
+import exceptions.BoardNotFoundException;
+import exceptions.BoardThreadNotFoundException;
+import exceptions.PermissionException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -16,112 +21,440 @@ import nl.tudelft.sem.group20.contentserver.ContentServer;
 import nl.tudelft.sem.group20.contentserver.entities.BoardThread;
 import nl.tudelft.sem.group20.contentserver.repositories.ThreadRepository;
 import nl.tudelft.sem.group20.contentserver.services.ThreadService;
+import nl.tudelft.sem.group20.shared.AuthRequest;
+import nl.tudelft.sem.group20.shared.AuthResponse;
+import nl.tudelft.sem.group20.shared.IsLockedResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.web.client.RestTemplate;
 
 @AutoConfigureMockMvc
 @WebMvcTest(ThreadService.class)
 @ContextConfiguration(classes = ContentServer.class)
 public class ThreadServiceTest {
 
-    @MockBean
-    transient ThreadRepository threadRepository;
+
+    private transient TestBoardThreadBuilder builder;
+    transient AuthResponse authResponse;
+    transient String token;
+    transient BoardThread thread1;
+    transient IsLockedResponse boardUnlocked;
+    transient IsLockedResponse boardLocked;
+    transient ResponseEntity<Boolean> responseEntity;
 
     transient ThreadService threadService;
 
-    transient BoardThread demoThread1;
-    transient BoardThread demoThread2;
-    transient BoardThread demoThread3;
+
     transient List<BoardThread> threads;
+
+
+    @MockBean
+    transient ThreadRepository threadRepository;
+
+    @MockBean
+    transient RestTemplate restTemplate;
+
+
+
 
     @BeforeEach
     void initialize() {
-        Long id1 = 1L;
-        Long id2 = 2L;
-        Long id3 = 3L;
 
-        String title1 = "title1";
-        String title2 = "title2";
-        String title3 = "title3";
+        restTemplate = mock(RestTemplate.class);
+        threadRepository = mock(ThreadRepository.class);
+        authResponse = new AuthResponse(true, "jayson");
+        boardUnlocked = new IsLockedResponse(false);
+        boardLocked = new IsLockedResponse(true);
 
-        String ques1 = "question1";
-        String ques2 = "question2";
-        String ques3 = "question3";
+        builder = new TestBoardThreadBuilder();
+        thread1 = builder.makeBoardThread();
+        builder.setBoardId(1);
 
-        String creator1 = "person1";
-        String creator2 = "person2";
-        String creator3 = "person3";
 
-        LocalDateTime time1 = LocalDateTime.now();
-        LocalDateTime time2 = LocalDateTime.now();
-        LocalDateTime time3 = LocalDateTime.now();
+        responseEntity = new ResponseEntity<>(false, HttpStatus.OK);
 
-        boolean locked1 = false;
-        boolean locked2 = true;
-        boolean locked3 = false;
-
-        demoThread1 = new BoardThread(id1, title1, ques1, creator1, time1, locked1);
-        demoThread2 = new BoardThread(id2, title2, ques2, creator2, time2, locked2);
-        demoThread3 = new BoardThread(id3, title3, ques3, creator3, time3, locked3);
-
-        threads = new ArrayList<>();
-        threads.add(demoThread1);
-        threads.add(demoThread2);
-        threads.add(demoThread3);
-
-        threadRepository = Mockito.mock(ThreadRepository.class);
-        Mockito.when(threadRepository.findAll())
-                .thenReturn(threads);
+        when(restTemplate.getForObject(Mockito.anyString(), Mockito.eq(ResponseEntity.class)))
+                .thenReturn(responseEntity);
         Mockito.when(threadRepository.saveAndFlush(any(BoardThread.class)))
                 .then(returnsFirstArg());
-        Mockito.when(threadRepository.getById(2))
-                .thenReturn(Optional.of(demoThread2));
+        Mockito.when(threadRepository.getById(builder.getBoardId()))
+                .thenReturn(Optional.of(thread1));
 
-        threadService = new ThreadService(threadRepository);
+        threadService = new ThreadService(threadRepository, restTemplate);
+
+
     }
 
     @Test
     void testGetThreads() {
+
+        List<BoardThread> threads  = new ArrayList<>();
+        threads.add(builder.makeBoardThread());
+
+        Mockito.when(threadRepository.findAll())
+                .thenReturn(threads);
+
         assertThat(threadService.getThreads())
-                .hasSize(threads.size())
-                .hasSameElementsAs(threads);
+            .hasSize(threads.size())
+            .hasSameElementsAs(threads);
     }
 
     @Test
-    void testCreateThread() {
-        assertEquals(threadService.createThread(demoThread3), demoThread3.getId());
+    void testCreateThreadSuccessful() {
 
-        verify(threadRepository, times(1)).saveAndFlush(demoThread3);
+        when(restTemplate.postForObject(Mockito.anyString(),
+                Mockito.any(AuthRequest.class),
+                Mockito.eq(AuthResponse.class))).thenReturn(authResponse);
+
+        when(restTemplate.getForObject(Mockito.anyString(),
+                Mockito.eq(IsLockedResponse.class))).thenReturn(boardUnlocked);
+
+        //builder.setBoardId(thread1.getBoardId());
+
+        assertEquals(0, threadService.createThread(token, builder.createBoardThreadRequest()));
+
+        verify(threadRepository, times(1)).saveAndFlush(any());
     }
 
     @Test
-    void testFailedCreateThread() {
-        assertEquals(-1, threadService.createThread(demoThread2));
+    void testCreatePostUnsuccessfulAuthorization() {
+
+        AuthResponse authResponse2 = new AuthResponse();
+        when(restTemplate.postForObject(Mockito.anyString(),
+                Mockito.any(AuthRequest.class),
+                Mockito.eq(AuthResponse.class))).thenReturn(authResponse2);
+
+        builder.setBoardId(thread1.getId());
+        assertThrows(AuthorizationFailedException.class, () ->
+                threadService.createThread(token,
+                        builder.createBoardThreadRequest()));
+
+        //check that no post was added
         verify(threadRepository, times(0)).saveAndFlush(any(BoardThread.class));
+    }
+
+    @Test
+    void testCreateThreadUnsuccessfulBoardLocked() {
+
+        /*responseEntity = new ResponseEntity<>(true, HttpStatus.OK);
+
+        when(restTemplate.getForObject(Mockito.anyString(), Mockito.eq(ResponseEntity.class)))
+                .thenReturn(responseEntity);*/
+
+        when(restTemplate.getForObject(Mockito.anyString(),
+                Mockito.eq(IsLockedResponse.class))).thenReturn(boardLocked);
+
+        when(restTemplate.postForObject(Mockito.anyString(),
+                Mockito.any(AuthRequest.class),
+                Mockito.eq(AuthResponse.class))).thenReturn(authResponse);
+
+        assertThrows(BoardIsLockedException.class,
+                () -> threadService.createThread(token, builder.createBoardThreadRequest()));
+        verify(threadRepository, times(0)).saveAndFlush(any());
+    }
+
+    @Test
+    void testCreateThreadUnsuccessfulBoardNotFound() {
+
+        when(restTemplate.getForObject(Mockito.anyString(),
+                Mockito.eq(IsLockedResponse.class))).thenReturn(null);
+
+        when(restTemplate.postForObject(Mockito.anyString(),
+                Mockito.any(AuthRequest.class),
+                Mockito.eq(AuthResponse.class))).thenReturn(authResponse);
+
+        assertThrows(BoardNotFoundException.class,
+                () -> threadService.createThread(token, builder.createBoardThreadRequest()));
+        verify(threadRepository, times(0)).saveAndFlush(any());
+    }
+
+    @Test
+    void updateThreadSuccesful() {
+
+        when(restTemplate.postForObject(Mockito.anyString(),
+                Mockito.any(AuthRequest.class),
+                Mockito.eq(AuthResponse.class))).thenReturn(authResponse);
+
+        when(threadRepository.getById(anyLong()))
+                .thenReturn(Optional.of(builder.makeBoardThread()));
+
+
+        threadService.updateThread(token, builder.editBoardThreadRequest());
+
+        verify(threadRepository, times(1)).saveAndFlush(any());
 
     }
 
     @Test
-    void updateThread() {
-        demoThread2.setThreadTitle("Footy");
-        assertTrue(threadService.updateThread(demoThread2));
-        verify(threadRepository, times(1)).saveAndFlush(demoThread2);
-    }
+    void updateThreadDoesNotExistFail() {
 
-    @Test
-    void failedUpdateThread() {
-        when(threadRepository.getById(3))
+        AuthResponse failAuth = new AuthResponse();
+
+        when(threadRepository.getById(anyLong()))
                 .thenReturn(Optional.empty());
 
-        assertFalse(threadService.updateThread(demoThread3));
-        verify(threadRepository, times(0)).saveAndFlush(any(BoardThread.class));
+        when(restTemplate.postForObject(Mockito.anyString(),
+                Mockito.any(AuthRequest.class),
+                Mockito.eq(AuthResponse.class))).thenReturn(failAuth);
+
+        assertThrows(BoardThreadNotFoundException.class, () ->
+                threadService.updateThread(token,
+                        builder.editBoardThreadRequest()));
+
+        verify(threadRepository, times(0)).saveAndFlush(any());
     }
 
+    @Test
+    void updateThreadAuthenticationFail() {
+
+        AuthResponse failAuth = new AuthResponse();
+
+        when(threadRepository.getById(anyLong()))
+                .thenReturn(Optional.of(builder.makeBoardThread()));
+
+        when(restTemplate.postForObject(Mockito.anyString(),
+                Mockito.any(AuthRequest.class),
+                Mockito.eq(AuthResponse.class))).thenReturn(failAuth);
+
+        assertThrows(AuthorizationFailedException.class, () ->
+                threadService.updateThread(token,
+                        builder.editBoardThreadRequest()));
+
+        verify(threadRepository, times(0)).saveAndFlush(any());
+    }
+
+    @Test
+    void updateThreadDifferingUsernamesFail() {
+
+        AuthResponse auth = new AuthResponse(true, "Elmo");
+
+        when(restTemplate.postForObject(Mockito.anyString(),
+                Mockito.any(AuthRequest.class),
+                Mockito.eq(AuthResponse.class))).thenReturn(auth);
+
+        when(threadRepository.getById(anyLong()))
+                .thenReturn(Optional.of(builder.makeBoardThread()));
+
+        assertThrows(PermissionException.class, () ->
+                threadService.updateThread(token,
+                        builder.editBoardThreadRequest()));
+
+        verify(threadRepository, times(0)).saveAndFlush(any());
+    }
+
+    @Test
+    void succesfulThreadLock() {
+        AuthResponse auth = new AuthResponse(true, "Elmo");
+
+        when(restTemplate.postForObject(Mockito.anyString(),
+                Mockito.any(AuthRequest.class),
+                Mockito.eq(AuthResponse.class))).thenReturn(auth);
+
+        builder.setBoardThreadNumber(4);
+        when(threadRepository.getById(anyLong()))
+                .thenReturn(Optional.of(builder.makeBoardThread()));
+
+        assertThat(threadService.lockThread(token, builder.getBoardThreadId()))
+               .isEqualTo("Thread with ID " + builder.getBoardThreadId()
+                       + " has been locked");
+        verify(threadRepository, times(1)).saveAndFlush(any());
+    }
+
+    @Test
+    void failedThreadLockAuthentication() {
+
+        AuthResponse auth = new AuthResponse();
+
+        when(restTemplate.postForObject(Mockito.anyString(),
+                Mockito.any(AuthRequest.class),
+                Mockito.eq(AuthResponse.class))).thenReturn(auth);
+
+        when(threadRepository.getById(anyLong()))
+                .thenReturn(Optional.of(builder.makeBoardThread()));
+
+        assertThrows(AuthorizationFailedException.class, () ->
+                threadService.lockThread(token, builder.getBoardThreadId()));
+
+        verify(threadRepository, times(0)).saveAndFlush(any());
+    }
+
+    @Test
+    void failedLockThreadDoesNotExist() {
+
+
+        when(restTemplate.postForObject(Mockito.anyString(),
+                Mockito.any(AuthRequest.class),
+                Mockito.eq(AuthResponse.class))).thenReturn(authResponse);
+
+        when(threadRepository.getById(anyLong()))
+                .thenReturn(Optional.empty());
+
+        assertThrows(BoardThreadNotFoundException.class, () ->
+                threadService.lockThread(token, builder.getBoardThreadId()));
+
+        verify(threadRepository, times(0)).saveAndFlush(any());
+    }
+
+    @Test
+    void lockFailNotaTeacher() {
+
+        AuthResponse auth = new AuthResponse(false, "Raul");
+
+        when(restTemplate.postForObject(Mockito.anyString(),
+                Mockito.any(AuthRequest.class),
+                Mockito.eq(AuthResponse.class))).thenReturn(auth);
+
+        assertThrows(AuthorizationFailedException.class, () ->
+                threadService.lockThread(token, builder.getBoardThreadId()));
+
+        verify(threadRepository, times(0)).saveAndFlush(any());
+    }
+
+    @Test
+    void alreadyLockedThread() {
+
+        AuthResponse auth = new AuthResponse(true, "Raul");
+
+        when(restTemplate.postForObject(Mockito.anyString(),
+                Mockito.any(AuthRequest.class),
+                Mockito.eq(AuthResponse.class))).thenReturn(auth);
+
+        builder.setLocked(true);
+        when(threadRepository.getById(anyLong()))
+                .thenReturn(Optional.of(builder.makeBoardThread()));
+
+        assertThat(threadService.lockThread(token, builder.getBoardThreadId()))
+                .isEqualTo("Thread with ID " + builder.getBoardThreadId()
+                        + " is already locked");
+
+        verify(threadRepository, times(0)).saveAndFlush(any());
+    }
+
+    @Test
+    void succesfulThreadUnlock() {
+
+        AuthResponse auth = new AuthResponse(true, "Elmo");
+
+        when(restTemplate.postForObject(Mockito.anyString(),
+                Mockito.any(AuthRequest.class),
+                Mockito.eq(AuthResponse.class))).thenReturn(auth);
+
+        builder.setBoardThreadNumber(4);
+        builder.setLocked(true);
+        when(threadRepository.getById(anyLong()))
+                .thenReturn(Optional.of(builder.makeBoardThread()));
+
+        assertThat(threadService.unlockThread(token, builder.getBoardThreadId()))
+                .isEqualTo("Thread on ID " + builder.getBoardThreadId()
+                        + " has been unlocked");
+
+        verify(threadRepository, times(1)).saveAndFlush(any());
+    }
+
+    @Test
+    void failedThreadUnlockAuthentication() {
+
+        AuthResponse auth = new AuthResponse();
+
+        when(restTemplate.postForObject(Mockito.anyString(),
+                Mockito.any(AuthRequest.class),
+                Mockito.eq(AuthResponse.class))).thenReturn(auth);
+
+        when(threadRepository.getById(anyLong()))
+                .thenReturn(Optional.of(builder.makeBoardThread()));
+
+        assertThrows(AuthorizationFailedException.class, () ->
+                threadService.unlockThread(token, builder.getBoardThreadId()));
+
+        verify(threadRepository, times(0)).saveAndFlush(any());
+    }
+
+    @Test
+    void failedUnlockThreadDoesNotExist() {
+
+
+        when(restTemplate.postForObject(Mockito.anyString(),
+                Mockito.any(AuthRequest.class),
+                Mockito.eq(AuthResponse.class))).thenReturn(authResponse);
+
+        when(threadRepository.getById(anyLong()))
+                .thenReturn(Optional.empty());
+
+        assertThrows(BoardThreadNotFoundException.class, () ->
+                threadService.unlockThread(token, builder.getBoardThreadId()));
+
+        verify(threadRepository, times(0)).saveAndFlush(any());
+    }
+
+    @Test
+    void unlockFailNotaTeacher() {
+
+        AuthResponse auth = new AuthResponse(false, "Gavin");
+
+        when(restTemplate.postForObject(Mockito.anyString(),
+                Mockito.any(AuthRequest.class),
+                Mockito.eq(AuthResponse.class))).thenReturn(auth);
+
+        assertThrows(AuthorizationFailedException.class, () ->
+                threadService.unlockThread(token, builder.getBoardThreadId()));
+
+        verify(threadRepository, times(0)).saveAndFlush(any());
+    }
+
+    @Test
+    void alreadyUnlockedThread() {
+
+        AuthResponse auth = new AuthResponse(true, "Gavin");
+
+        when(restTemplate.postForObject(Mockito.anyString(),
+                Mockito.any(AuthRequest.class),
+                Mockito.eq(AuthResponse.class))).thenReturn(auth);
+
+        when(threadRepository.getById(anyLong()))
+                .thenReturn(Optional.of(builder.makeBoardThread()));
+
+        assertThat(threadService.unlockThread(token, builder.getBoardThreadId()))
+                .isEqualTo("Thread on ID " + builder.getBoardThreadId()
+                        + " is already unlocked");
+
+        verify(threadRepository, times(0)).saveAndFlush(any());
+    }
+
+    @Test
+    void gettingAllThreadsFromBoard() {
+        when(restTemplate.getForObject(Mockito.anyString(),
+                Mockito.eq(IsLockedResponse.class))).thenReturn(boardUnlocked);
+
+        List<BoardThread> threads  = new ArrayList<>();
+        threads.add(builder.makeBoardThread());
+
+        builder.setBoardId(1);
+
+        Mockito.when(threadRepository.findAll())
+                .thenReturn(threads);
+
+        assertThat(threadService.getThreadsPerBoard(1))
+                .hasSize(threads.size())
+                .hasSameElementsAs(threads);
+
+    }
+
+    @Test
+    void gettingAllThreadsFromLockedBoard() {
+        when(restTemplate.getForObject(Mockito.anyString(),
+                Mockito.eq(IsLockedResponse.class))).thenReturn(boardLocked);
+
+        assertThrows(BoardIsLockedException.class, () ->
+                threadService.getThreadsPerBoard(1));
+
+    }
 
 }
 
