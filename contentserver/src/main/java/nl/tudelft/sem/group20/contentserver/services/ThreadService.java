@@ -125,10 +125,9 @@ public class ThreadService {
      */
     public boolean updateThread(String token, EditBoardThreadRequest request) {
 
-
         BoardThread thread =
-            threadRepository.getById(request.getBoardId())
-                .orElseThrow(BoardThreadNotFoundException::new);
+                threadRepository.getById(request.getBoardThreadId())
+                        .orElseThrow(BoardThreadNotFoundException::new);
 
         AuthResponse res = authenticateUser(token);
         if (!res.getUsername().equals(thread.getThreadCreator())) {
@@ -171,6 +170,7 @@ public class ThreadService {
         }
 
         thread.setLocked(true);
+        threadRepository.saveAndFlush(thread);
         return "Thread with ID " + id + " has been locked";
     }
 
@@ -199,6 +199,7 @@ public class ThreadService {
         }
 
         thread.setLocked(false);
+        threadRepository.saveAndFlush(thread);
         return "Thread of ID " + id + " has been unlocked";
     }
 

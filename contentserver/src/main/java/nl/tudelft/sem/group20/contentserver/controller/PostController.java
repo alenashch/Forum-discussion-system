@@ -102,9 +102,9 @@ public class PostController {
      * @param id id of the post to be checked.
      * @return ResponseEntity containing true if it was edited or else false.
      */
-    @GetMapping("/checkedited")
+    @GetMapping("/checkedited/{id}")
     @ResponseBody
-    public ResponseEntity<Boolean> isEdited(@RequestBody long id) {
+    public ResponseEntity<Boolean> isEdited(@PathVariable long id) {
 
         return new ResponseEntity<>(postService.isEdited(id), HttpStatus.OK);
     }
