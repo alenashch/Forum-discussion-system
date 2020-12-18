@@ -62,10 +62,10 @@ public class ThreadServiceTest {
         boolean locked2 = true;
         boolean locked3 = false;
 
-        demoThread1 = new BoardThread(id1, title1, ques1, creatorName ,time1, locked1,
+        demoThread1 = new BoardThread(id1, title1, ques1, creatorName, time1, locked1,
                 1, false);
 
-        demoThread2 = new BoardThread(id2, title2, ques2, creatorName ,time2, locked2,
+        demoThread2 = new BoardThread(id2, title2, ques2, creatorName, time2, locked2,
                 1, false);
         demoThread3 = new BoardThread(id3, title3, ques3, creatorName, time3, locked3,
                 1, false);

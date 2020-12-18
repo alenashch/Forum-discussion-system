@@ -1,8 +1,8 @@
+import java.time.LocalDateTime;
 import nl.tudelft.sem.group20.contentserver.entities.BoardThread;
 import nl.tudelft.sem.group20.contentserver.requests.CreateBoardThreadRequest;
 import nl.tudelft.sem.group20.contentserver.requests.EditBoardThreadRequest;
 
-import java.time.LocalDateTime;
 
 /**
  * A simple class builder to facilitate Content testing.
@@ -31,13 +31,23 @@ public class TestBoardThreadBuilder {
 
     }
 
+    /**
+     * creates and create request for board.
+     *
+     * @return create request
+     */
     public CreateBoardThreadRequest createBoardThreadRequest() {
 
         return new CreateBoardThreadRequest(title, statement, boardId);
     }
 
-    public EditBoardThreadRequest editBoardThreadRequest() {
 
+    /**
+     * creates and edit request for board.
+     *
+     * @return edit request
+     */
+    public EditBoardThreadRequest editBoardThreadRequest() {
 
         return new EditBoardThreadRequest(title, statement, boardId, locked, id);
     }

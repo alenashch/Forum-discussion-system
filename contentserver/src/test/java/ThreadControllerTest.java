@@ -11,6 +11,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Collections;
+import java.util.List;
 import nl.tudelft.sem.group20.contentserver.ContentServer;
 import nl.tudelft.sem.group20.contentserver.controller.ThreadController;
 import nl.tudelft.sem.group20.contentserver.entities.BoardThread;
@@ -27,14 +29,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Consumer;
 
 
 @AutoConfigureMockMvc
@@ -82,7 +79,8 @@ class ThreadControllerTest {
                     .content(objectMapper.writeValueAsString(createThreadReq)))
                     .andDo(print())
                     .andExpect(status().isCreated())
-                    .andExpect(content().string("A new thread with ID: " + builder.getBoardThreadId()
+                    .andExpect(content().string("A new thread with ID: "
+                            + builder.getBoardThreadId()
                             + " has been created"));
 
         } catch (Exception e) {
