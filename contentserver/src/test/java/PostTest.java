@@ -89,7 +89,7 @@ public class PostTest {
         assertEquals("Mike", demoPost2.getCreatorName());
 
     }
-    
+
     @Test
     void testSetAndGetEditedSuccessful() {
         validEdited = demoPost2.getCreated().plusHours(3);
