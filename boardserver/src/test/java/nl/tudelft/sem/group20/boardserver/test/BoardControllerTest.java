@@ -344,12 +344,17 @@ class BoardControllerTest {
     void testisBoardLockedSuccessful() {
 
         when(boardService.getById(1)).thenReturn(board);
+        IsLockedResponse isLockedResponse = new IsLockedResponse(false);
 
         try {
 
             mockMvc.perform(get("/board/checklocked/1")
-                    .contentType(APPLICATION_JSON)).andDo(print())
-                    .andExpect((ResultMatcher) new IsLockedResponse(false));
+                    .contentType(APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(isLockedResponse)))
+                    .andDo(print())
+                    .andExpect(content().string(
+                            "{\"status\":\"success\",\"message\":\"Success!\",\"locked\":false}"));
+
 
             Mockito.verify(boardService, times(1)).getById(1);
 
@@ -365,12 +370,16 @@ class BoardControllerTest {
         //Can't get the board if it is not in the database
 
         when(boardService.getById(2)).thenReturn(null);
+        IsLockedResponse isLockedResponse = new IsLockedResponse();
 
         try {
 
             mockMvc.perform(get("/board/checklocked/2")
-                    .contentType(APPLICATION_JSON)).andDo(print())
-                    .andExpect((ResultMatcher) new IsLockedResponse());
+                    .contentType(APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(isLockedResponse)))
+                    .andDo(print())
+                    .andExpect(content().string(
+                            "{\"status\":\"fail\",\"message\":\"ID invalid\",\"locked\":false}"));
 
         } catch (Exception e) {
 

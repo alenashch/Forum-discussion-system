@@ -4,9 +4,8 @@ import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import nl.tudelft.sem.group20.boardserver.repos.BoardRepository;
 import nl.tudelft.sem.group20.boardserver.entities.Board;
+import nl.tudelft.sem.group20.boardserver.repos.BoardRepository;
 import nl.tudelft.sem.group20.boardserver.requests.CreateBoardRequest;
 import nl.tudelft.sem.group20.boardserver.requests.EditBoardRequest;
 import nl.tudelft.sem.group20.exceptions.UserNotFoundException;
@@ -51,8 +50,10 @@ public class BoardService {
      * @throws AccessDeniedException, if the user does not have permissions to
      *      create a board.
      */
-    public long createBoard(CreateBoardRequest request, String token) throws UserNotFoundException, AccessDeniedException {
-        AuthResponse response = restTemplate.postForObject(authenticateUserUrl, new AuthRequest(token), AuthResponse.class);
+    public long createBoard(CreateBoardRequest request, String token)
+            throws UserNotFoundException, AccessDeniedException {
+        AuthResponse response = restTemplate.postForObject(authenticateUserUrl,
+                new AuthRequest(token), AuthResponse.class);
 
         assert response != null;
 
@@ -82,8 +83,10 @@ public class BoardService {
      *      create a board.
      *
      */
-    public boolean updateBoard(EditBoardRequest request, String token) throws UserNotFoundException, AccessDeniedException {
-        AuthResponse response = restTemplate.postForObject(authenticateUserUrl, new AuthRequest(token), AuthResponse.class);
+    public boolean updateBoard(EditBoardRequest request, String token)
+            throws UserNotFoundException, AccessDeniedException {
+        AuthResponse response = restTemplate.postForObject(authenticateUserUrl,
+                new AuthRequest(token), AuthResponse.class);
 
         assert response != null;
 
@@ -97,10 +100,13 @@ public class BoardService {
         }
 
         Board currentBoard = getById(request.getId());
-        if (!currentBoard.getUsername().equals(response.getUsername()))
-            throw new AccessDeniedException("This user does not have the permission to edit this board.");
+        if (!currentBoard.getUsername().equals(response.getUsername())) {
+            throw new AccessDeniedException(
+                    "This user does not have the permission to edit this board.");
+        }
 
-        boardRepository.saveAndFlush(new Board(request.getId(), request.getName(), request.getDescription(),
+        boardRepository.saveAndFlush(new Board(request.getId(),
+                request.getName(), request.getDescription(),
                 request.isLocked(), response.getUsername()));
 
         return true;
@@ -113,7 +119,7 @@ public class BoardService {
      * @param id - an id of a board to be retrieved.
      * @return the Board if it is in database, null otherwise.
      */
-    public Board getById(long id){
+    public Board getById(long id) {
         if (boardRepository.getById(id).isEmpty()) {
             return null;
         }
