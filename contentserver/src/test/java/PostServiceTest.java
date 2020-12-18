@@ -100,7 +100,7 @@ public class PostServiceTest {
         assertThat(postService.getPosts()).hasSize(posts.size()).hasSameElementsAs(posts);
     }
 
-    @Test
+    /*@Test
     void testCreatePostSuccessful() {
 
 
@@ -171,7 +171,7 @@ public class PostServiceTest {
             () -> postService.createPost(token, builder.createTestCreatePostRequest()));
 
         verify(postRepository, times(0)).saveAndFlush(any());
-    }
+    }*/
 
 
     @Test
