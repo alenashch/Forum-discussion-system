@@ -13,6 +13,8 @@
 | Create method for locking and unlcoking threads | 61 | 1 hour | 1 hour 30 minutes | Yes| |
 | Add constraint check to the content Microservice | 56 | 4 hours | 4 hours | Yes | |
 | Unit Testing Threads | 76 | 2 hours | 4 hours 30 minutes |
+| Unit Testing AuthenticationService | 82 | 30 minutes | 40 minutes | Added missing tests
+
 **Project:** Student/Teacher forum
 
 **Group:** OP10-SEM20
