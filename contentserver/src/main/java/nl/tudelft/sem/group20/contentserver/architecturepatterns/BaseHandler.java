@@ -1,10 +1,16 @@
 package nl.tudelft.sem.group20.contentserver.architecturepatterns;
 
-public abstract class BaseHandler implements Handler {
-    Handler next;
+import org.springframework.stereotype.Service;
 
-    public boolean handle(CheckRequest checkRequest){
-        return next == null || next.handle(checkRequest);
+public abstract class BaseHandler implements Handler {
+    transient Handler next;
+
+    public boolean handle(CheckRequest checkRequest) {
+        if(next == null){
+            return true;
+        }else{
+            return next.handle(checkRequest);
+        }
     }
 
     @Override

@@ -113,19 +113,19 @@ public class ThreadService {
      */
     public long createThread(String token, CreateBoardThreadRequest request) {
 
-        Handler h = new VerifyAuth();
 
-        h.setNext(new VerifyBoard());
+        Handler h = new HandlerBuilder()
+                .addToChain(new VerifyAuth())
+                .addToChain(new VerifyBoard())
+                .build();
 
 
-        if(h.handle(new CheckRequest(token,request.getBoardId()))) {
+        if (h.handle(new CheckRequest(token, request.getBoardId(), restTemplate))) {
 
             AuthResponse authResponse = restTemplate.postForObject(
                     "http://authentication-server/user/authenticate",
                     new AuthRequest(token), AuthResponse.class);
 
-
-            assert authResponse != null;
             BoardThread toCreate = new BoardThread(request.getTitle(), request.getStatement(),
                     authResponse.getUsername(), LocalDateTime.now(), false, request.getBoardId());
 

@@ -7,15 +7,20 @@ import nl.tudelft.sem.group20.shared.AuthResponse;
 import nl.tudelft.sem.group20.shared.IsLockedResponse;
 import nl.tudelft.sem.group20.shared.StatusResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 public class VerifyBoard extends BaseHandler {
 
-    @Autowired
-    private transient RestTemplate restTemplate;
-
-    public boolean handle(CheckRequest checkRequest){
-        IsLockedResponse response = restTemplate.getForObject("http://board-server/board/checklocked/" + checkRequest.boardId,
+    /**
+     * Verifies if board exists and not locked
+     * @param checkRequest info to check
+     * @return if board exists and not locked
+     */
+    @Override
+    public boolean handle(CheckRequest checkRequest) {
+        IsLockedResponse response = checkRequest.restTemplate.getForObject(
+                "http://board-server/board/checklocked/" + checkRequest.boardId,
                 IsLockedResponse.class);
 
         if (response == null || response.getStatus() == StatusResponse.Status.fail) {
