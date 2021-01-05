@@ -24,11 +24,11 @@ public class VerifyBoard extends BaseHandler {
                 IsLockedResponse.class);
 
         if (response == null || response.getStatus() == StatusResponse.Status.fail) {
-            return false;
+            throw new BoardNotFoundException();
         }
 
         if (response.getStatus() == StatusResponse.Status.success && response.isLocked()) {
-            return false;
+            throw new BoardIsLockedException();
         }
 
         return super.handle(checkRequest);

@@ -23,7 +23,7 @@ public class VerifyAuth extends BaseHandler {
                 new AuthRequest(checkRequest.token), AuthResponse.class);
 
         if (authResponse == null || authResponse.getStatus() == StatusResponse.Status.fail) {
-            return false;
+            throw new AuthorizationFailedException();
         }
 
         return super.handle(checkRequest);
