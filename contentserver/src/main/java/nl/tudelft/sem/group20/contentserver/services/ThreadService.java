@@ -33,11 +33,6 @@ public class ThreadService {
     @Autowired
     private transient RestTemplate restTemplate;
 
-    /*public ThreadService(ThreadRepository threadRepository) {
-        this.threadRepository = threadRepository;
-    }*/
-
-
     /**
      * Constructor of PostService.
      *
@@ -113,30 +108,24 @@ public class ThreadService {
      */
     public long createThread(String token, CreateBoardThreadRequest request) {
 
-
         Handler h = new HandlerBuilder()
                 .addToChain(new VerifyAuth())
                 .addToChain(new VerifyBoard())
                 .build();
 
+        //Keep reference of checkrequest to get user back
+        CheckRequest checkRequest = new CheckRequest(token, request.getBoardId(), restTemplate);
+        h.handle(checkRequest);
 
-        if (h.handle(new CheckRequest(token, request.getBoardId(), restTemplate))) {
+        //to create board we get user back from check request
+        BoardThread toCreate = new BoardThread(request.getTitle(), request.getStatement(),
+                checkRequest.getUsername(), LocalDateTime.now(), false, request.getBoardId());
 
-            AuthResponse authResponse = restTemplate.postForObject(
-                    "http://authentication-server/user/authenticate",
-                    new AuthRequest(token), AuthResponse.class);
+        toCreate.setIsThreadEdited(false);
 
-            BoardThread toCreate = new BoardThread(request.getTitle(), request.getStatement(),
-                    authResponse.getUsername(), LocalDateTime.now(), false, request.getBoardId());
+        threadRepository.saveAndFlush(toCreate);
 
-
-            toCreate.setIsThreadEdited(false);
-
-            threadRepository.saveAndFlush(toCreate);
-            return toCreate.getId();
-        }
-
-        return -1;
+        return toCreate.getId();
     }
 
     /**
@@ -148,18 +137,25 @@ public class ThreadService {
      */
     public boolean updateThread(String token, EditBoardThreadRequest request) {
 
+        Handler h = new HandlerBuilder()
+                .addToChain(new VerifyAuth())
+                .build();
+
+        CheckRequest checkRequest =
+                new CheckRequest(token, request.getBoardId(), restTemplate);
+
+        h.handle(checkRequest);
+
         BoardThread thread =
                 threadRepository.getById(request.getBoardThreadId())
                         .orElseThrow(BoardThreadNotFoundException::new);
 
-        AuthResponse res = authenticateUser(token);
-        if (!res.getUsername().equals(thread.getThreadCreator())) {
+        if (!checkRequest.getUsername().equals(thread.getThreadCreator())) {
             throw new PermissionException();
         }
 
         thread.setThreadTitle(request.getTitle());
         thread.setStatement(request.getStatement());
-        //thread.setLocked(request.isLocked()); only locking happnes thorugh api
         thread.setEditedTime(LocalDateTime.now());
 
         thread.setIsThreadEdited(true); //save in database that its edited
