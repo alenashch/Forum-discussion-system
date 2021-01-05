@@ -9,6 +9,8 @@ import exceptions.PermissionException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import nl.tudelft.sem.group20.contentserver.architecturepatterns.*;
 import nl.tudelft.sem.group20.contentserver.entities.BoardThread;
 import nl.tudelft.sem.group20.contentserver.repositories.PostRepository;
 import nl.tudelft.sem.group20.contentserver.repositories.ThreadRepository;
@@ -111,17 +113,30 @@ public class ThreadService {
      */
     public long createThread(String token, CreateBoardThreadRequest request) {
 
-        AuthResponse res = authenticateUser(token);
-        isBoardLocked(request.getBoardId()); // if board locked new thread cant be created
+        Handler h = new VerifyAuth();
 
-        BoardThread toCreate = new BoardThread(request.getTitle(), request.getStatement(),
-            res.getUsername(), LocalDateTime.now(), false, request.getBoardId());
+        h.setNext(new VerifyBoard());
 
 
-        toCreate.setIsThreadEdited(false);
+        if(h.handle(new CheckRequest(token,request.getBoardId()))) {
 
-        threadRepository.saveAndFlush(toCreate);
-        return toCreate.getId();
+            AuthResponse authResponse = restTemplate.postForObject(
+                    "http://authentication-server/user/authenticate",
+                    new AuthRequest(token), AuthResponse.class);
+
+
+            assert authResponse != null;
+            BoardThread toCreate = new BoardThread(request.getTitle(), request.getStatement(),
+                    authResponse.getUsername(), LocalDateTime.now(), false, request.getBoardId());
+
+
+            toCreate.setIsThreadEdited(false);
+
+            threadRepository.saveAndFlush(toCreate);
+            return toCreate.getId();
+        }
+
+        return -1;
     }
 
     /**
