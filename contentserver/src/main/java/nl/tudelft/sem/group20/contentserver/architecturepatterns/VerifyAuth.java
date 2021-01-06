@@ -6,6 +6,7 @@ import nl.tudelft.sem.group20.shared.AuthResponse;
 import nl.tudelft.sem.group20.shared.StatusResponse;
 
 public class VerifyAuth extends BaseHandler {
+
     /**
      * Verifies authentication
      * @param checkRequest info to check

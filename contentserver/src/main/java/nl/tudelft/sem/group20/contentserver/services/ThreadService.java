@@ -78,7 +78,7 @@ public class ThreadService {
 
 
     /**
-     * Get all thraeds in database.
+     * Get all threads in database.
      *
      * @return List of BoardThread
      */
@@ -108,12 +108,14 @@ public class ThreadService {
      */
     public long createThread(String token, CreateBoardThreadRequest request) {
 
+        //Handler created with builder design patter
         Handler h = new HandlerBuilder()
                 .addToChain(new VerifyAuth())
                 .addToChain(new VerifyBoard())
                 .build();
 
-        //Keep reference of checkrequest to get user back
+        //check request is used for the process of handling with chain of responsibilities
+        //Keep reference of check request to get user back
         CheckRequest checkRequest = new CheckRequest(token, request.getBoardId(), restTemplate);
         h.handle(checkRequest);
 
