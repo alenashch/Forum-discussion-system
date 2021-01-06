@@ -114,9 +114,11 @@ public class ThreadService {
                 .addToChain(new VerifyBoard())
                 .build();
 
-        //check request is used for the process of handling with chain of responsibilities
+
         //Keep reference of check request to get user back
         CheckRequest checkRequest = new CheckRequest(token, request.getBoardId(), restTemplate);
+
+        //check request is used for the process of handling with chain of responsibilities
         h.handle(checkRequest);
 
         //to create board we get user back from check request
