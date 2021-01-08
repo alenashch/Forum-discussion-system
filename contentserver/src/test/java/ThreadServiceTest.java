@@ -195,14 +195,12 @@ public class ThreadServiceTest {
     @Test
     void updateThreadDoesNotExistFail() {
 
-        AuthResponse failAuth = new AuthResponse();
-
         when(threadRepository.getById(anyLong()))
                 .thenReturn(Optional.empty());
 
         when(restTemplate.postForObject(Mockito.anyString(),
                 Mockito.any(AuthRequest.class),
-                Mockito.eq(AuthResponse.class))).thenReturn(failAuth);
+                Mockito.eq(AuthResponse.class))).thenReturn(authResponse);
 
         assertThrows(BoardThreadNotFoundException.class, () ->
                 threadService.updateThread(token,
