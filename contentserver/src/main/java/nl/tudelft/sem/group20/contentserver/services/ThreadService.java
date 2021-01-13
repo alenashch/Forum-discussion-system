@@ -12,7 +12,6 @@ import java.util.List;
 
 import nl.tudelft.sem.group20.contentserver.architecturepatterns.*;
 import nl.tudelft.sem.group20.contentserver.entities.BoardThread;
-import nl.tudelft.sem.group20.contentserver.repositories.PostRepository;
 import nl.tudelft.sem.group20.contentserver.repositories.ThreadRepository;
 import nl.tudelft.sem.group20.contentserver.requests.CreateBoardThreadRequest;
 import nl.tudelft.sem.group20.contentserver.requests.EditBoardThreadRequest;
@@ -154,12 +153,12 @@ public class ThreadService {
                 threadRepository.getById(request.getBoardThreadId())
                         .orElseThrow(BoardThreadNotFoundException::new);
 
-        if (!checkRequest.getUsername().equals(thread.getThreadCreator())) {
+        if (!checkRequest.getUsername().equals(thread.getCreatorName())) {
             throw new PermissionException();
         }
 
         thread.setThreadTitle(request.getTitle());
-        thread.setStatement(request.getStatement());
+        thread.setBody(request.getStatement());
         thread.setEditedTime(LocalDateTime.now());
 
         thread.setIsThreadEdited(true); //save in database that its edited
