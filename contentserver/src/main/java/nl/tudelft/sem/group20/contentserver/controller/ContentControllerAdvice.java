@@ -40,13 +40,13 @@ public class ContentControllerAdvice {
     }
 
     @ExceptionHandler({BoardNotFoundException.class})
-    ResponseEntity<String> boardNotFoundException(RuntimeException exception) {
+    ResponseEntity<String> boardNotFoundException(Exception exception) {
 
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler({ThreadIsLockedException.class})
-    ResponseEntity<String> ThreadIsLockedException(RuntimeException exception) {
+    ResponseEntity<String> ThreadIsLockedException(Exception exception) {
 
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
