@@ -13,7 +13,7 @@ public class VerifyAuth extends BaseHandler {
      * @return if it is verified
      */
     @Override
-    public boolean handle(CheckRequest checkRequest) {
+    public boolean handle(CheckRequest checkRequest) throws Exception {
         AuthResponse authResponse = checkRequest.restTemplate.postForObject(
                 "http://authentication-server/user/authenticate",
                 new AuthRequest(checkRequest.token), AuthResponse.class);

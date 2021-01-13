@@ -63,7 +63,7 @@ class ThreadControllerTest {
 
 
     @Test
-    void createThreadTest() {
+    void createThreadTest() throws Exception {
         //BoardThread thread = createTestThread();
 
         CreateBoardThreadRequest createThreadReq = builder.createBoardThreadRequest();
@@ -90,7 +90,7 @@ class ThreadControllerTest {
     }
 
     @Test
-    public void getBoardThreadTest() {
+    public void getBoardThreadTest() throws Exception {
 
         builder.setBoardId(1L);
         BoardThread board = builder.makeBoardThread();
@@ -222,7 +222,7 @@ class ThreadControllerTest {
     }
 
     @Test
-    public void getThreadsOfBoardTest() {
+    public void getThreadsOfBoardTest() throws Exception {
 
         List<BoardThread> list = Collections.singletonList(builder.makeBoardThread());
         when(threadService.getThreadsPerBoard(1)).thenReturn(list);

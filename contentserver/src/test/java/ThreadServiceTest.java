@@ -107,7 +107,7 @@ public class ThreadServiceTest {
     }
 
     @Test
-    void testCreateThreadSuccessful() {
+    void testCreateThreadSuccessful() throws Exception {
 
         when(restTemplate.postForObject(Mockito.anyString(),
                 Mockito.any(AuthRequest.class),
@@ -176,7 +176,7 @@ public class ThreadServiceTest {
     }
 
     @Test
-    void updateThreadSuccesful() {
+    void updateThreadSuccesful() throws Exception {
 
         when(restTemplate.postForObject(Mockito.anyString(),
                 Mockito.any(AuthRequest.class),
@@ -248,7 +248,7 @@ public class ThreadServiceTest {
     }
 
     @Test
-    void succesfulThreadLock() {
+    void succesfulThreadLock() throws Exception {
         AuthResponse auth = new AuthResponse(true, "Elmo");
 
         when(restTemplate.postForObject(Mockito.anyString(),
@@ -316,7 +316,7 @@ public class ThreadServiceTest {
     }
 
     @Test
-    void alreadyLockedThread() {
+    void alreadyLockedThread() throws Exception {
 
         AuthResponse auth = new AuthResponse(true, "Raul");
 
@@ -336,7 +336,7 @@ public class ThreadServiceTest {
     }
 
     @Test
-    void succesfulThreadUnlock() {
+    void succesfulThreadUnlock() throws Exception {
 
         AuthResponse auth = new AuthResponse(true, "Elmo");
 
@@ -407,7 +407,7 @@ public class ThreadServiceTest {
     }
 
     @Test
-    void alreadyUnlockedThread() {
+    void alreadyUnlockedThread() throws Exception {
 
         AuthResponse auth = new AuthResponse(true, "Gavin");
 
@@ -426,7 +426,7 @@ public class ThreadServiceTest {
     }
 
     @Test
-    void gettingAllThreadsFromBoard() {
+    void gettingAllThreadsFromBoard() throws Exception {
         when(restTemplate.getForObject(Mockito.anyString(),
                 Mockito.eq(IsLockedResponse.class))).thenReturn(boardUnlocked);
 
