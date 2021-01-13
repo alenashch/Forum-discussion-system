@@ -107,7 +107,7 @@ public class BoardThread extends Content{
 
 
     public boolean isThreadEdited() {
-        return isEdited;
+        return isEdited || !this.getEditedTime().isEqual(this.getCreatedTime());
     }
 
 
