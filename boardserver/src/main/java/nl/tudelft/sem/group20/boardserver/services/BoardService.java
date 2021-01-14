@@ -35,6 +35,31 @@ public class BoardService {
         return authenticateUserUrl;
     }
 
+    /**
+     * Gets a response from Authentication Server.
+     *
+     * @param token - a user token.
+     * @return response from Authentication server
+     *          if the token is valid.
+     *
+     * @throws UserNotFoundException, if the token is not valid.
+     *
+     */
+    public AuthResponse getAuthentication(String token)
+            throws UserNotFoundException{
+
+        AuthResponse response = restTemplate.postForObject(authenticateUserUrl,
+                new AuthRequest(token), AuthResponse.class);
+
+        assert response != null;
+
+        if (response.getStatus() == StatusResponse.Status.fail) {
+            throw new UserNotFoundException(
+                    "This token does not belong to a legitimate user. Board cannot be created");
+        }
+        return response;
+    }
+
     public List<Board> getBoards() {
         return boardRepository.findAll();
     }
@@ -46,21 +71,15 @@ public class BoardService {
      * @return the id of the newly created board
      *      if creation was successful.
      *
-     * @throws UserNotFoundException if the token is not valid.
-     * @throws AccessDeniedException if the user does not have permissions to
+     * @throws AccessDeniedException, if the user does not have permissions to
      *      create a board.
      */
     public long createBoard(CreateBoardRequest request, String token)
-            throws UserNotFoundException, AccessDeniedException {
-        AuthResponse response = restTemplate.postForObject(authenticateUserUrl,
-                new AuthRequest(token), AuthResponse.class);
+            throws AccessDeniedException {
 
-        assert response != null;
+        AuthResponse response = getAuthentication(token);
 
-        if (response.getStatus() == StatusResponse.Status.fail) {
-            throw new UserNotFoundException(
-                    "This token does not belong to a legitimate user. Board cannot be created");
-        } else if (!response.isType()) {
+        if (!response.isType()) {
             throw new AccessDeniedException("This type of user cannot create a board.");
         }
 
@@ -72,28 +91,21 @@ public class BoardService {
         return boardRepository.saveAndFlush(toCreate).getId();
     }
 
+
     /**
      * Updates a Board in the database.
      *
      * @param request - request to update a board.
      * @return false if the Board does not exist in the database, true otherwise.
      *
-     * @throws UserNotFoundException, if the token is not valid.
      * @throws AccessDeniedException, if the user does not have permissions to
      *      create a board.
      *
      */
     public boolean updateBoard(EditBoardRequest request, String token)
-            throws UserNotFoundException, AccessDeniedException {
-        AuthResponse response = restTemplate.postForObject(authenticateUserUrl,
-                new AuthRequest(token), AuthResponse.class);
+            throws AccessDeniedException {
 
-        assert response != null;
-
-        if (response.getStatus() == StatusResponse.Status.fail) {
-            throw new UserNotFoundException(
-                    "This token does not belong to a legitimate user. Board cannot be created");
-        }
+        AuthResponse response = getAuthentication(token);
 
         if (boardRepository.getById(request.getId()).isEmpty()) {
             return false;
@@ -125,7 +137,7 @@ public class BoardService {
         }
         return boardRepository.getOne(id);
     }
-    
-    
-    
+
+
+
 }
