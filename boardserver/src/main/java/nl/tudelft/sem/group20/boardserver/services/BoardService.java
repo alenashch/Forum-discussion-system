@@ -42,11 +42,8 @@ public class BoardService {
      * @return response from Authentication server
      *          if the token is valid.
      *
-     * @throws UserNotFoundException, if the token is not valid.
-     *
      */
-    public AuthResponse getAuthentication(String token)
-            throws UserNotFoundException{
+    public AuthResponse getAuthentication(String token) {
 
         AuthResponse response = restTemplate.postForObject(authenticateUserUrl,
                 new AuthRequest(token), AuthResponse.class);
@@ -54,9 +51,9 @@ public class BoardService {
         assert response != null;
 
         if (response.getStatus() == StatusResponse.Status.fail) {
-            throw new UserNotFoundException(
-                    "This token does not belong to a legitimate user. Board cannot be created");
+            return  null;
         }
+
         return response;
     }
 
@@ -71,13 +68,19 @@ public class BoardService {
      * @return the id of the newly created board
      *      if creation was successful.
      *
-     * @throws AccessDeniedException, if the user does not have permissions to
+     * @throws AccessDeniedException if the user does not have permissions to
      *      create a board.
+     * @throws UserNotFoundException if the token is not valid.
      */
     public long createBoard(CreateBoardRequest request, String token)
-            throws AccessDeniedException {
+            throws UserNotFoundException, AccessDeniedException {
 
         AuthResponse response = getAuthentication(token);
+
+        if (response == null) {
+            throw new UserNotFoundException(
+                    "This token does not belong to a legitimate user. Board cannot be created");
+        }
 
         if (!response.isType()) {
             throw new AccessDeniedException("This type of user cannot create a board.");
@@ -98,14 +101,20 @@ public class BoardService {
      * @param request - request to update a board.
      * @return false if the Board does not exist in the database, true otherwise.
      *
-     * @throws AccessDeniedException, if the user does not have permissions to
+     * @throws AccessDeniedException if the user does not have permissions to
      *      create a board.
-     *
+     * @throws UserNotFoundException if the token is not valid.
      */
     public boolean updateBoard(EditBoardRequest request, String token)
-            throws AccessDeniedException {
+            throws UserNotFoundException, AccessDeniedException {
 
         AuthResponse response = getAuthentication(token);
+
+
+        if (response == null) {
+            throw new UserNotFoundException(
+                    "This token does not belong to a legitimate user. Board cannot be created");
+        }
 
         if (boardRepository.getById(request.getId()).isEmpty()) {
             return false;

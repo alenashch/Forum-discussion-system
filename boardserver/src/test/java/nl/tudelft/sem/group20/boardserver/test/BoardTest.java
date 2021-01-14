@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
-
 import nl.tudelft.sem.group20.boardserver.embeddable.TimestampTracker;
 import nl.tudelft.sem.group20.boardserver.entities.Board;
 import org.junit.jupiter.api.BeforeEach;
