@@ -1,6 +1,7 @@
 package nl.tudelft.sem.group20.boardserver.entities;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.MappedSuperclass;
@@ -74,6 +75,12 @@ public class ExtendedBaseEntity extends BaseEntity {
         }
 
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.getId(), this.getName(), this.username,
+                this.timestampTracker);
     }
 
     @Override

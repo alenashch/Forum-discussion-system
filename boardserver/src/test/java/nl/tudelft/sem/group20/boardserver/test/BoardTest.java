@@ -23,10 +23,10 @@ public class BoardTest {
     transient String description;
     transient boolean locked;
     transient LocalDateTime validEdited;
+    transient TimestampTracker timestampTracker;
     transient String user;
     transient Board board2;
     transient Board board2Copy;
-
 
     @BeforeEach
     void initialize() {
@@ -40,7 +40,7 @@ public class BoardTest {
         locked = false;
         user = "user";
 
-        TimestampTracker timestampTracker = new TimestampTracker();
+        timestampTracker = new TimestampTracker();
 
         board2 = new Board(id, name, description, locked, user);
         board2Copy = new Board(board2.getId(), board2.getName(), board2.getDescription(),

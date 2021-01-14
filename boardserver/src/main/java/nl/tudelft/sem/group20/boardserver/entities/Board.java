@@ -3,6 +3,7 @@ package nl.tudelft.sem.group20.boardserver.entities;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import java.util.Objects;
 
 @Entity
 @Table(name = "board")
@@ -72,6 +73,13 @@ public class Board extends ExtendedBaseEntity {
         }
 
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.getId(), this.getName(),
+                this.description, this.getTimestampTracker(), this.getUsername(),
+                this.locked);
     }
 
     @Override
