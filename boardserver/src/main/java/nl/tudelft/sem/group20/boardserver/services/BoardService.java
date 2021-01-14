@@ -46,8 +46,8 @@ public class BoardService {
      * @return the id of the newly created board
      *      if creation was successful.
      *
-     * @throws UserNotFoundException, if the token is not valid.
-     * @throws AccessDeniedException, if the user does not have permissions to
+     * @throws UserNotFoundException if the token is not valid.
+     * @throws AccessDeniedException if the user does not have permissions to
      *      create a board.
      */
     public long createBoard(CreateBoardRequest request, String token)

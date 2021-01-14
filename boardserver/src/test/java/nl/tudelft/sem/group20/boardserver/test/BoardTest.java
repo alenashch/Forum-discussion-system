@@ -4,10 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
+
+import nl.tudelft.sem.group20.boardserver.embeddable.TimestampTracker;
 import nl.tudelft.sem.group20.boardserver.entities.Board;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,10 +40,12 @@ public class BoardTest {
         locked = false;
         user = "user";
 
+        TimestampTracker timestampTracker = new TimestampTracker();
+
         board2 = new Board(id, name, description, locked, user);
         board2Copy = new Board(board2.getId(), board2.getName(), board2.getDescription(),
                 board2.isLocked(), user);
-
+        board2Copy.setTimestampTracker(board2.getTimestampTracker());
     }
 
     @Test
@@ -93,23 +96,21 @@ public class BoardTest {
 
     @Test
     public void testGetCreated() {
-        assertTrue(board.getCreated().isEqual(LocalDateTime.now())
-                || board.getCreated().isBefore(LocalDateTime.now()));
+        assertTrue(board.getTimestampTracker().getCreated().isEqual(LocalDateTime.now())
+                || board.getTimestampTracker().getEdited().isBefore(LocalDateTime.now()));
     }
 
     @Test
     void testSetAndGetEditedSuccessful() {
-        validEdited = board.getCreated().plusHours(3);
-        board.setEdited(validEdited);
-        assertEquals(validEdited, board.getEdited());
+        validEdited = board.getTimestampTracker().getCreated().plusHours(3);
+        board.getTimestampTracker().setEdited(validEdited);
+        assertEquals(validEdited, board.getTimestampTracker().getEdited());
     }
-
 
     @Test
     void testIsEditedFalse() {
-        assertFalse(board2.isEdited());
+        assertFalse(board2.getTimestampTracker().isEdited());
     }
-
 
     @Test
     public void testBoardTwoEqual() {
@@ -145,8 +146,7 @@ public class BoardTest {
                 + ", boardName='" + board.getName() + '\''
                 + ", boardDescription='" + board.getDescription() + '\''
                 + ", locked='" + board.isLocked() + '\''
-                + ", edited='" + board.getEdited() + '\''
-                + ", created='" + board.getCreated() + '\''
+                + ", " + board.getTimestampTracker().toString() + '\''
                 + ", username='" + board.getUsername() + '\''
                 + '}';
         assertEquals(board.toString(), boardToString);
