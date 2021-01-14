@@ -14,8 +14,10 @@ import nl.tudelft.sem.group20.contentserver.entities.Post;
 import nl.tudelft.sem.group20.contentserver.repositories.PostRepository;
 import nl.tudelft.sem.group20.contentserver.repositories.ThreadRepository;
 import nl.tudelft.sem.group20.contentserver.requests.CreatePostRequest;
+import nl.tudelft.sem.group20.contentserver.requests.EditPostRequest;
 import nl.tudelft.sem.group20.shared.AuthRequest;
 import nl.tudelft.sem.group20.shared.AuthResponse;
+import nl.tudelft.sem.group20.shared.IsLockedResponse;
 import nl.tudelft.sem.group20.shared.StatusResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -55,7 +57,7 @@ public class PostService {
      * @return String with a username.
      * @throws RuntimeException if the authentication fails.
      */
-    public String authenticateUser(String token) throws RuntimeException {
+    public String authenticateUser(String token) throws Exception {
 
         AuthResponse authResponse = restTemplate.postForObject("http://authentication-server/user"
                 + "/authenticate",
@@ -77,22 +79,22 @@ public class PostService {
      *      if creation was successful.
      * @throws RuntimeException One of the custom exception if something goes wrong.
      */
-    public long createPost(String token, CreatePostRequest request) throws RuntimeException {
+    public long createPost(String token, CreatePostRequest request) throws Exception {
 
         BoardThread boardThread =
             threadRepository.getById(request.getBoardThreadId())
                 .orElseThrow(BoardThreadNotFoundException::new);
 
-        ResponseEntity<Boolean> responseEntity = (ResponseEntity<Boolean>)
-            restTemplate.getForObject("http://board-server/board/checklocked/" + boardThread.getBoardId(),
-                ResponseEntity.class);
+        IsLockedResponse response = restTemplate.getForObject("http://board-server/board/checklocked/" + boardThread.getBoardId(),
+                IsLockedResponse.class);
 
-        if (responseEntity == null || responseEntity.getStatusCode().is4xxClientError()) {
 
+        if (response.getStatus() == StatusResponse.Status.fail) {
             throw new BoardNotFoundException();
         }
 
-        if (responseEntity.getBody()) {
+
+        if (response.getStatus() == StatusResponse.Status.success && response.isLocked()==true) {
 
             throw new BoardIsLockedException();
         }
@@ -101,6 +103,7 @@ public class PostService {
 
             throw new ThreadIsLockedException();
         }
+
 
         int nextPostNumber = boardThread.getPosts().size();
         Post toCreate = new Post(nextPostNumber, authenticateUser(token),
@@ -117,9 +120,9 @@ public class PostService {
      *
      * @param request Request with information needed to create a new post
      */
-    public void updatePost(String token, CreatePostRequest request) throws RuntimeException {
+    public void updatePost(String token, EditPostRequest request) throws Exception {
 
-        Post toUpdate = postRepository.getById(request.getBoardThreadId())
+        Post toUpdate = postRepository.getById(request.getPostId())
             .orElseThrow(PostNotFoundException::new);
 
         if (!toUpdate.getCreatorName().equals(authenticateUser(token))) {
@@ -154,7 +157,7 @@ public class PostService {
      * @return the retrieved post.
      * @throws PostNotFoundException when the post could not be found.
      */
-    public Post getPostById(long id) throws PostNotFoundException {
+    public Post getPostById(long id) throws Exception {
 
         Post post = postRepository.getById(id).orElseThrow(PostNotFoundException::new);
 
@@ -173,7 +176,7 @@ public class PostService {
      * @return set containing all posts.
      * @throws BoardThreadNotFoundException if the thread could not be found.
      */
-    public Set<Post> getPostsFromThread(long id) throws BoardThreadNotFoundException {
+    public Set<Post> getPostsFromThread(long id) throws Exception {
 
         BoardThread boardThread =
             threadRepository.getById(id).orElseThrow(BoardThreadNotFoundException::new);
@@ -187,7 +190,7 @@ public class PostService {
      * @param id Id of the post to check.
      * @return true if it was edites or false otherwise.
      */
-    public Boolean isEdited(long id) {
+    public Boolean isEdited(long id) throws Exception {
 
         Post post = postRepository.getById(id).orElseThrow(PostNotFoundException::new);
 

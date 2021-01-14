@@ -58,7 +58,7 @@ class PostControllerTest {
     }
 
     @Test
-    void createPostSuccessTest() {
+    void createPostSuccessTest() throws Exception {
 
         CreatePostRequest createPostRequest = builder.createTestCreatePostRequest();
         when(postService.createPost(anyString(), any(CreatePostRequest.class)))
@@ -132,7 +132,7 @@ class PostControllerTest {
     }
 
     @Test
-    public void getPostTest() {
+    public void getPostTest() throws Exception {
 
         builder.setPostId(1L);
         Post post = builder.createTestPost();
@@ -153,7 +153,7 @@ class PostControllerTest {
     }
 
     @Test
-    public void getPostsFromThreadTest() {
+    public void getPostsFromThreadTest() throws Exception {
 
         builder.setThreadId(1L);
         Set<Post> posts = Set.of(builder.createTestPost());
@@ -175,7 +175,7 @@ class PostControllerTest {
     }
 
     @Test
-    public void isEditedTest() {
+    public void isEditedTest() throws Exception {
 
         builder.setPostId(1L);
         when(postService.isEdited(builder.getPostId())).thenReturn(true);
@@ -183,8 +183,7 @@ class PostControllerTest {
         try {
 
             MvcResult result =
-                mockMvc.perform(get("/post/checkedited").contentType(APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(1L)).accept(APPLICATION_JSON))
+                mockMvc.perform(get("/post/checkedited/1").contentType(APPLICATION_JSON))
                     .andDo(print()).andExpect(status().isOk())
                     .andExpect(status().isOk()).andReturn();
 

@@ -1,15 +1,12 @@
 package nl.tudelft.sem.group20.shared;
 
-import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 @Embeddable
 public class IsLockedRequest {
 
-    //@Column(name = "id")
     private transient long id;
 
-    //@Column(name = "token")
     private transient String token;
 
     public IsLockedRequest() {

@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -16,6 +18,7 @@ import exceptions.BoardIsLockedException;
 import exceptions.BoardThreadNotFoundException;
 import exceptions.PostNotFoundException;
 import exceptions.ThreadIsLockedException;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +32,7 @@ import nl.tudelft.sem.group20.contentserver.repositories.ThreadRepository;
 import nl.tudelft.sem.group20.contentserver.services.PostService;
 import nl.tudelft.sem.group20.shared.AuthRequest;
 import nl.tudelft.sem.group20.shared.AuthResponse;
+import nl.tudelft.sem.group20.shared.IsLockedResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -49,6 +53,8 @@ public class PostServiceTest {
     transient String token;
     transient Post demoPost;
     transient ResponseEntity<Boolean> responseEntity;
+    transient IsLockedResponse success;
+    transient IsLockedResponse failed;
 
     transient PostService postService;
 
@@ -72,6 +78,11 @@ public class PostServiceTest {
 
         builder = new TestThreadPostBuilder();
         demoPost = builder.createTestPost();
+
+        //board is not locked
+        success = new IsLockedResponse(false);
+        //board is locked
+        failed = new IsLockedResponse(true);
 
         postRepository = mock(PostRepository.class);
 
@@ -101,14 +112,15 @@ public class PostServiceTest {
     }
 
     @Test
-    void testCreatePostSuccessful() {
-
-
+    void testCreatePostSuccessful() throws Exception {
         when(threadRepository.getById(builder.getThreadId()))
             .thenReturn(Optional.of(builder.createTestBoardThread()));
         when(restTemplate.postForObject(Mockito.anyString(),
             Mockito.any(AuthRequest.class),
             Mockito.eq(AuthResponse.class))).thenReturn(authResponse);
+        when(restTemplate.getForObject(anyString(), eq(IsLockedResponse.class)))
+            .thenReturn(success);
+
         builder.setPostId(demoPost.getId());
         assertEquals(0, postService.createPost(token, builder.createTestCreatePostRequest()));
 
@@ -117,13 +129,15 @@ public class PostServiceTest {
 
     @Test
     void testCreatePostUnsuccessfulAuthorization() {
-
         AuthResponse authResponse2 = new AuthResponse();
+
         when(restTemplate.postForObject(Mockito.anyString(),
             Mockito.any(AuthRequest.class),
             Mockito.eq(AuthResponse.class))).thenReturn(authResponse2);
         when(threadRepository.getById(builder.getThreadId()))
             .thenReturn(Optional.of(builder.createTestBoardThread()));
+        when(restTemplate.getForObject(anyString(), eq(IsLockedResponse.class)))
+                .thenReturn(success);
 
         builder.setPostId(demoPost.getId());
         assertThrows(AuthorizationFailedException.class, () ->
@@ -135,12 +149,15 @@ public class PostServiceTest {
         verify(postRepository, times(0)).saveAndFlush(any(Post.class));
     }
 
+
     @Test
     void testCreatePostUnsuccessfulBoardLocked() {
 
         responseEntity = new ResponseEntity<>(true, HttpStatus.OK);
         when(restTemplate.getForObject(Mockito.anyString(), Mockito.eq(ResponseEntity.class)))
             .thenReturn(responseEntity);
+        when(restTemplate.getForObject(anyString(), eq(IsLockedResponse.class)))
+                .thenReturn(failed);
 
         when(threadRepository.getById(builder.getThreadId()))
             .thenReturn(Optional.of(builder.createTestBoardThread()));
@@ -159,6 +176,9 @@ public class PostServiceTest {
         responseEntity = new ResponseEntity<>(false, HttpStatus.OK);
         when(restTemplate.getForObject(Mockito.anyString(), Mockito.eq(ResponseEntity.class)))
             .thenReturn(responseEntity);
+        //board is not locked
+        when(restTemplate.getForObject(anyString(), eq(IsLockedResponse.class)))
+                .thenReturn(success);
 
         builder.setLocked(true);
         when(threadRepository.getById(builder.getThreadId()))
@@ -197,7 +217,7 @@ public class PostServiceTest {
 
 
     @Test
-    void updatePostSuccessful() {
+    void updatePostSuccessful() throws Exception {
 
         when(restTemplate.postForObject(Mockito.anyString(),
             Mockito.any(AuthRequest.class),
@@ -233,7 +253,7 @@ public class PostServiceTest {
     }
 
     @Test
-    void authenticateUserSuccessful() {
+    void authenticateUserSuccessful() throws Exception {
 
         when(restTemplate.postForObject(Mockito.anyString(),
             Mockito.any(AuthRequest.class),
@@ -279,7 +299,7 @@ public class PostServiceTest {
     }
 
     @Test
-    void getPostByIdTest() {
+    void getPostByIdTest() throws Exception {
 
         Post post = builder.createTestPost();
 
@@ -298,7 +318,7 @@ public class PostServiceTest {
     }
 
     @Test
-    void getPostsFromThreadTest() {
+    void getPostsFromThreadTest() throws Exception {
 
         Set<Post> posts = Set.of(builder.createTestPost());
         BoardThread boardThread = builder.createTestBoardThread();
@@ -319,7 +339,7 @@ public class PostServiceTest {
     }
 
     @Test
-    void isEditedTest() {
+    void isEditedTest() throws Exception {
 
         Post post = builder.createTestPost();
 
@@ -327,7 +347,7 @@ public class PostServiceTest {
 
         assertFalse(postService.isEdited(builder.getPostId()));
 
-        post.setEdited(LocalDateTime.now());
+        post.setEdited(LocalDateTime.now().plus(Duration.ofHours(1)));
 
         assertTrue(postService.isEdited(builder.getPostId()));
     }

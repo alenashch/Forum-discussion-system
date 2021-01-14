@@ -1,15 +1,12 @@
 package nl.tudelft.sem.group20.shared;
 
-import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 @Embeddable
 public class AuthResponse extends StatusResponse {
 
-    //@Column(name = "type")
     private boolean type;
 
-    //@Column(name = "username")
     private String username;
 
 

@@ -1,6 +1,6 @@
 package exceptions;
 
-public class PermissionException extends RuntimeException {
+public class PermissionException extends Exception {
 
     private static final long serialVersionUID = 16;
 

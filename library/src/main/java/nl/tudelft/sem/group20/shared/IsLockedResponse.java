@@ -1,11 +1,9 @@
 package nl.tudelft.sem.group20.shared;
 
-import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 @Embeddable
 public class IsLockedResponse extends StatusResponse {
-    //@Column(name = "locked")
     private transient boolean locked;
 
     /**
