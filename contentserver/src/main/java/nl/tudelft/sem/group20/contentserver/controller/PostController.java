@@ -31,7 +31,8 @@ public class PostController {
     @PostMapping(value = "/create")
     @ResponseBody
     public ResponseEntity<String> createPost(@RequestHeader String token,
-                                             @RequestBody CreatePostRequest request) {
+                                             @RequestBody CreatePostRequest request)
+        throws Exception {
 
         long newId = postService.createPost(token, request);
 
@@ -60,7 +61,7 @@ public class PostController {
     @PostMapping("/edit")
     @ResponseBody
     public ResponseEntity<String> editPost(@RequestHeader String token,
-                                           @RequestBody EditPostRequest request) {
+                                           @RequestBody EditPostRequest request) throws Exception {
 
 
         postService.updatePost(token, request);
@@ -78,7 +79,7 @@ public class PostController {
      */
     @GetMapping("/get/{id}")
     @ResponseBody
-    public ResponseEntity<?> getPost(@PathVariable long id) {
+    public ResponseEntity<?> getPost(@PathVariable long id) throws Exception {
 
         return new ResponseEntity<>(postService.getPostById(id), HttpStatus.OK);
     }
@@ -91,7 +92,7 @@ public class PostController {
      */
     @GetMapping("/get/fromthread/{id}")
     @ResponseBody
-    public ResponseEntity<?> getPostsFromThread(@PathVariable long id) {
+    public ResponseEntity<?> getPostsFromThread(@PathVariable long id) throws Exception {
 
         return new ResponseEntity<>(postService.getPostsFromThread(id), HttpStatus.OK);
     }
@@ -104,7 +105,7 @@ public class PostController {
      */
     @GetMapping("/checkedited/{id}")
     @ResponseBody
-    public ResponseEntity<Boolean> isEdited(@PathVariable long id) {
+    public ResponseEntity<Boolean> isEdited(@PathVariable long id) throws Exception {
 
         return new ResponseEntity<>(postService.isEdited(id), HttpStatus.OK);
     }

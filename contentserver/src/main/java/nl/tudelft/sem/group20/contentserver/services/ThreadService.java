@@ -44,7 +44,7 @@ public class ThreadService {
         this.restTemplate = restTemplate;
     }
 
-    public AuthResponse authenticateUser(String token) {
+    public AuthResponse authenticateUser(String token) throws Exception {
         AuthResponse authResponse = restTemplate.postForObject(
                 "http://authentication-server/user/authenticate",
                 new AuthRequest(token), AuthResponse.class);
@@ -58,7 +58,7 @@ public class ThreadService {
     }
 
 
-    public boolean isBoardLocked(long boardId) {
+    public boolean isBoardLocked(long boardId) throws Exception{
         IsLockedResponse response = restTemplate.getForObject("http://board-server/board/checklocked/" + boardId,
                 IsLockedResponse.class);
 
@@ -92,7 +92,7 @@ public class ThreadService {
      * @param id id of the new thread
      * @return the found thread
      */
-    public BoardThread getSingleThread(long id) {
+    public BoardThread getSingleThread(long id) throws Exception {
 
         return threadRepository.findById(id).orElseThrow(BoardNotFoundException::new);
     }
@@ -106,7 +106,7 @@ public class ThreadService {
      * @return -1 if the Thread already exists in the database, or the id of the newly
      *         created thread if creation was successful.
      */
-    public long createThread(String token, CreateBoardThreadRequest request) {
+    public long createThread(String token, CreateBoardThreadRequest request) throws Exception {
 
         //Handler created with builder design patter
         Handler h = new HandlerBuilder()
@@ -139,7 +139,7 @@ public class ThreadService {
      *                thread.
      * @return false if the thread does not exist in the database, and true otherwise.
      */
-    public boolean updateThread(String token, EditBoardThreadRequest request) {
+    public boolean updateThread(String token, EditBoardThreadRequest request) throws Exception{
 
         Handler h = new HandlerBuilder()
                 .addToChain(new VerifyAuth())
@@ -176,7 +176,7 @@ public class ThreadService {
      * @param id    long containing the id.
      * @return String with the information if the thread was locked.
      */
-    public String lockThread(String token, long id) {
+    public String lockThread(String token, long id) throws Exception {
 
         AuthResponse authResponse = authenticateUser(token);
 
@@ -205,7 +205,7 @@ public class ThreadService {
      * @param id    long containing the id.
      * @return String with the information if the thread was unlocked.
      */
-    public String unlockThread(String token, long id) {
+    public String unlockThread(String token, long id) throws Exception {
 
         AuthResponse authResponse = authenticateUser(token);
 
@@ -233,7 +233,7 @@ public class ThreadService {
      * @param boardId - id of a board
      * @return list of threads
      */
-    public List<BoardThread> getThreadsPerBoard(long boardId) {
+    public List<BoardThread> getThreadsPerBoard(long boardId) throws Exception {
         isBoardLocked(boardId);
 
         List<BoardThread> allThreads = getThreads();

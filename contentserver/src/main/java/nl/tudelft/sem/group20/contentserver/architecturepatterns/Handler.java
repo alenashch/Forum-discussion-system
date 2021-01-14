@@ -1,5 +1,7 @@
 package nl.tudelft.sem.group20.contentserver.architecturepatterns;
 
+import exceptions.AuthorizationFailedException;
+
 /**
  * Interface that defines the main methods all handlers
  * implement.
@@ -12,7 +14,7 @@ package nl.tudelft.sem.group20.contentserver.architecturepatterns;
  */
 public interface Handler {
 
-    boolean handle(CheckRequest checkRequest);
+    boolean handle(CheckRequest checkRequest) throws AuthorizationFailedException, Exception;
 
     void setNext(Handler handler);
 }

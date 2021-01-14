@@ -1,6 +1,6 @@
 package exceptions;
 
-public class BoardThreadNotFoundException extends RuntimeException {
+public class BoardThreadNotFoundException extends Exception {
 
     private static final long serialVersionUID = 11;
 

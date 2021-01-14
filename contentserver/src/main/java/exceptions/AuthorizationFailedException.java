@@ -1,6 +1,6 @@
 package exceptions;
 
-public class AuthorizationFailedException extends RuntimeException {
+public class AuthorizationFailedException extends Exception {
 
     private static final long serialVersionUID = 10;
 
