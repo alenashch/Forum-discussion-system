@@ -13,7 +13,7 @@ public class VerifyBoard extends BaseHandler {
      * @return if board exists and not locked
      */
     @Override
-    public boolean handle(CheckRequest checkRequest) {
+    public boolean handle(CheckRequest checkRequest) throws Exception {
         IsLockedResponse response = checkRequest.restTemplate.getForObject(
                 "http://board-server/board/checklocked/" + checkRequest.boardId,
                 IsLockedResponse.class);

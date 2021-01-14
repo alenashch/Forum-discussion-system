@@ -1,6 +1,8 @@
 package nl.tudelft.sem.group20.contentserver.architecturepatterns;
 
 
+import exceptions.AuthorizationFailedException;
+
 /**
  * Base Handler which implements the handler.
  * Other handlers implement this base, which enforces
@@ -14,7 +16,7 @@ package nl.tudelft.sem.group20.contentserver.architecturepatterns;
 public abstract class BaseHandler implements Handler {
     transient Handler next;
 
-    public boolean handle(CheckRequest checkRequest) {
+    public boolean handle(CheckRequest checkRequest) throws Exception {
         return next == null || next.handle(checkRequest);
     }
 

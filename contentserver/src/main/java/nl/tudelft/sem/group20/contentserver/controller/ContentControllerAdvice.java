@@ -10,43 +10,43 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class ContentControllerAdvice {
 
     @ExceptionHandler({AuthorizationFailedException.class})
-    ResponseEntity<String> handleAuthorizationFailedException(RuntimeException exception) {
+    ResponseEntity<String> handleAuthorizationFailedException(Exception exception) {
 
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler({BoardThreadNotFoundException.class})
-    ResponseEntity<String> handleBoardThreadNotFoundException(RuntimeException exception) {
+    ResponseEntity<String> handleBoardThreadNotFoundException(Exception exception) {
 
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler({PostNotFoundException.class})
-    ResponseEntity<String> handlePostNotFoundException(RuntimeException exception) {
+    ResponseEntity<String> handlePostNotFoundException(Exception exception) {
 
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler({PermissionException.class})
-    ResponseEntity<String> handlePermissionException(RuntimeException exception) {
+    ResponseEntity<String> handlePermissionException(Exception exception) {
 
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler({BoardIsLockedException.class})
-    ResponseEntity<String> boardIsLockedException(RuntimeException exception) {
+    ResponseEntity<String> boardIsLockedException(Exception exception) {
 
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler({BoardNotFoundException.class})
-    ResponseEntity<String> boardNotFoundException(RuntimeException exception) {
+    ResponseEntity<String> boardNotFoundException(Exception exception) {
 
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler({ThreadIsLockedException.class})
-    ResponseEntity<String> ThreadIsLockedException(RuntimeException exception) {
+    ResponseEntity<String> ThreadIsLockedException(Exception exception) {
 
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
