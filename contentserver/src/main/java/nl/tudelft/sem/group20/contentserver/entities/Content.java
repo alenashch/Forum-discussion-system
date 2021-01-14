@@ -8,8 +8,10 @@ import nl.tudelft.sem.group20.contentserver.serialization.LocalDateTimeSerialize
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
 
+@MappedSuperclass
 public abstract class Content {
 
     @Id
