@@ -1,22 +1,18 @@
 package nl.tudelft.sem.group20.contentserver.entities;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity(name = "thread")
 @Table(name = "thread")
-public class BoardThread extends Content{
+public class BoardThread extends Content {
 
     private String threadTitle;    //title of thread
 

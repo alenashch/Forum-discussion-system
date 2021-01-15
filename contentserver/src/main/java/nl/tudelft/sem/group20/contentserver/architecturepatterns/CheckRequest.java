@@ -9,6 +9,13 @@ public class CheckRequest {
     public transient RestTemplate restTemplate;
     public transient String username;
 
+    /**
+     * Generates check requests.
+     *
+     * @param token token
+     * @param boardId id of board
+     * @param restTemplate rest template
+     */
     public CheckRequest(String token, long boardId, RestTemplate restTemplate) {
         this.token = token;
         this.boardId = boardId;

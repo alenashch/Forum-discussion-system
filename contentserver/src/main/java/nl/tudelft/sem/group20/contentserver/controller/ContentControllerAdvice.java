@@ -1,6 +1,12 @@
 package nl.tudelft.sem.group20.contentserver.controller;
 
-import exceptions.*;
+import exceptions.AuthorizationFailedException;
+import exceptions.BoardIsLockedException;
+import exceptions.BoardNotFoundException;
+import exceptions.BoardThreadNotFoundException;
+import exceptions.PermissionException;
+import exceptions.PostNotFoundException;
+import exceptions.ThreadIsLockedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -46,7 +52,7 @@ public class ContentControllerAdvice {
     }
 
     @ExceptionHandler({ThreadIsLockedException.class})
-    ResponseEntity<String> ThreadIsLockedException(Exception exception) {
+    ResponseEntity<String> threadIsLockedException(Exception exception) {
 
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }

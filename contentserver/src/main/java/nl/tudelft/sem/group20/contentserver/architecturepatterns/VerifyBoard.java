@@ -8,7 +8,8 @@ import nl.tudelft.sem.group20.shared.StatusResponse;
 public class VerifyBoard extends BaseHandler {
 
     /**
-     * Verifies if board exists and not locked
+     * Verifies if board exists and not locked.
+     *
      * @param checkRequest info to check
      * @return if board exists and not locked
      */

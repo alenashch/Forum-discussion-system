@@ -17,7 +17,7 @@ import nl.tudelft.sem.group20.contentserver.serialization.LocalDateTimeDeseriali
 import nl.tudelft.sem.group20.contentserver.serialization.LocalDateTimeSerializer;
 
 @Entity
-public class Post extends Content{
+public class Post extends Content {
 
     private int postNumber;
 

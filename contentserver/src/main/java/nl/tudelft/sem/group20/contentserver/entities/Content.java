@@ -2,14 +2,13 @@ package nl.tudelft.sem.group20.contentserver.entities;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import nl.tudelft.sem.group20.contentserver.serialization.LocalDateTimeDeserializer;
-import nl.tudelft.sem.group20.contentserver.serialization.LocalDateTimeSerializer;
-
+import java.time.LocalDateTime;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
-import java.time.LocalDateTime;
+import nl.tudelft.sem.group20.contentserver.serialization.LocalDateTimeDeserializer;
+import nl.tudelft.sem.group20.contentserver.serialization.LocalDateTimeSerializer;
 
 @MappedSuperclass
 public abstract class Content {
@@ -113,12 +112,12 @@ public abstract class Content {
 
     @Override
     public String toString() {
-        return "Content{" +
-                "id=" + id +
-                ", body='" + body + '\'' +
-                ", creatorName='" + creatorName + '\'' +
-                ", createdTime=" + createdTime +
-                ", editedTime=" + editedTime +
-                '}';
+        return "Content{"
+                + "id=" + id
+                + ", body='" + body + '\''
+                + ", creatorName='" + creatorName + '\''
+                + ", createdTime=" + createdTime
+                + ", editedTime=" + editedTime
+                + '}';
     }
 }

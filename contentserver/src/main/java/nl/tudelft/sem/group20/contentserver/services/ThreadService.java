@@ -94,7 +94,7 @@ public class ThreadService extends ContentService {
      *                thread.
      * @return false if the thread does not exist in the database, and true otherwise.
      */
-    public boolean updateThread(String token, EditBoardThreadRequest request) throws Exception{
+    public boolean updateThread(String token, EditBoardThreadRequest request) throws Exception {
 
         Handler h = new HandlerBuilder()
                 .addToChain(new VerifyAuth())
@@ -184,9 +184,10 @@ public class ThreadService extends ContentService {
         List<BoardThread> allThreads = getThreads();
         List<BoardThread> threadsPerBoard = new ArrayList<>();
 
-        for(BoardThread thread : allThreads){
-            if(thread.getBoardId() == boardId)
+        for (BoardThread thread : allThreads) {
+            if (thread.getBoardId() == boardId) {
                 threadsPerBoard.add(thread);
+            }
         }
 
         return threadsPerBoard;

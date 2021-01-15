@@ -45,7 +45,7 @@ public class PostService extends ContentService {
      *
      * @param request Request with information needed to create a new post.
      * @return -1 if the Post already exists in the database, or the id of the newly created post
-     * if creation was successful.
+     *         if creation was successful.
      * @throws RuntimeException One of the custom exception if something goes wrong.
      */
     public long createPost(String token, CreatePostRequest request) throws Exception {
@@ -136,7 +136,7 @@ public class PostService extends ContentService {
     /**
      * Retrieves thread with a given id and checks whether it exists.
      *
-     * @param threadId- the ID of the thread.
+     * @param threadId the ID of the thread.
      * @return The retrieved BoardThread.
      * @throws Exception When the thread is not found.
      */
@@ -156,9 +156,11 @@ public class PostService extends ContentService {
     }
 
     /**
-     * Checks if the thread existsis in the given thread and update the thread.
-     * @param toUpdate - the post in the thread.
-     * @param threadId - the id of the thread.
+     * Checks if the thread exists is in the given
+     * thread and update the thread.
+     *
+     * @param toUpdate the post in the thread.
+     * @param threadId the id of the thread.
      * @throws Exception if the given thread does not exist.
      */
     public void updateThread(Post toUpdate, long threadId) throws Exception {

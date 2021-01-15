@@ -54,7 +54,7 @@ public abstract class ContentService {
     }
 
     /**
-     * Checks if the given board is locked
+     * Checks if the given board is locked.
      *
      * @param boardId the id of the board.
      * @throws Exception if the board is locked or does not exist.

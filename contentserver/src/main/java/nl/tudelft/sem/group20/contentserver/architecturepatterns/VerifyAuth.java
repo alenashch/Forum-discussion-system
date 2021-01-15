@@ -8,7 +8,8 @@ import nl.tudelft.sem.group20.shared.StatusResponse;
 public class VerifyAuth extends BaseHandler {
 
     /**
-     * Verifies authentication
+     * Verifies authentication.
+     *
      * @param checkRequest info to check
      * @return if it is verified
      */
