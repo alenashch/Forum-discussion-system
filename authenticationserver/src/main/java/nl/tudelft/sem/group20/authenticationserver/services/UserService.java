@@ -71,20 +71,24 @@ public class UserService {
             User user = userOptional.get();
 
             if (user.getPassword().equals(getMd5(password))) {
-                while (true) {
-                    String token = getRandomToken(20);
-                    Optional<AuthToken> optionalAuthToken = authTokenRepository.findByToken(token);
-                    if (optionalAuthToken.isEmpty()) {
-                        AuthToken loginToken = new AuthToken(token,
-                                user.isType(), user.getUsername());
-                        authTokenRepository.save(loginToken);
-
-                        return loginToken;
-                    }
-                }
+                return generateToken(user);
             }
         }
         return new AuthToken();
+    }
+
+    public AuthToken generateToken(User user) {
+        while (true) {
+            String token = getRandomToken(20);
+            Optional<AuthToken> optionalAuthToken = authTokenRepository.findByToken(token);
+            if (optionalAuthToken.isEmpty()) {
+                AuthToken loginToken = new AuthToken(token,
+                        user.isType(), user.getUsername());
+                authTokenRepository.save(loginToken);
+
+                return loginToken;
+            }
+        }
     }
 
     /**
