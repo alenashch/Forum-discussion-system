@@ -1,25 +1,13 @@
 package nl.tudelft.sem.group20.boardserver.entities;
 
-
-import java.time.LocalDateTime;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "board")
-public class Board {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
-
-    @Column
-    private String name;
+public class Board extends ExtendedBaseEntity {
 
     @Column
     private String description;
@@ -27,19 +15,8 @@ public class Board {
     @Column
     private boolean locked;
 
-    //@UpdateTimestamp
-    @Column
-    private LocalDateTime edited;
-
-    //@CreationTimestamp
-    @Column
-    private LocalDateTime created;
-
-    @Column
-    private String username;
-
     public Board() {
-
+        super();
     }
 
     /**
@@ -52,13 +29,9 @@ public class Board {
      */
 
     public Board(long id, String name, String description, boolean locked, String username) {
-        this.id = id;
-        this.name = name;
+        super(id, name, username);
         this.description = description;
         this.locked = locked;
-        this.created = LocalDateTime.now();
-        this.edited = created;
-        this.username = username;
     }
 
     /**
@@ -69,28 +42,9 @@ public class Board {
      * @param locked - true if a board is locked, false otherwise.
      */
     public Board(String name, String description, boolean locked, String username) {
-        this.name = name;
+        super(name, username);
         this.description = description;
         this.locked = locked;
-        this.created = LocalDateTime.now();
-        this.edited = created;
-        this.username = username;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getDescription() {
@@ -109,76 +63,34 @@ public class Board {
         this.locked = locked;
     }
 
-    public LocalDateTime getCreated() {
-        return created;
-    }
-
-    public void setCreated(LocalDateTime created) {
-        this.created = created;
-    }
-
-    public LocalDateTime getEdited() {
-        return edited;
-    }
-
-    public boolean isEdited() {
-        return !this.edited.isEqual(this.created);
-    }
-
-    public void setEdited(LocalDateTime edited) {
-        this.edited = edited;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
+        if (o instanceof Board) {
+            Board that = (Board) o;
+            return super.equals(o)
+                    && this.locked == that.locked
+                    && this.description.equals(that.description);
         }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Board board = (Board) o;
-        return Objects.equals(id, board.getId());
-    }
 
-    /**
-     * Checks the creation time of a board.
-     * If it is a new board - set created and
-     * set edited to current time
-     *
-     * @param board - board that needs to be checked.
-     */
-    public static void checkCreationTime(Board board) {
-        if (board.getCreated() == null) {
-            board.setCreated(LocalDateTime.now());
-            board.setEdited(LocalDateTime.now());
-        }
+        return false;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, locked);
+        return Objects.hash(this.getId(), this.getName(),
+                this.description, this.getTimestampTracker(), this.getUsername(),
+                this.locked);
     }
-
 
     @Override
     public String toString() {
         return "Board{"
-                + "boardId='" + id + '\''
-                + ", boardName='" + name + '\''
-                + ", boardDescription='" + description + '\''
-                + ", locked='" + locked + '\''
-                + ", edited='" + edited + '\''
-                + ", created='" + created + '\''
-                + ", username='" + username + '\''
+                + "boardId='" + this.getId() + '\''
+                + ", boardName='" + this.getName() + '\''
+                + ", boardDescription='" + this.description + '\''
+                + ", locked='" + this.locked + '\''
+                + ", " + this.getTimestampTracker().toString() + '\''
+                + ", username='" + this.getUsername() + '\''
                 + '}';
     }
 }

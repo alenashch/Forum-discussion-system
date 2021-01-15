@@ -137,7 +137,7 @@ public class BoardServiceTest {
     }
 
     @Test
-    public void testCreateBoardSuccessful() {
+    public void testCreateBoardSuccessful() throws Exception {
         Mockito.when(restTemplate.postForObject(eq(BoardService.getAuthenticateUserUrl()),
                         any(AuthRequest.class), eq(AuthResponse.class)))
                 .thenReturn(teacherResponse);
@@ -176,7 +176,7 @@ public class BoardServiceTest {
     }
 
     @Test
-    public void testUpdateBoardSuccessful() {
+    public void testUpdateBoardSuccessful() throws Exception {
         Mockito.when(restTemplate.postForObject(eq(BoardService.getAuthenticateUserUrl()),
                 any(AuthRequest.class), eq(AuthResponse.class)))
                 .thenReturn(teacherResponse);
@@ -218,7 +218,7 @@ public class BoardServiceTest {
     }
 
     @Test
-    public void testUpdateNonExistingBoard() {
+    public void testUpdateNonExistingBoard() throws Exception {
         //Doesn't update a board that is not in the database
         board3.setName("New name 3");
         Mockito.when(restTemplate.postForObject(eq(BoardService.getAuthenticateUserUrl()),

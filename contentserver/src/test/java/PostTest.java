@@ -39,7 +39,7 @@ public class PostTest {
         demoPost2Copy =
             new Post(demoPost2.getId(), demoPost2.getPostNumber(), demoPost2.getCreatorName(),
                 demoPost2.getBody(), null,
-                demoPost2.getCreated());
+                demoPost2.getCreatedTime());
     }
 
     @Test
@@ -54,8 +54,8 @@ public class PostTest {
             && demoPost2.getCreatorName().equals(demoPost2Copy.getCreatorName())
             && demoPost2.getPostNumber() == demoNumber2
             && demoPost2.getBody().equals(demoBody2)
-            && demoPost2.getCreated().equals(demoCreated2)
-            && demoPost2.getEdited().equals(demoCreated2));
+            && demoPost2.getCreatedTime().equals(demoCreated2)
+            && demoPost2.getEditedTime().equals(demoCreated2));
     }
 
     @Test
@@ -79,8 +79,8 @@ public class PostTest {
     @Test
     void testGetAndSetCreated() {
         LocalDateTime newCreated = demoCreated2.plusHours(3);
-        demoPost2.setCreated(newCreated);
-        assertEquals(newCreated, demoPost2.getCreated());
+        demoPost2.setCreatedTime(newCreated);
+        assertEquals(newCreated, demoPost2.getCreatedTime());
     }
 
     @Test
@@ -92,14 +92,14 @@ public class PostTest {
 
     @Test
     void testSetAndGetEditedSuccessful() {
-        validEdited = demoPost2.getCreated().plusHours(3);
-        demoPost2.setEdited(validEdited);
-        assertEquals(validEdited, demoPost2.getEdited());
+        validEdited = demoPost2.getCreatedTime().plusHours(3);
+        demoPost2.setEditedTime(validEdited);
+        assertEquals(validEdited, demoPost2.getEditedTime());
     }
 
     @Test
     void testIsEditedTrue() {
-        demoPost2.setEdited(demoPost2.getCreated().plusHours(3));
+        demoPost2.setEditedTime(demoPost2.getCreatedTime().plusHours(3));
         assertTrue(demoPost2.isEdited());
     }
 
@@ -144,8 +144,8 @@ public class PostTest {
                 + "id=" + demoPost2.getId()
                 + ", postNumber=" + demoPost2.getPostNumber()
                 + ", body='" + demoPost2.getBody() + '\''
-                + ", created=" + demoPost2.getCreated()
-                + ", edited=" + demoPost2.getEdited()
+                + ", created=" + demoPost2.getCreatedTime()
+                + ", edited=" + demoPost2.getEditedTime()
                 + '}';
         assertEquals(string, demoPost2.toString());
     }

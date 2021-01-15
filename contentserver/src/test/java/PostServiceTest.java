@@ -112,7 +112,7 @@ public class PostServiceTest {
     }
 
     @Test
-    void testCreatePostSuccessful() {
+    void testCreatePostSuccessful() throws Exception {
         when(threadRepository.getById(builder.getThreadId()))
             .thenReturn(Optional.of(builder.createTestBoardThread()));
         when(restTemplate.postForObject(Mockito.anyString(),
@@ -217,7 +217,7 @@ public class PostServiceTest {
 
 
     @Test
-    void updatePostSuccessful() {
+    void updatePostSuccessful() throws Exception {
 
         when(restTemplate.postForObject(Mockito.anyString(),
             Mockito.any(AuthRequest.class),
@@ -253,13 +253,13 @@ public class PostServiceTest {
     }
 
     @Test
-    void authenticateUserSuccessful() {
+    void authenticateUserSuccessful() throws Exception {
 
         when(restTemplate.postForObject(Mockito.anyString(),
             Mockito.any(AuthRequest.class),
             Mockito.eq(AuthResponse.class))).thenReturn(authResponse);
 
-        assertEquals("bob", postService.authenticateUser(token));
+        assertEquals("bob", postService.authenticateUser(token, false));
     }
 
     @Test
@@ -270,7 +270,8 @@ public class PostServiceTest {
             Mockito.any(AuthRequest.class),
             Mockito.eq(AuthResponse.class))).thenReturn(authResponse2);
 
-        assertThrows(AuthorizationFailedException.class, () -> postService.authenticateUser(token));
+        assertThrows(AuthorizationFailedException.class, () -> postService.authenticateUser(token,
+            false));
     }
 
     @Test
@@ -299,7 +300,7 @@ public class PostServiceTest {
     }
 
     @Test
-    void getPostByIdTest() {
+    void getPostByIdTest() throws Exception {
 
         Post post = builder.createTestPost();
 
@@ -318,7 +319,7 @@ public class PostServiceTest {
     }
 
     @Test
-    void getPostsFromThreadTest() {
+    void getPostsFromThreadTest() throws Exception {
 
         Set<Post> posts = Set.of(builder.createTestPost());
         BoardThread boardThread = builder.createTestBoardThread();
@@ -339,7 +340,7 @@ public class PostServiceTest {
     }
 
     @Test
-    void isEditedTest() {
+    void isEditedTest() throws Exception {
 
         Post post = builder.createTestPost();
 
@@ -347,7 +348,7 @@ public class PostServiceTest {
 
         assertFalse(postService.isEdited(builder.getPostId()));
 
-        post.setEdited(LocalDateTime.now().plus(Duration.ofHours(1)));
+        post.setEditedTime(LocalDateTime.now().plus(Duration.ofHours(1)));
 
         assertTrue(postService.isEdited(builder.getPostId()));
     }

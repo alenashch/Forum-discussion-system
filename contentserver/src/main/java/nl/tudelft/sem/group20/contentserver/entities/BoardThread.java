@@ -1,43 +1,20 @@
 package nl.tudelft.sem.group20.contentserver.entities;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import nl.tudelft.sem.group20.contentserver.serialization.LocalDateTimeDeserializer;
-import nl.tudelft.sem.group20.contentserver.serialization.LocalDateTimeSerializer;
 
 @Entity(name = "thread")
 @Table(name = "thread")
-public class BoardThread {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+public class BoardThread extends Content {
 
     private String threadTitle;    //title of thread
-
-    private String statement;      //Main question or statement of thread
-
-    private String threadCreator;  //name of thread creator
-
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    private LocalDateTime createdTime; //when was it creates
-
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    private transient LocalDateTime editedTime; //when was it creates
 
     private boolean locked;        //locked thread or not
 
@@ -55,7 +32,7 @@ public class BoardThread {
      */
 
     public BoardThread() {
-
+        super();
     }
 
     /**
@@ -63,19 +40,13 @@ public class BoardThread {
      *
      * @param id              id of item
      * @param threadTitle     title of thread
-     * @param statement       general statment of thread
-     * @param threadCreator person who created thread
      * @param locked          locked or not
      */
-    public BoardThread(Long id, String threadTitle, String statement, String threadCreator,
+    public BoardThread(Long id, String threadTitle, String body, String creatorName,
                        LocalDateTime created, boolean locked, long boardId, boolean isEdited) {
-        this.id            = id;
+
+        super(id, body, creatorName, created);
         this.threadTitle   = threadTitle;
-        this.statement     = statement;
-        this.threadCreator = threadCreator;
-        this.createdTime   = created;
-        //initially, set this field the same as the created field
-        this.editedTime    = created;
         this.locked        = locked;
         this.boardId       = boardId;
         this.isEdited      = isEdited;
@@ -85,29 +56,16 @@ public class BoardThread {
      * Non-empty constructor of BoardThread.
      *
      * @param threadTitle     title of thread
-     * @param statement       general statment of thread
-     * @param threadCreatorId person who created thread
      * @param locked          locked or not
      * @param boardId         id of the board this thread is assigned to
      */
-    public BoardThread(String threadTitle, String statement, String threadCreatorId,
+    public BoardThread(String threadTitle, String body, String creatorName,
                        LocalDateTime created, boolean locked, long boardId) {
+
+        super(body, creatorName, created);
         this.threadTitle = threadTitle;
-        this.statement = statement;
-        this.threadCreator = threadCreatorId;
-        this.createdTime = created;
-        //initially, set this field the same as the created field
-        this.editedTime = created;
         this.locked = locked;
         this.boardId = boardId;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public String getThreadTitle() {
@@ -117,16 +75,6 @@ public class BoardThread {
     public void setThreadTitle(String name) {
         this.threadTitle = name;
     }
-
-    public String getStatement() {
-        return statement;
-    }
-
-    public void setStatement(String statement) {
-        this.statement = statement;
-    }
-
-
 
     public boolean isLocked() {
         return locked;
@@ -144,13 +92,6 @@ public class BoardThread {
         return boardId;
     }
 
-    public String getThreadCreator() {
-        return threadCreator;
-    }
-
-    public void setThreadCreator(String threadCreator) {
-        this.threadCreator = threadCreator;
-    }
 
     public Set<Post> getPosts() {
         return posts;
@@ -160,24 +101,9 @@ public class BoardThread {
         this.posts = posts;
     }
 
-    public LocalDateTime getCreatedTime() {
-        return createdTime;
-    }
-
-    public void setCreatedTime(LocalDateTime createdTime) {
-        this.createdTime = createdTime;
-    }
-
-    public LocalDateTime getEditedTime() {
-        return editedTime;
-    }
-
-    public void setEditedTime(LocalDateTime edited) {
-        this.editedTime = edited;
-    }
 
     public boolean isThreadEdited() {
-        return isEdited;
+        return isEdited || !this.getEditedTime().isEqual(this.getCreatedTime());
     }
 
 
@@ -204,23 +130,23 @@ public class BoardThread {
             return false;
         }
         BoardThread that = (BoardThread) o;
-        return id == that.id;
+        return getId() == that.getId();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(this.getId());
     }
 
     @Override
     public String toString() {
         return "BoardThread{"
-                + "id=" + id
+                + "id=" + this.getId()
                 + ", threadTitle='" + threadTitle + '\''
-                +  ", statement='" + statement + '\''
-                +  ", threadCreator='" + threadCreator + '\''
-                +  ", createdTime=" + createdTime
-                + ", editedTime=" + editedTime
+                +  ", statement='" + this.getBody() + '\''
+                +  ", threadCreator='" + this.getCreatorName() + '\''
+                +  ", createdTime=" + this.getCreatedTime()
+                + ", editedTime=" + this.getEditedTime()
                 + ", locked=" + locked
                 + ", boardId=" + boardId
                 + ", isEdited=" + isEdited

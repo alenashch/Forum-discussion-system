@@ -16,8 +16,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.file.AccessDeniedException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import nl.tudelft.sem.group20.boardserver.BoardServer;
@@ -84,7 +82,7 @@ class BoardControllerTest {
 
 
     @Test
-    void testCreateBoardSuccessful() {
+    void testCreateBoardSuccessful() throws Exception {
         try {
             when(boardService.createBoard(any(CreateBoardRequest.class), anyString()))
                     .thenReturn(board.getId());
@@ -108,7 +106,7 @@ class BoardControllerTest {
     }
 
     @Test
-    void testCreateBoardUserNotFound() {
+    void testCreateBoardUserNotFound() throws Exception {
         //token is not valid
 
         try {
@@ -138,7 +136,7 @@ class BoardControllerTest {
     }
 
     @Test
-    void testCreateBoardAccessDenied() {
+    void testCreateBoardAccessDenied() throws Exception {
         //user is not a teacher
 
         try {
@@ -190,7 +188,7 @@ class BoardControllerTest {
     }
 
     @Test
-    void editBoardSuccessful() {
+    void editBoardSuccessful() throws Exception {
 
         try {
             when(boardService.updateBoard(any(EditBoardRequest.class),
@@ -215,7 +213,7 @@ class BoardControllerTest {
     }
 
     @Test
-    void testEditBoardUserNotFound() {
+    void testEditBoardUserNotFound() throws Exception {
         //token is invalid
 
         try {
@@ -245,7 +243,7 @@ class BoardControllerTest {
     }
 
     @Test
-    void testEditBoardAccessDenied() {
+    void testEditBoardAccessDenied() throws Exception {
         //user is not a teacher
 
         try {
@@ -275,7 +273,7 @@ class BoardControllerTest {
     }
 
     @Test
-    void editBoardFailure() {
+    void editBoardFailure() throws Exception {
         //Can't edit the board if it is not in the database
 
         try {

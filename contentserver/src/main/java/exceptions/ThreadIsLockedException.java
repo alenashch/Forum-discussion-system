@@ -1,6 +1,6 @@
 package exceptions;
 
-public class ThreadIsLockedException extends RuntimeException {
+public class ThreadIsLockedException extends Exception {
 
     private static final long serialVersionUID = 14;
 

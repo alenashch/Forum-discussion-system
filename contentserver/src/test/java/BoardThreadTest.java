@@ -46,7 +46,7 @@ public class BoardThreadTest {
             threadCreator, createdTime, locked, boardId, isEdited);
 
         thread2Copy = new BoardThread(id, thread2.getThreadTitle(),
-            thread2.getStatement(), thread2.getThreadCreator(),
+            thread2.getBody(), thread2.getCreatorName(),
             thread2.getCreatedTime(), thread2.isLocked(),
                 thread2.getBoardId(), thread2.isThreadEdited());
     }
@@ -61,9 +61,9 @@ public class BoardThreadTest {
         assertNotNull(thread2);
         assertTrue(thread2.getId() == id
             && thread2.getThreadTitle().equals(title)
-            && thread2.getStatement().equals(statement)
+            && thread2.getBody().equals(statement)
             && thread2.getCreatedTime().equals(createdTime)
-            && thread2.getThreadCreator().equals(threadCreator)
+            && thread2.getCreatorName().equals(threadCreator)
             && thread2.isLocked() == locked);
     }
 
@@ -75,9 +75,9 @@ public class BoardThreadTest {
         assertNotNull(thread2);
 
         assertTrue(thread2.getThreadTitle().equals(title)
-            && thread2.getStatement().equals(statement)
+            && thread2.getBody().equals(statement)
             && thread2.getCreatedTime().equals(createdTime)
-            && thread2.getThreadCreator().equals(threadCreator)
+            && thread2.getCreatorName().equals(threadCreator)
             && thread2.isLocked() == locked
             && demoThread3.getBoardId() == boardId);
     }
@@ -96,8 +96,8 @@ public class BoardThreadTest {
 
     @Test
     void testGetAndSetStatement() {
-        thread2.setStatement("yeah");
-        assertEquals("yeah", thread2.getStatement());
+        thread2.setBody("yeah");
+        assertEquals("yeah", thread2.getBody());
     }
 
     @Test
@@ -116,8 +116,8 @@ public class BoardThreadTest {
 
     @Test
     void testGetAndSetThreadCreator() {
-        thread2.setThreadCreator("Rob");
-        assertEquals("Rob", thread2.getThreadCreator());
+        thread2.setCreatorName("Rob");
+        assertEquals("Rob", thread2.getCreatorName());
     }
 
     @Test
@@ -161,8 +161,8 @@ public class BoardThreadTest {
         String string = "BoardThread{"
                 + "id=" + thread2.getId()
                 + ", threadTitle='" + thread2.getThreadTitle() + '\''
-                + ", statement='" + thread2.getStatement() + '\''
-                + ", threadCreator='" + thread2.getThreadCreator() + '\''
+                + ", statement='" + thread2.getBody() + '\''
+                + ", threadCreator='" + thread2.getCreatorName() + '\''
                 + ", createdTime=" + thread2.getCreatedTime()
                 + ", editedTime=" + thread2.getEditedTime()
                 + ", locked=" + thread2.isLocked()

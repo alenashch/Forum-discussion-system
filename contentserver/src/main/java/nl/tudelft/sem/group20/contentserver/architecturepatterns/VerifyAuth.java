@@ -8,12 +8,13 @@ import nl.tudelft.sem.group20.shared.StatusResponse;
 public class VerifyAuth extends BaseHandler {
 
     /**
-     * Verifies authentication
+     * Verifies authentication.
+     *
      * @param checkRequest info to check
      * @return if it is verified
      */
     @Override
-    public boolean handle(CheckRequest checkRequest) {
+    public boolean handle(CheckRequest checkRequest) throws Exception {
         AuthResponse authResponse = checkRequest.restTemplate.postForObject(
                 "http://authentication-server/user/authenticate",
                 new AuthRequest(checkRequest.token), AuthResponse.class);

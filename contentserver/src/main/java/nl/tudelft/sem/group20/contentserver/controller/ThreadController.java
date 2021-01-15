@@ -15,9 +15,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
-
-import java.util.List;
 
 @RestController
 @RequestMapping(path = "/thread")
@@ -37,7 +34,8 @@ public class ThreadController {
     @PostMapping(path = "/create")
     public @ResponseBody
     ResponseEntity<String> createThread(@RequestHeader String token,
-                                        @RequestBody CreateBoardThreadRequest request) {
+                                        @RequestBody CreateBoardThreadRequest request)
+        throws Exception {
         // @ResponseBody means the returned String is the response, not a view name
         // @RequestParam means it is a parameter from the GET or POST request
 
@@ -65,7 +63,7 @@ public class ThreadController {
      */
     @GetMapping("/get/{id}")
     @ResponseBody
-    public ResponseEntity<?> getThread(@PathVariable long id) {
+    public ResponseEntity<?> getThread(@PathVariable long id) throws Exception {
         return new ResponseEntity<>(threadService.getSingleThread(id), HttpStatus.OK);
     }
 
@@ -80,7 +78,8 @@ public class ThreadController {
     @PostMapping("/edit")
     @ResponseBody
     public ResponseEntity<String> editThread(@RequestHeader String token,
-                                             @RequestBody EditBoardThreadRequest request) {
+                                             @RequestBody EditBoardThreadRequest request)
+        throws Exception {
 
         threadService.updateThread(token, request);
 
@@ -99,7 +98,7 @@ public class ThreadController {
     @PostMapping("/lock/{id}")
     @ResponseBody
     public ResponseEntity<String> lockThread(@RequestHeader String token,
-                                             @PathVariable long id) {
+                                             @PathVariable long id) throws Exception {
 
         return new ResponseEntity<>(threadService.lockThread(token, id), HttpStatus.OK);
     }
@@ -114,7 +113,7 @@ public class ThreadController {
     @PostMapping("/unlock/{id}")
     @ResponseBody
     public ResponseEntity<String> unlockThread(@RequestHeader String token,
-                                               @PathVariable long id) {
+                                               @PathVariable long id) throws Exception {
 
         return new ResponseEntity<>(threadService.unlockThread(token, id), HttpStatus.OK);
     }
@@ -126,7 +125,7 @@ public class ThreadController {
      */
     @GetMapping("/get/allthreads/{id}")
     @ResponseBody
-    public ResponseEntity<?> getThreadsPerBoard(@PathVariable long id) {
+    public ResponseEntity<?> getThreadsPerBoard(@PathVariable long id) throws Exception {
 
         return new ResponseEntity<>(threadService.getThreadsPerBoard(id),
                 HttpStatus.OK);

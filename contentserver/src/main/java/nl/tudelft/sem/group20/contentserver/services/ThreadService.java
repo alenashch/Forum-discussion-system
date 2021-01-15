@@ -1,37 +1,26 @@
 package nl.tudelft.sem.group20.contentserver.services;
 
 
-import exceptions.AuthorizationFailedException;
-import exceptions.BoardIsLockedException;
 import exceptions.BoardNotFoundException;
 import exceptions.BoardThreadNotFoundException;
 import exceptions.PermissionException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import nl.tudelft.sem.group20.contentserver.architecturepatterns.*;
+import nl.tudelft.sem.group20.contentserver.architecturepatterns.CheckRequest;
+import nl.tudelft.sem.group20.contentserver.architecturepatterns.Handler;
+import nl.tudelft.sem.group20.contentserver.architecturepatterns.HandlerBuilder;
+import nl.tudelft.sem.group20.contentserver.architecturepatterns.VerifyAuth;
+import nl.tudelft.sem.group20.contentserver.architecturepatterns.VerifyBoard;
 import nl.tudelft.sem.group20.contentserver.entities.BoardThread;
-import nl.tudelft.sem.group20.contentserver.repositories.PostRepository;
 import nl.tudelft.sem.group20.contentserver.repositories.ThreadRepository;
 import nl.tudelft.sem.group20.contentserver.requests.CreateBoardThreadRequest;
 import nl.tudelft.sem.group20.contentserver.requests.EditBoardThreadRequest;
-import nl.tudelft.sem.group20.shared.AuthRequest;
-import nl.tudelft.sem.group20.shared.AuthResponse;
-import nl.tudelft.sem.group20.shared.IsLockedResponse;
-import nl.tudelft.sem.group20.shared.StatusResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
-public class ThreadService {
-
-    @Autowired
-    private final transient ThreadRepository threadRepository;
-
-    @Autowired
-    private transient RestTemplate restTemplate;
+public class ThreadService extends ContentService {
 
     /**
      * Constructor of PostService.
@@ -40,42 +29,8 @@ public class ThreadService {
      * @param restTemplate     - restTemplate to use.
      */
     public ThreadService(ThreadRepository threadRepository, RestTemplate restTemplate) {
-        this.threadRepository = threadRepository;
-        this.restTemplate = restTemplate;
+        super(threadRepository, restTemplate);
     }
-
-    public AuthResponse authenticateUser(String token) {
-        AuthResponse authResponse = restTemplate.postForObject(
-                "http://authentication-server/user/authenticate",
-                new AuthRequest(token), AuthResponse.class);
-
-        if (authResponse == null || authResponse.getStatus() == StatusResponse.Status.fail) {
-            throw new AuthorizationFailedException();
-        }
-
-        return authResponse;
-
-    }
-
-
-    public boolean isBoardLocked(long boardId) {
-        IsLockedResponse response = restTemplate.getForObject("http://board-server/board/checklocked/" + boardId,
-                IsLockedResponse.class);
-
-        if (response == null || response.getStatus() == StatusResponse.Status.fail) {
-
-            throw new BoardNotFoundException();
-        }
-
-        if (response.getStatus() == StatusResponse.Status.success && response.isLocked()) {
-
-            throw new BoardIsLockedException();
-        }
-
-        return response.isLocked();
-
-    }
-
 
     /**
      * Get all threads in database.
@@ -92,7 +47,7 @@ public class ThreadService {
      * @param id id of the new thread
      * @return the found thread
      */
-    public BoardThread getSingleThread(long id) {
+    public BoardThread getSingleThread(long id) throws Exception {
 
         return threadRepository.findById(id).orElseThrow(BoardNotFoundException::new);
     }
@@ -106,7 +61,7 @@ public class ThreadService {
      * @return -1 if the Thread already exists in the database, or the id of the newly
      *         created thread if creation was successful.
      */
-    public long createThread(String token, CreateBoardThreadRequest request) {
+    public long createThread(String token, CreateBoardThreadRequest request) throws Exception {
 
         //Handler created with builder design patter
         Handler h = new HandlerBuilder()
@@ -139,7 +94,7 @@ public class ThreadService {
      *                thread.
      * @return false if the thread does not exist in the database, and true otherwise.
      */
-    public boolean updateThread(String token, EditBoardThreadRequest request) {
+    public boolean updateThread(String token, EditBoardThreadRequest request) throws Exception {
 
         Handler h = new HandlerBuilder()
                 .addToChain(new VerifyAuth())
@@ -154,12 +109,12 @@ public class ThreadService {
                 threadRepository.getById(request.getBoardThreadId())
                         .orElseThrow(BoardThreadNotFoundException::new);
 
-        if (!checkRequest.getUsername().equals(thread.getThreadCreator())) {
+        if (!checkRequest.getUsername().equals(thread.getCreatorName())) {
             throw new PermissionException();
         }
 
         thread.setThreadTitle(request.getTitle());
-        thread.setStatement(request.getStatement());
+        thread.setBody(request.getStatement());
         thread.setEditedTime(LocalDateTime.now());
 
         thread.setIsThreadEdited(true); //save in database that its edited
@@ -176,14 +131,9 @@ public class ThreadService {
      * @param id    long containing the id.
      * @return String with the information if the thread was locked.
      */
-    public String lockThread(String token, long id) {
+    public String lockThread(String token, long id) throws Exception {
 
-        AuthResponse authResponse = authenticateUser(token);
-
-        if (!authResponse.isType()) {
-
-            throw new AuthorizationFailedException("Only teachers can lock threads");
-        }
+        authenticateUser(token, true);
 
         BoardThread thread =
             threadRepository.getById(id).orElseThrow(BoardThreadNotFoundException::new);
@@ -205,14 +155,9 @@ public class ThreadService {
      * @param id    long containing the id.
      * @return String with the information if the thread was unlocked.
      */
-    public String unlockThread(String token, long id) {
+    public String unlockThread(String token, long id) throws Exception {
 
-        AuthResponse authResponse = authenticateUser(token);
-
-        if (!authResponse.isType()) {
-
-            throw new AuthorizationFailedException("Only teachers can unlock threads");
-        }
+        authenticateUser(token, true);
 
         BoardThread thread =
             threadRepository.getById(id).orElseThrow(BoardThreadNotFoundException::new);
@@ -233,15 +178,16 @@ public class ThreadService {
      * @param boardId - id of a board
      * @return list of threads
      */
-    public List<BoardThread> getThreadsPerBoard(long boardId) {
+    public List<BoardThread> getThreadsPerBoard(long boardId) throws Exception {
         isBoardLocked(boardId);
 
         List<BoardThread> allThreads = getThreads();
         List<BoardThread> threadsPerBoard = new ArrayList<>();
 
-        for(BoardThread thread : allThreads){
-            if(thread.getBoardId() == boardId)
+        for (BoardThread thread : allThreads) {
+            if (thread.getBoardId() == boardId) {
                 threadsPerBoard.add(thread);
+            }
         }
 
         return threadsPerBoard;

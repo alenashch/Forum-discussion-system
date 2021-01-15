@@ -8,12 +8,13 @@ import nl.tudelft.sem.group20.shared.StatusResponse;
 public class VerifyBoard extends BaseHandler {
 
     /**
-     * Verifies if board exists and not locked
+     * Verifies if board exists and not locked.
+     *
      * @param checkRequest info to check
      * @return if board exists and not locked
      */
     @Override
-    public boolean handle(CheckRequest checkRequest) {
+    public boolean handle(CheckRequest checkRequest) throws Exception {
         IsLockedResponse response = checkRequest.restTemplate.getForObject(
                 "http://board-server/board/checklocked/" + checkRequest.boardId,
                 IsLockedResponse.class);

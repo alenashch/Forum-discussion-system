@@ -1,6 +1,6 @@
 package exceptions;
 
-public class BoardIsLockedException extends RuntimeException {
+public class BoardIsLockedException extends Exception {
 
     private static final long serialVersionUID = 14;
 
