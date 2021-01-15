@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "6550ae73-a4bd-424a-9b61-5c9d108df093",
-		"name": "Integration Testing Threads/Posts",
+		"_postman_id": "e3b1dbf9-0c2e-4b5a-8e0d-444b71b7d576",
+		"name": "Integration Testing Threads/Posts Copy 2",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -3979,7 +3979,7 @@
 								"exec": [
 									"pm.test(\"A post wasnt created.Board and thread are locked\", function () {\r",
 									"    pm.response.to.have.status(400);\r",
-									"    pm.expect(pm.response.text()).to.include(\"Given board is locked\");\r",
+									"    pm.expect(pm.response.text()).to.include(\"locked\");\r",
 									"});\r",
 									""
 								],

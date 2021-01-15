@@ -73,14 +73,13 @@ subprojects {
 		implementation 'org.springframework.boot:spring-boot-starter-web'
 		implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
-		compile 'org.springframework.boot:spring-boot-starter-web'
+		implementation 'org.springframework.boot:spring-boot-starter-web'
 
-		compile group: 'org.hsqldb', name: 'hsqldb'
+		implementation group: 'org.hsqldb', name: 'hsqldb'
 
-
-		compile 'com.sun.xml.bind:jaxb-impl:2.3.0'
-		compile 'org.glassfish.jaxb:jaxb-runtime:2.3.0'
-		compile 'javax.activation:activation:1.1.1'
+		implementation 'com.sun.xml.bind:jaxb-impl:2.3.0'
+		implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.0'
+		implementation 'javax.activation:activation:1.1.1'
 
 		//implementation 'org.springframework.cloud:spring-cloud-starter-config'
 		//implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
@@ -117,7 +116,7 @@ subprojects {
 
 	repositories {
 		mavenCentral()
-		maven { url 'https://repo.spring.io/milestone' }
+		maven { url 'https://repo.spring.io/milestone'}
 	}
 
 	jacocoTestCoverageVerification() {
