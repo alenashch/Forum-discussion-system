@@ -347,7 +347,7 @@ public class PostServiceTest {
 
         assertFalse(postService.isEdited(builder.getPostId()));
 
-        post.setEdited(LocalDateTime.now().plus(Duration.ofHours(1)));
+        post.setEditedTime(LocalDateTime.now().plus(Duration.ofHours(1)));
 
         assertTrue(postService.isEdited(builder.getPostId()));
     }
