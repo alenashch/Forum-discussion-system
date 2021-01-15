@@ -81,11 +81,7 @@ public class PostService extends ContentService {
         toUpdate.setBody(request.getBody());
         toUpdate.setEdited(LocalDateTime.now());
 
-
-        if (request.getBoardThreadId() != toUpdate.getBoardThread().getId()) {
-
-            updateThread(toUpdate, request.getBoardThreadId());
-        }
+        updateThread(toUpdate, request.getBoardThreadId());
 
         postRepository.saveAndFlush(toUpdate);
     }
@@ -137,6 +133,13 @@ public class PostService extends ContentService {
         return !post.getCreated().equals(post.getEdited());
     }
 
+    /**
+     * Retrieves thread with a given id and checks whether it exists.
+     *
+     * @param threadId- the ID of the thread.
+     * @return The retrieved BoardThread.
+     * @throws Exception When the thread is not found.
+     */
     public BoardThread retrieveThread(long threadId) throws Exception {
 
         BoardThread boardThread =
@@ -152,17 +155,26 @@ public class PostService extends ContentService {
         return boardThread;
     }
 
+    /**
+     * Checks if the thread existsis in the given thread and update the thread.
+     * @param toUpdate - the post in the thread.
+     * @param threadId - the id of the thread.
+     * @throws Exception if the given thread does not exist.
+     */
     public void updateThread(Post toUpdate, long threadId) throws Exception {
 
-        BoardThread boardThread = toUpdate.getBoardThread();
-        boardThread.removePost(toUpdate);
+        if (threadId != toUpdate.getBoardThread().getId()) {
 
-        BoardThread newThread =
-            threadRepository.getById(threadId).orElseThrow(
-                () -> new BoardThreadNotFoundException("Given new thread does not exist"));
+            BoardThread boardThread = toUpdate.getBoardThread();
+            boardThread.removePost(toUpdate);
 
-        toUpdate.setBoardThread(newThread);
-        newThread.addPost(toUpdate);
-        threadRepository.saveAndFlush(newThread);
+            BoardThread newThread =
+                threadRepository.getById(threadId).orElseThrow(
+                    () -> new BoardThreadNotFoundException("Given new thread does not exist"));
+
+            toUpdate.setBoardThread(newThread);
+            newThread.addPost(toUpdate);
+            threadRepository.saveAndFlush(newThread);
+        }
     }
 }
