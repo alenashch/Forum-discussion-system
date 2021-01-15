@@ -1,8 +1,6 @@
 package nl.tudelft.sem.group20.contentserver.services;
 
 import exceptions.AuthorizationFailedException;
-import exceptions.BoardIsLockedException;
-import exceptions.BoardNotFoundException;
 import exceptions.BoardThreadNotFoundException;
 import exceptions.PostNotFoundException;
 import exceptions.ThreadIsLockedException;
@@ -15,22 +13,13 @@ import nl.tudelft.sem.group20.contentserver.repositories.PostRepository;
 import nl.tudelft.sem.group20.contentserver.repositories.ThreadRepository;
 import nl.tudelft.sem.group20.contentserver.requests.CreatePostRequest;
 import nl.tudelft.sem.group20.contentserver.requests.EditPostRequest;
-import nl.tudelft.sem.group20.shared.AuthRequest;
-import nl.tudelft.sem.group20.shared.AuthResponse;
-import nl.tudelft.sem.group20.shared.IsLockedResponse;
-import nl.tudelft.sem.group20.shared.StatusResponse;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
-public class PostService {
+public class PostService extends ContentService {
 
     private final transient PostRepository postRepository;
-
-    private final transient ThreadRepository threadRepository;
-
-    private transient RestTemplate restTemplate;
 
     /**
      * Constructor of PostService.
@@ -41,72 +30,32 @@ public class PostService {
      */
     public PostService(PostRepository postRepository, ThreadRepository threadRepository,
                        RestTemplate restTemplate) {
+        super(threadRepository, restTemplate);
         this.postRepository = postRepository;
-        this.threadRepository = threadRepository;
-        this.restTemplate = restTemplate;
     }
 
     public List<Post> getPosts() {
         return postRepository.findAll();
     }
 
-    /**
-     * Authenticates user.
-     *
-     * @param token String with an authentication token in it.
-     * @return String with a username.
-     * @throws RuntimeException if the authentication fails.
-     */
-    public String authenticateUser(String token) throws Exception {
 
-        AuthResponse authResponse = restTemplate.postForObject("http://authentication-server/user"
-                + "/authenticate",
-            new AuthRequest(token), AuthResponse.class);
-
-        if (authResponse == null || authResponse.getStatus() == StatusResponse.Status.fail) {
-
-            throw new AuthorizationFailedException();
-        }
-
-        return authResponse.getUsername();
-    }
 
     /**
      * Creates a Post in the database.
      *
      * @param request Request with information needed to create a new post.
      * @return -1 if the Post already exists in the database, or the id of the newly created post
-     *      if creation was successful.
+     * if creation was successful.
      * @throws RuntimeException One of the custom exception if something goes wrong.
      */
     public long createPost(String token, CreatePostRequest request) throws Exception {
 
-        BoardThread boardThread =
-            threadRepository.getById(request.getBoardThreadId())
-                .orElseThrow(BoardThreadNotFoundException::new);
+        BoardThread boardThread = retrieveThread(request.getBoardThreadId());
 
-        IsLockedResponse response = restTemplate.getForObject("http://board-server/board/checklocked/" + boardThread.getBoardId(),
-                IsLockedResponse.class);
-
-
-        if (response.getStatus() == StatusResponse.Status.fail) {
-            throw new BoardNotFoundException();
-        }
-
-
-        if (response.getStatus() == StatusResponse.Status.success && response.isLocked()==true) {
-
-            throw new BoardIsLockedException();
-        }
-
-        if (boardThread.isLocked()) {
-
-            throw new ThreadIsLockedException();
-        }
-
+        isBoardLocked(boardThread.getBoardId());
 
         int nextPostNumber = boardThread.getPosts().size();
-        Post toCreate = new Post(nextPostNumber, authenticateUser(token),
+        Post toCreate = new Post(nextPostNumber, authenticateUser(token, false),
             request.getBody(), boardThread, LocalDateTime.now());
 
         postRepository.saveAndFlush(toCreate);
@@ -125,7 +74,7 @@ public class PostService {
         Post toUpdate = postRepository.getById(request.getPostId())
             .orElseThrow(PostNotFoundException::new);
 
-        if (!toUpdate.getCreatorName().equals(authenticateUser(token))) {
+        if (!toUpdate.getCreatorName().equals(authenticateUser(token, false))) {
 
             throw new AuthorizationFailedException("This post does not belong to the given user");
         }
@@ -135,16 +84,7 @@ public class PostService {
 
         if (request.getBoardThreadId() != toUpdate.getBoardThread().getId()) {
 
-            BoardThread boardThread = toUpdate.getBoardThread();
-            boardThread.removePost(toUpdate);
-
-            BoardThread newThread =
-                threadRepository.getById(request.getBoardThreadId()).orElseThrow(
-                    () -> new BoardThreadNotFoundException("Given new thread does not exist"));
-
-            toUpdate.setBoardThread(newThread);
-            newThread.addPost(toUpdate);
-            threadRepository.saveAndFlush(newThread);
+            updateThread(toUpdate, request.getBoardThreadId());
         }
 
         postRepository.saveAndFlush(toUpdate);
@@ -195,5 +135,34 @@ public class PostService {
         Post post = postRepository.getById(id).orElseThrow(PostNotFoundException::new);
 
         return !post.getCreated().equals(post.getEdited());
+    }
+
+    public BoardThread retrieveThread(long threadId) throws Exception {
+
+        BoardThread boardThread =
+            threadRepository.getById(threadId)
+                .orElseThrow(BoardThreadNotFoundException::new);
+
+
+        if (boardThread.isLocked()) {
+
+            throw new ThreadIsLockedException();
+        }
+
+        return boardThread;
+    }
+
+    public void updateThread(Post toUpdate, long threadId) throws Exception {
+
+        BoardThread boardThread = toUpdate.getBoardThread();
+        boardThread.removePost(toUpdate);
+
+        BoardThread newThread =
+            threadRepository.getById(threadId).orElseThrow(
+                () -> new BoardThreadNotFoundException("Given new thread does not exist"));
+
+        toUpdate.setBoardThread(newThread);
+        newThread.addPost(toUpdate);
+        threadRepository.saveAndFlush(newThread);
     }
 }

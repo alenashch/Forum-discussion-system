@@ -259,7 +259,7 @@ public class PostServiceTest {
             Mockito.any(AuthRequest.class),
             Mockito.eq(AuthResponse.class))).thenReturn(authResponse);
 
-        assertEquals("bob", postService.authenticateUser(token));
+        assertEquals("bob", postService.authenticateUser(token, false));
     }
 
     @Test
@@ -270,7 +270,8 @@ public class PostServiceTest {
             Mockito.any(AuthRequest.class),
             Mockito.eq(AuthResponse.class))).thenReturn(authResponse2);
 
-        assertThrows(AuthorizationFailedException.class, () -> postService.authenticateUser(token));
+        assertThrows(AuthorizationFailedException.class, () -> postService.authenticateUser(token,
+            false));
     }
 
     @Test
