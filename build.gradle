@@ -1,5 +1,11 @@
 
 
+buildscript{
+	dependencies {
+		classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.5.1'
+	}
+}
+
 
 plugins {
 	id 'org.springframework.boot' version '2.3.5.RELEASE'
@@ -14,9 +20,13 @@ plugins {
 	// PMD
 	id 'pmd'
 
-	// PITest
-	id 'info.solidsoft.pitest' version '1.5.2'
+	id "ua.eshepelyuk.ManifestClasspath" version "1.0.0"
+
+	// https://mvnrepository.com/artifact/eu.stamp-project/pitmp-maven-plugin
+
 }
+
+
 
 
 repositories {
@@ -45,11 +55,37 @@ subprojects {
 	// Code style
 	apply plugin: 'checkstyle'
 
+	apply plugin: 'ua.eshepelyuk.ManifestClasspath'
 	// PMD
 	apply plugin: 'pmd'
 
+
+
+	/*pitest {
+		useClasspathFile = true
+		junit5PluginVersion = '0.12'
+		//targetClasses = ['nl.tudelft.sem.group20.shared.test.*']  //by default "${project.group}.*"
+		targetClasses = ["nl.tudelft.sem.group20.boardserver.test"]
+		//filter = 'nl.tudelft.sem.group20.shared.test.*'
+		pitestVersion = "1.5.1"
+		threads = 4
+		outputFormats = ['XML', 'HTML']
+		timestampedReports = false
+		jvmArgs = ['-Xmx1024m']
+		//useClasspathFile = true     //useful with bigger projects on Windows
+		fileExtensionsToFilter.addAll('xml', 'orbit')
+	}*/
+
 	// PITest
 	apply plugin: 'info.solidsoft.pitest'
+
+	pitest {
+		threads = 4
+
+		if (project.name in ['module-without-any-test']) {
+			failWhenNoMutations = false
+		}
+	}
 
 
 	group = 'nl.tudelft.cse.sem.group20'
@@ -69,6 +105,8 @@ subprojects {
 
 	dependencies {
 
+
+
 		implementation 'org.springframework.boot:spring-boot-starter'
 		implementation 'org.springframework.boot:spring-boot-starter-web'
 		implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -84,7 +122,7 @@ subprojects {
 		//implementation 'org.springframework.cloud:spring-cloud-starter-config'
 		//implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
 
-		implementation 'junit:junit:4.12'
+		testImplementation 'junit:junit:4.12'
 		runtimeOnly 'mysql:mysql-connector-java'
 
 		implementation 'com.h2database:h2'
@@ -145,8 +183,6 @@ subprojects {
 		incrementalAnalysis = true
 	}
 
-
-	apply plugin: 'info.solidsoft.pitest'
 	apply plugin: 'io.spring.dependency-management'
 
 }
