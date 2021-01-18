@@ -27,10 +27,14 @@ public class ExtendedBaseEntityTest {
     }
 
     @Test
-    public void testSetCreated() {
+    public void testGetTimestampTracker() {
         extendedBaseEntity.getTimestampTracker().setCreated(null);
         extendedBaseEntity.checkCreationTime(extendedBaseEntity);
-        assertEquals(extendedBaseEntity.getTimestampTracker().getCreated(), LocalDateTime.now());
+
+        assertTrue(extendedBaseEntity.getTimestampTracker().getCreated()
+                .isEqual(LocalDateTime.now())
+                || extendedBaseEntity.getTimestampTracker().getCreated()
+                .isBefore(LocalDateTime.now()));
     }
 
 
