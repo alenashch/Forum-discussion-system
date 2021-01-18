@@ -34,25 +34,25 @@ public class ContentControllerAdvice {
     }
 
     @ExceptionHandler({PermissionException.class})
-    ResponseEntity<String> handlePermissionException(Exception exception) {
+    public ResponseEntity<String> handlePermissionException(Exception exception) {
 
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler({BoardIsLockedException.class})
-    ResponseEntity<String> boardIsLockedException(Exception exception) {
+    public ResponseEntity<String> boardIsLockedException(Exception exception) {
 
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler({BoardNotFoundException.class})
-    ResponseEntity<String> boardNotFoundException(Exception exception) {
+    public ResponseEntity<String> boardNotFoundException(Exception exception) {
 
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler({ThreadIsLockedException.class})
-    ResponseEntity<String> threadIsLockedException(Exception exception) {
+    public ResponseEntity<String> threadIsLockedException(Exception exception) {
 
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }

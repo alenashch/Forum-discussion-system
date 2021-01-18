@@ -1,8 +1,11 @@
 package nl.tudelft.sem.group20.contentserver.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -20,6 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import nl.tudelft.sem.group20.contentserver.ContentServer;
+import nl.tudelft.sem.group20.contentserver.architecturepatterns.CheckRequest;
+import nl.tudelft.sem.group20.contentserver.architecturepatterns.VerifyAuth;
+import nl.tudelft.sem.group20.contentserver.architecturepatterns.VerifyBoard;
 import nl.tudelft.sem.group20.contentserver.entities.BoardThread;
 import nl.tudelft.sem.group20.contentserver.repositories.ThreadRepository;
 import nl.tudelft.sem.group20.contentserver.services.ThreadService;
@@ -41,6 +47,12 @@ import org.springframework.web.client.RestTemplate;
 @WebMvcTest(ThreadService.class)
 @ContextConfiguration(classes = ContentServer.class)
 public class ThreadServiceTest {
+
+
+    transient VerifyBoard verifyBoard;
+    transient VerifyAuth verifyAuth;
+
+    transient CheckRequest cr;
 
 
     private transient TestBoardThreadBuilder builder;
@@ -69,7 +81,16 @@ public class ThreadServiceTest {
     @BeforeEach
     void initialize() {
 
+
+
+
         restTemplate = mock(RestTemplate.class);
+
+        cr = new CheckRequest("token", 1, restTemplate);
+        verifyBoard = new VerifyBoard();
+        verifyAuth = new VerifyAuth();
+
+
         threadRepository = mock(ThreadRepository.class);
         authResponse = new AuthResponse(true, "jayson");
         boardUnlocked = new IsLockedResponse(false);
@@ -111,6 +132,8 @@ public class ThreadServiceTest {
     @Test
     void testCreateThreadSuccessful() throws Exception {
 
+        VerifyAuth mockVerify = mock(VerifyAuth.class);
+
         when(restTemplate.postForObject(Mockito.anyString(),
                 Mockito.any(AuthRequest.class),
                 Mockito.eq(AuthResponse.class))).thenReturn(authResponse);
@@ -118,11 +141,64 @@ public class ThreadServiceTest {
         when(restTemplate.getForObject(Mockito.anyString(),
                 Mockito.eq(IsLockedResponse.class))).thenReturn(boardUnlocked);
 
+        assertTrue(verifyBoard.handle(cr));
+        assertTrue(verifyAuth.handle(cr));
+
+
         //builder.setBoardId(thread1.getBoardId());
 
         assertEquals(0, threadService.createThread(token, builder.createBoardThreadRequest()));
 
         verify(threadRepository, times(1)).saveAndFlush(any());
+    }
+
+    @Test
+    void testBoardVerifyException() throws Exception {
+
+        VerifyBoard mockVerifyBoard = mock(VerifyBoard.class);
+
+        when(restTemplate.postForObject(Mockito.anyString(),
+                Mockito.any(AuthRequest.class),
+                Mockito.eq(AuthResponse.class))).thenReturn(authResponse);
+
+        when(restTemplate.getForObject(Mockito.anyString(),
+                Mockito.eq(IsLockedResponse.class))).thenReturn(boardLocked);
+
+        //builder.setBoardId(thread1.getBoardId());
+
+        assertThrows(BoardIsLockedException.class, () ->
+                threadService.createThread(token,
+                        builder.createBoardThreadRequest()));
+    }
+
+
+    @Test
+    void testCreateThreadUnsuccessfulAuthorization() {
+
+        AuthResponse authResponse2 = new AuthResponse();
+        IsLockedResponse locked = new IsLockedResponse(false);
+
+        when(restTemplate.getForObject(Mockito.anyString(),
+                Mockito.eq(AuthResponse.class))).thenReturn(authResponse2);
+
+        when(restTemplate.getForObject(Mockito.anyString(),
+                Mockito.eq(IsLockedResponse.class))).thenReturn(locked);
+
+
+        builder.setBoardId(thread1.getId());
+
+        assertThrows(AuthorizationFailedException.class, () ->
+                threadService.createThread(token,
+                        builder.createBoardThreadRequest()));
+
+
+        assertThrows(AuthorizationFailedException.class, () ->
+                verifyAuth.handle(cr));
+
+
+
+        //check that no post was added
+        verify(threadRepository, times(0)).saveAndFlush(any(BoardThread.class));
     }
 
     @Test
@@ -137,6 +213,8 @@ public class ThreadServiceTest {
         assertThrows(AuthorizationFailedException.class, () ->
                 threadService.createThread(token,
                         builder.createBoardThreadRequest()));
+
+
 
         //check that no post was added
         verify(threadRepository, times(0)).saveAndFlush(any(BoardThread.class));
@@ -160,6 +238,8 @@ public class ThreadServiceTest {
         assertThrows(BoardIsLockedException.class,
                 () -> threadService.createThread(token, builder.createBoardThreadRequest()));
         verify(threadRepository, times(0)).saveAndFlush(any());
+
+
     }
 
     @Test
@@ -175,6 +255,9 @@ public class ThreadServiceTest {
         assertThrows(BoardNotFoundException.class,
                 () -> threadService.createThread(token, builder.createBoardThreadRequest()));
         verify(threadRepository, times(0)).saveAndFlush(any());
+
+        assertThrows(BoardNotFoundException.class,
+                () -> verifyBoard.handle(cr));
     }
 
     @Test
@@ -223,9 +306,12 @@ public class ThreadServiceTest {
                 Mockito.any(AuthRequest.class),
                 Mockito.eq(AuthResponse.class))).thenReturn(failAuth);
 
+
         assertThrows(AuthorizationFailedException.class, () ->
                 threadService.updateThread(token,
                         builder.editBoardThreadRequest()));
+
+
 
         verify(threadRepository, times(0)).saveAndFlush(any());
     }

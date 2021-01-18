@@ -47,4 +47,41 @@ class ContentControllerAdviceTest {
         Assertions.assertEquals(responseEntity,
             controllerAdvice.handlePostNotFoundException(exception));
     }
+
+    @Test
+    void handlePermissionExceptionTest() {
+
+        ResponseEntity<String> responseEntity = new ResponseEntity<>(message,
+                HttpStatus.BAD_REQUEST);
+        Assertions.assertEquals(responseEntity,
+                controllerAdvice.handlePermissionException(exception));
+    }
+
+    @Test
+    void handleBoardIsLockedExceptionTest() {
+
+        ResponseEntity<String> responseEntity = new ResponseEntity<>(message,
+                HttpStatus.BAD_REQUEST);
+        Assertions.assertEquals(responseEntity,
+                controllerAdvice.boardIsLockedException(exception));
+    }
+
+    @Test
+    void handleBoardNotFoundExceptionTest() {
+
+        ResponseEntity<String> responseEntity = new ResponseEntity<>(message,
+                HttpStatus.BAD_REQUEST);
+        Assertions.assertEquals(responseEntity,
+                controllerAdvice.boardNotFoundException(exception));
+    }
+
+    @Test
+    void handleThreadIsLockedExceptionTest() {
+
+        ResponseEntity<String> responseEntity = new ResponseEntity<>(message,
+                HttpStatus.BAD_REQUEST);
+        Assertions.assertEquals(responseEntity,
+                controllerAdvice.threadIsLockedException(exception));
+    }
+
 }
