@@ -132,7 +132,6 @@ public class ThreadServiceTest {
     @Test
     void testCreateThreadSuccessful() throws Exception {
 
-        VerifyAuth mockVerify = mock(VerifyAuth.class);
 
         when(restTemplate.postForObject(Mockito.anyString(),
                 Mockito.any(AuthRequest.class),
@@ -155,7 +154,6 @@ public class ThreadServiceTest {
     @Test
     void testBoardVerifyException() throws Exception {
 
-        VerifyBoard mockVerifyBoard = mock(VerifyBoard.class);
 
         when(restTemplate.postForObject(Mockito.anyString(),
                 Mockito.any(AuthRequest.class),
