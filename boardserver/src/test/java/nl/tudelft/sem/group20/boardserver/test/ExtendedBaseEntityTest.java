@@ -1,16 +1,15 @@
 package nl.tudelft.sem.group20.boardserver.test;
 
-import nl.tudelft.sem.group20.boardserver.embeddable.TimestampTracker;
-import nl.tudelft.sem.group20.boardserver.entities.Board;
+import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.time.LocalDateTime;
 import nl.tudelft.sem.group20.boardserver.entities.ExtendedBaseEntity;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.time.LocalDateTime;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.jupiter.api.Assertions.*;
 
 public class ExtendedBaseEntityTest {
     transient ExtendedBaseEntity extendedBaseEntity;
@@ -19,8 +18,8 @@ public class ExtendedBaseEntityTest {
 
     @BeforeEach
     void initialize() {
-        extendedBaseEntity = new ExtendedBaseEntity(1,"Chandler", "Chan");
-        extendedBaseEntity2 = new ExtendedBaseEntity(2,"Monica", "Mon");
+        extendedBaseEntity = new ExtendedBaseEntity(1, "Chandler", "Chan");
+        extendedBaseEntity2 = new ExtendedBaseEntity(2, "Monica", "Mon");
 
         extendedBaseEntityCopy = new ExtendedBaseEntity(extendedBaseEntity.getId(),
                 extendedBaseEntity.getName(), extendedBaseEntity.getUsername());
