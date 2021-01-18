@@ -1,5 +1,6 @@
-package nl.tudelft.sem.group20.contentserver.controller;
+package nl.tudelft.sem.group20.contentserver.test.controller;
 
+import nl.tudelft.sem.group20.contentserver.controller.ContentControllerAdvice;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
