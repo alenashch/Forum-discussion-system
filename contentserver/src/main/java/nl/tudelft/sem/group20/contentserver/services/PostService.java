@@ -44,11 +44,10 @@ public class PostService extends ContentService {
      * Creates a Post in the database.
      *
      * @param request Request with information needed to create a new post.
-     * @return -1 if the Post already exists in the database, or the id of the newly created post
-     *         if creation was successful.
+     * @return newly created Post.
      * @throws RuntimeException One of the custom exception if something goes wrong.
      */
-    public long createPost(String token, CreatePostRequest request) throws Exception {
+    public Post createPost(String token, CreatePostRequest request) throws Exception {
 
         BoardThread boardThread = retrieveThread(request.getBoardThreadId());
 
@@ -61,15 +60,16 @@ public class PostService extends ContentService {
         postRepository.saveAndFlush(toCreate);
         boardThread.addPost(toCreate);
         threadRepository.saveAndFlush(boardThread);
-        return toCreate.getId();
+        return toCreate;
     }
 
     /**
      * Updates a Post in the database.
      *
      * @param request Request with information needed to create a new post
+     * @return the edited post.
      */
-    public void updatePost(String token, EditPostRequest request) throws Exception {
+    public Post updatePost(String token, EditPostRequest request) throws Exception {
 
         Post toUpdate = postRepository.getById(request.getPostId())
             .orElseThrow(PostNotFoundException::new);
@@ -84,6 +84,8 @@ public class PostService extends ContentService {
         updateThread(toUpdate, request.getBoardThreadId());
 
         postRepository.saveAndFlush(toUpdate);
+
+        return toUpdate;
     }
 
     /**
