@@ -1,3 +1,5 @@
+package nl.tudelft.sem.group20.contentserver.test;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
@@ -62,7 +64,7 @@ class PostControllerTest {
 
         CreatePostRequest createPostRequest = builder.createTestCreatePostRequest();
         when(postService.createPost(anyString(), any(CreatePostRequest.class)))
-            .thenReturn(builder.getPostId());
+            .thenReturn(builder.createTestPost());
 
         try {
             mockMvc.perform(post("/post/create")

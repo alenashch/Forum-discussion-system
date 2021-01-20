@@ -1,5 +1,6 @@
 package nl.tudelft.sem.group20.contentserver.controller;
 
+import nl.tudelft.sem.group20.contentserver.entities.Post;
 import nl.tudelft.sem.group20.contentserver.requests.CreatePostRequest;
 import nl.tudelft.sem.group20.contentserver.requests.EditPostRequest;
 import nl.tudelft.sem.group20.contentserver.services.PostService;
@@ -34,9 +35,9 @@ public class PostController {
                                              @RequestBody CreatePostRequest request)
         throws Exception {
 
-        long newId = postService.createPost(token, request);
+        Post newPost = postService.createPost(token, request);
 
-        return new ResponseEntity<>("A new post with ID: " + newId + " has been created",
+        return new ResponseEntity<>("A new post with ID: " + newPost.getId() + " has been created",
             HttpStatus.CREATED);
     }
 

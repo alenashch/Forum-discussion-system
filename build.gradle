@@ -1,5 +1,11 @@
 
 
+buildscript{
+	dependencies {
+		classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.5.1'
+	}
+}
+
 
 plugins {
 	id 'org.springframework.boot' version '2.3.5.RELEASE'
@@ -13,10 +19,9 @@ plugins {
 
 	// PMD
 	id 'pmd'
-
-	// PITest
-	id 'info.solidsoft.pitest' version '1.5.2'
 }
+
+
 
 
 repositories {
@@ -51,6 +56,19 @@ subprojects {
 	// PITest
 	apply plugin: 'info.solidsoft.pitest'
 
+	pitest {
+		junit5PluginVersion = '0.12'
+		threads = 4
+		useClasspathFile = true
+		targetClasses = ["nl.tudelft.sem.group20.shared.*",
+						 "nl.tudelft.sem.group20.authenticationserver.*",
+						 "nl.tudelft.sem.group20.boardserver.*",
+						 "nl.tudelft.sem.group20.contentserver.*"]
+		if (project.name in ['eurekaserver']) {
+			failWhenNoMutations = false
+		}
+	}
+
 
 	group = 'nl.tudelft.cse.sem.group20'
 	version = '0.0.1-SNAPSHOT'
@@ -69,6 +87,8 @@ subprojects {
 
 	dependencies {
 
+
+
 		implementation 'org.springframework.boot:spring-boot-starter'
 		implementation 'org.springframework.boot:spring-boot-starter-web'
 		implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -84,7 +104,7 @@ subprojects {
 		//implementation 'org.springframework.cloud:spring-cloud-starter-config'
 		//implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
 
-		implementation 'junit:junit:4.12'
+		testImplementation 'junit:junit:4.12'
 		runtimeOnly 'mysql:mysql-connector-java'
 
 		implementation 'com.h2database:h2'
@@ -145,8 +165,6 @@ subprojects {
 		incrementalAnalysis = true
 	}
 
-
-	apply plugin: 'info.solidsoft.pitest'
 	apply plugin: 'io.spring.dependency-management'
 
 }

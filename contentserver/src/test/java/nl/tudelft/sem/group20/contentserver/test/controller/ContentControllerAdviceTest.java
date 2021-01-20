@@ -1,5 +1,6 @@
-package nl.tudelft.sem.group20.contentserver.controller;
+package nl.tudelft.sem.group20.contentserver.test.controller;
 
+import nl.tudelft.sem.group20.contentserver.controller.ContentControllerAdvice;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,4 +47,41 @@ class ContentControllerAdviceTest {
         Assertions.assertEquals(responseEntity,
             controllerAdvice.handlePostNotFoundException(exception));
     }
+
+    @Test
+    void handlePermissionExceptionTest() {
+
+        ResponseEntity<String> responseEntity = new ResponseEntity<>(message,
+                HttpStatus.BAD_REQUEST);
+        Assertions.assertEquals(responseEntity,
+                controllerAdvice.handlePermissionException(exception));
+    }
+
+    @Test
+    void handleBoardIsLockedExceptionTest() {
+
+        ResponseEntity<String> responseEntity = new ResponseEntity<>(message,
+                HttpStatus.BAD_REQUEST);
+        Assertions.assertEquals(responseEntity,
+                controllerAdvice.boardIsLockedException(exception));
+    }
+
+    @Test
+    void handleBoardNotFoundExceptionTest() {
+
+        ResponseEntity<String> responseEntity = new ResponseEntity<>(message,
+                HttpStatus.BAD_REQUEST);
+        Assertions.assertEquals(responseEntity,
+                controllerAdvice.boardNotFoundException(exception));
+    }
+
+    @Test
+    void handleThreadIsLockedExceptionTest() {
+
+        ResponseEntity<String> responseEntity = new ResponseEntity<>(message,
+                HttpStatus.BAD_REQUEST);
+        Assertions.assertEquals(responseEntity,
+                controllerAdvice.threadIsLockedException(exception));
+    }
+
 }

@@ -1,3 +1,5 @@
+package nl.tudelft.sem.group20.contentserver.test;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
@@ -16,9 +18,7 @@ import java.util.List;
 import nl.tudelft.sem.group20.contentserver.ContentServer;
 import nl.tudelft.sem.group20.contentserver.controller.ThreadController;
 import nl.tudelft.sem.group20.contentserver.entities.BoardThread;
-import nl.tudelft.sem.group20.contentserver.entities.Post;
 import nl.tudelft.sem.group20.contentserver.requests.CreateBoardThreadRequest;
-import nl.tudelft.sem.group20.contentserver.requests.CreatePostRequest;
 import nl.tudelft.sem.group20.contentserver.requests.EditBoardThreadRequest;
 import nl.tudelft.sem.group20.contentserver.services.ThreadService;
 import org.junit.jupiter.api.Assertions;

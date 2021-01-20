@@ -1,3 +1,5 @@
+package nl.tudelft.sem.group20.contentserver.test;
+
 import java.time.LocalDateTime;
 import nl.tudelft.sem.group20.contentserver.entities.BoardThread;
 import nl.tudelft.sem.group20.contentserver.entities.Post;
@@ -12,7 +14,7 @@ import nl.tudelft.sem.group20.contentserver.requests.EditPostRequest;
 public class TestThreadPostBuilder {
 
     public int postNumber = 123;
-    public String creatorName = "Bob";
+    public String creatorName = "bob";
     public long postId = 1L;
     public long threadId = 2L;
     public long boardId = 3L;

@@ -1,3 +1,5 @@
+package nl.tudelft.sem.group20.contentserver.test;
+
 import java.time.LocalDateTime;
 import nl.tudelft.sem.group20.contentserver.entities.BoardThread;
 import nl.tudelft.sem.group20.contentserver.requests.CreateBoardThreadRequest;

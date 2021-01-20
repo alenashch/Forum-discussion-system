@@ -1,3 +1,5 @@
+package nl.tudelft.sem.group20.contentserver.test;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -29,6 +31,8 @@ import nl.tudelft.sem.group20.contentserver.entities.BoardThread;
 import nl.tudelft.sem.group20.contentserver.entities.Post;
 import nl.tudelft.sem.group20.contentserver.repositories.PostRepository;
 import nl.tudelft.sem.group20.contentserver.repositories.ThreadRepository;
+import nl.tudelft.sem.group20.contentserver.requests.CreatePostRequest;
+import nl.tudelft.sem.group20.contentserver.requests.EditPostRequest;
 import nl.tudelft.sem.group20.contentserver.services.PostService;
 import nl.tudelft.sem.group20.shared.AuthRequest;
 import nl.tudelft.sem.group20.shared.AuthResponse;
@@ -113,6 +117,8 @@ public class PostServiceTest {
 
     @Test
     void testCreatePostSuccessful() throws Exception {
+
+        CreatePostRequest request = builder.createTestCreatePostRequest();
         when(threadRepository.getById(builder.getThreadId()))
             .thenReturn(Optional.of(builder.createTestBoardThread()));
         when(restTemplate.postForObject(Mockito.anyString(),
@@ -122,7 +128,12 @@ public class PostServiceTest {
             .thenReturn(success);
 
         builder.setPostId(demoPost.getId());
-        assertEquals(0, postService.createPost(token, builder.createTestCreatePostRequest()));
+
+        Post createdPost = postService.createPost(token, request);
+        assertEquals(builder.getBoardId(), createdPost.getBoardThread().getBoardId());
+        assertEquals(builder.getCreatorName(), createdPost.getCreatorName());
+        assertEquals(builder.getBody(), createdPost.getBody());
+
 
         verify(postRepository, times(1)).saveAndFlush(any());
     }
@@ -227,11 +238,44 @@ public class PostServiceTest {
         builder.setCreatorName("bob");
         when(postRepository.getById(anyLong()))
             .thenReturn(Optional.of(builder.createTestPost()));
-        when(threadRepository.getById(anyLong()))
-            .thenReturn(Optional.of(builder.createTestBoardThread()));
 
-        postService.updatePost(token, builder.createTestEditPostRequest());
+
+        Post updatedPost = postService.updatePost(token, builder.createTestEditPostRequest());
+        assertEquals(builder.getBody(), updatedPost.getBody());
+        assertEquals(builder.getCreatorName(), updatedPost.getCreatorName());
+        assertEquals(builder.getBody(), updatedPost.getBody());
+
+
         verify(postRepository, times(1)).saveAndFlush(any());
+    }
+
+    @Test
+    void updatePostWithNewThread() throws Exception {
+
+        when(restTemplate.postForObject(Mockito.anyString(),
+            Mockito.any(AuthRequest.class),
+            Mockito.eq(AuthResponse.class))).thenReturn(authResponse);
+
+        BoardThread boardThread1 = builder.createTestBoardThread();
+        BoardThread boardThread2 = builder.createTestBoardThread();
+        boardThread1.setId(10);
+        boardThread2.setId(11);
+        boardThread2.setThreadTitle("new");
+
+
+        when(threadRepository.getById(10))
+            .thenReturn(Optional.of(boardThread1));
+        when(threadRepository.getById(11))
+            .thenReturn(Optional.of(boardThread2));
+
+        EditPostRequest request = builder.createTestEditPostRequest();
+        request.setBoardThreadId(11);
+
+        Post updatedPost = postService.updatePost(token, request);
+
+        assertEquals(boardThread2.getThreadTitle(), updatedPost.getBoardThread().getThreadTitle());
+        assertTrue(boardThread2.getPosts().contains(updatedPost));
+        assertFalse(boardThread1.getPosts().contains(updatedPost));
     }
 
     @Test
@@ -360,5 +404,11 @@ public class PostServiceTest {
 
         assertThrows(PostNotFoundException.class,
             () -> postService.isEdited(builder.getPostId()));
+    }
+
+    @Test
+    void toUpdateTest() {
+
+
     }
 }
